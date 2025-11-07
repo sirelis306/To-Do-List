@@ -1,0 +1,22 @@
+<div class="autocomplete-container">
+
+  <input 
+    type="text" 
+    placeholder="Escribe o selecciona una categoría"
+    [(ngModel)]="terminoBusqueda"
+    (input)="onInput()"
+    (blur)="onBlur()"
+  />
+
+  @if (mostrarSugerencias && sugerencias.length > 0) {
+    <ul class="suggestions-list">
+
+      @for (sug of sugerencias; track sug) {
+        <li (mousedown)="onSelectSugerencia(sug)">
+          {{ sug }}
+        </li>
+      }
+
+    </ul>
+  }
+</div>

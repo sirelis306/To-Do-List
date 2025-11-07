@@ -1,0 +1,26 @@
+<div class="modal-backdrop" (click)="onCerrar()"></div>
+<div class="modal-content">
+  <button class="close-btn" (click)="onCerrar()">×</button>
+  <h2>Nueva Tarea</h2>
+
+  <div class="nueva-tarea-form">
+    <input type="text" placeholder="¿Qué necesitas hacer?" [(ngModel)]="nuevaTareaTitulo"/>
+  </div>
+
+  <div class="nueva-tarea-form">
+    <app-category-autocomplete 
+      (categoriaSeleccionada)="onCategoriaCambia($event)">
+    </app-category-autocomplete>
+  </div>
+
+ <div class="nueva-tarea-form">
+    <app-custom-dropdown
+      label="Importancia"
+      [options]="opcionesImportancia"
+      [selectedValue]="nuevaTareaImportancia"
+      (valueChange)="onImportanciaChange($event)"
+    ></app-custom-dropdown>
+  </div>
+
+  <button class="add-task-btn" (click)="onAgregarTarea()">Añadir Tarea</button>
+</div>

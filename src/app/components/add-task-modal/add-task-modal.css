@@ -1,0 +1,79 @@
+:host {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.modal-backdrop {
+  position: absolute;
+  width: 100%; height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+.modal-content {
+  position: relative;
+  z-index: 1001;
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 25px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  font-family: Arial, sans-serif;
+}
+.close-btn {
+  position: absolute;
+  top: 10px; right: 15px;
+  background: none; border: none;
+  font-size: 24px; color: #aaa;
+  cursor: pointer;
+}
+.close-btn:hover { color: #333; }
+h2 { margin-top: 0; color: #172b4d; }
+
+.nueva-tarea-form {
+  margin-bottom: 15px;
+}
+
+.nueva-tarea-form input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  font-size: 16px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+}
+
+.add-task-btn {
+  width: 100%;
+  padding: 12px 20px;
+  font-size: 16px;
+  background-color: #3240A5; 
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px; 
+}
+.add-task-btn:hover {
+  background-color: #303a87;
+}
+
+.importancia-select-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px; 
+  font-size: 16px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+  margin-top: 5px; 
+}
+.nueva-tarea-form label {
+  display: block; 
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #333;
+}

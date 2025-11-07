@@ -1,0 +1,19 @@
+<div class="custom-select-container">
+  
+  <button class="custom-btn" (click)="menuAbierto = !menuAbierto">
+    <i class="fa-solid fa-filter"></i> <span>{{ getNombreSeleccion() }}</span>
+    
+    <i class="fa-solid fa-chevron-down arrow-icon"></i>
+  </button>
+  
+  @if (menuAbierto) {
+    <div class="custom-menu">
+      
+      <button (click)="seleccionarOpcion('')">Todos los Filtros</button>
+      
+      @for (op of options; track op) {
+        <button (click)="seleccionarOpcion(op)">{{ op }}</button>
+      }
+    </div>
+  }
+</div>

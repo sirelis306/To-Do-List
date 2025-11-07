@@ -1,0 +1,23 @@
+<div class="kanban-column" [ngClass]="{
+      'kanban-column-hacer': titulo === 'Por Hacer',
+      'kanban-column-progreso': titulo === 'En Progreso',
+      'kanban-column-completada': titulo === 'Completada'
+    }">
+  
+  <h2>{{ titulo }}</h2>
+
+  <div class="card-container" cdkDropList [id]="estado" [cdkDropListData]="tareas" (cdkDropListDropped)="onTareaDropped($event)">
+    @for (tarea of tareas; track tarea.id) {
+      <app-task-card 
+        
+        [tarea]="tarea"
+        (eliminar)="onEliminarDesdeTarjeta($event)"
+
+        />
+    }
+
+    @if (tareas.length === 0) {
+      <p class="empty-column-msg">Columna vacía</p>
+    }
+  </div>
+</div>

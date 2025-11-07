@@ -1,0 +1,67 @@
+<div class="detail-modal-backdrop" (click)="onCerrar()"></div>
+<div class="detail-modal-content">
+  <button class="close-btn" (click)="onCerrar()">×</button>
+  
+  <div class="task-title-section">
+    @if (!editandoTitulo) {
+      <h2 (click)="editandoTitulo = true">{{ tarea.titulo }}</h2>
+      <button class="edit-btn" (click)="editandoTitulo = true">
+        <i class="fa-solid fa-pen"></i>
+      </button>
+    } @else {
+      <input type="text" [(ngModel)]="nuevoTituloTarea" (blur)="guardarTitulo()" (keyup.enter)="guardarTitulo()" autofocus/>
+    }
+  </div>
+
+  <div class="task-controls">
+    <div class="control-item">
+      <span>Categoría:</span>
+      <app-custom-dropdown
+        label="Ninguna"
+        [options]="categoriasParaDropdown"
+        [selectedValue]="tarea.categoria || ''"
+        (valueChange)="onCategoriaChange($event)"
+      ></app-custom-dropdown>
+    </div>
+
+    <div class="control-item">
+      <span>Importancia:</span>
+      <app-custom-dropdown
+        label="Normal"
+        [options]="opcionesImportancia"
+        [selectedValue]="tarea.importancia || ''"
+        (valueChange)="onImportanciaChange($event)"
+      ></app-custom-dropdown>
+    </div>
+
+    <div class="control-item">
+      <span>Estado:</span>
+      <app-custom-dropdown label="Seleccionar" [options]="opcionesEstado" [selectedValue]="tarea.estado" (valueChange)="onEstadoChange($event)"></app-custom-dropdown>
+    </div>
+  </div>
+
+  <div class="subtasks-section">
+   <h3>Sub-tareas ({{ subtareasCompletadas }}/{{ totalSubtareas }})</h3>
+    
+    <div class="add-subtask-form">
+      <input type="text" placeholder="Añadir sub-tarea..." [(ngModel)]="nuevoSubtareaDescripcion" (keyup.enter)="agregarSubtarea()"/>
+      <button class="add-subtask-btn" (click)="agregarSubtarea()">
+        <i class="fa-solid fa-plus"></i>
+      </button>
+    </div>
+
+    <div class="subtask-list">
+      @for (subtarea of tarea.subtareas; track subtarea.id) {
+        <div class="subtask-item">
+          <input type="checkbox" [checked]="subtarea.completada" (change)="marcarSubtarea(subtarea)" [id]="'subtask-' + subtarea.id"/>
+          <label [for]="'subtask-' + subtarea.id" [class.completed]="subtarea.completada">{{ subtarea.descripcion }}</label>
+          <button class="delete-subtask-btn" (click)="eliminarSubtarea(subtarea.id)">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      } @empty {
+        <p class="no-subtasks">No hay subtareas para esta tarea.</p>
+      }
+    </div>
+  </div>
+</div>

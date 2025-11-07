@@ -1,0 +1,24 @@
+<div class="task-card" (click)="onCardClick()" cdkDrag [cdkDragData]="tarea"
+  [ngClass]="{
+      'task-card-hacer': tarea.estado === 'por_hacer',
+      'task-card-progreso': tarea.estado === 'en_progreso',
+      'task-card-completada': tarea.estado === 'completada'
+    }"
+   >
+  <div class="card-header">
+    <span class="task-title">{{ tarea.titulo }}</span>
+    <button class="delete-btn" (click)="onEliminar()">
+      <i class="fa-solid fa-trash"></i>
+    </button>
+  </div>
+  
+  <div class="card-footer">
+    @if (tarea.categoria) {
+      <span class="task-category">{{ tarea.categoria | titlecase }}</span>
+    }
+    
+    <span class="task-flag" [class]="getImportanciaClass()">
+      <i class="fa-solid fa-flag"></i>
+    </span>
+  </div>
+</div>
