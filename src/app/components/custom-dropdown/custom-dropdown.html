@@ -12,7 +12,7 @@
       <button (click)="seleccionarOpcion('')">Todos los Filtros</button>
       
       @for (op of options; track op) {
-        <button (click)="seleccionarOpcion(op)">{{ op }}</button>
+        <button (click)="seleccionarOpcion(op)">{{ op | titlecase }}</button>
       }
     </div>
   }

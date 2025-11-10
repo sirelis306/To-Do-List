@@ -7,6 +7,7 @@ import { CustomDropdown } from '../custom-dropdown/custom-dropdown';
 
 @Component({
   selector: 'app-add-task-modal',
+  standalone: true,
   imports: [CommonModule, FormsModule, CategoryAutocomplete, CustomDropdown],
   templateUrl: './add-task-modal.html',
   styleUrl: './add-task-modal.css',
@@ -16,8 +17,10 @@ export class AddTaskModal {
   public nuevaTareaCategoria: string = "";
   public nuevaTareaImportancia: Importancia = Importancia.baja;
   public opcionesImportancia: string[] = Object.values(Importancia);
+  public nuevoSubtareaDescripcion: string = "";
+  public nuevasSubtareas: string[] = [];
 
-  @Output() tareaAgregada = new EventEmitter<{ titulo: string, categoria: string, importancia:Importancia }>();
+  @Output() tareaAgregada = new EventEmitter<{ titulo: string, categoria: string, importancia:Importancia, subtareas: string[] }>();
   @Output() cerrarModal = new EventEmitter<void>();
 
   constructor() { }
@@ -30,15 +33,34 @@ export class AddTaskModal {
     this.nuevaTareaCategoria = categoria;
   }
 
+  public get totalSubtareas(): number {
+    return this.nuevasSubtareas.length;
+  }
+  public get subtareasCompletadas(): number {
+    return 0; 
+  }
+
+  agregarSubtarea(): void {
+    if (this.nuevoSubtareaDescripcion.trim() === '') return;
+    this.nuevasSubtareas.push(this.nuevoSubtareaDescripcion.trim());
+    this.nuevoSubtareaDescripcion = "";
+  }
+
+  eliminarSubtarea(index: number): void {
+    this.nuevasSubtareas.splice(index, 1);
+  }
+
   onAgregarTarea() {
     if (this.nuevaTareaTitulo.trim() === "") return;
     this.tareaAgregada.emit({
       titulo: this.nuevaTareaTitulo,
       categoria: this.nuevaTareaCategoria.trim() || 'General',
-      importancia: this.nuevaTareaImportancia
+      importancia: this.nuevaTareaImportancia,
+      subtareas: this.nuevasSubtareas 
     });
     
     this.nuevaTareaTitulo = "";
+    this.nuevasSubtareas = [];
   }
 
   get ImportanciaEnum() {

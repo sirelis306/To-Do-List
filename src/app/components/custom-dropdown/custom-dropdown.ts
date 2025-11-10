@@ -1,11 +1,11 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, TitleCasePipe } from '@angular/common';
 
 
 @Component({
   selector: 'app-custom-dropdown',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TitleCasePipe],
   templateUrl: './custom-dropdown.html',
   styleUrl: './custom-dropdown.css'
 })

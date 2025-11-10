@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Tarea, EstadoTarea } from '../../models/tarea';
 import { TaskCard } from '../task-card/task-card';
-import { DragDropModule, CdkDragDrop } from '@angular/cdk/drag-drop';
+import { DragDropModule, CdkDragDrop, CdkDrag, CdkDropList } from '@angular/cdk/drag-drop';
 
 export interface MoverTareaEvento {
   taskId: number;
@@ -12,7 +12,7 @@ export interface MoverTareaEvento {
 @Component({
   selector: 'app-kanban-column',
   standalone: true,
-  imports: [CommonModule, TaskCard, DragDropModule],
+  imports: [CommonModule, TaskCard, DragDropModule, CdkDrag, CdkDropList],
   templateUrl: './kanban-column.html',
   styleUrl: './kanban-column.css',
 })
@@ -23,6 +23,7 @@ export class KanbanColumn {
 
   @Output() tareaDropped = new EventEmitter<CdkDragDrop<Tarea[]>>();
   @Output() eliminarTarea = new EventEmitter<number>();
+  @Output() cardClicked = new EventEmitter<Tarea>();
 
   constructor() {}
 
@@ -32,5 +33,9 @@ export class KanbanColumn {
 
   onEliminarDesdeTarjeta(taskId: number) {
     this.eliminarTarea.emit(taskId);
+  }
+
+  onCardClickFromChild(tarea: Tarea): void {
+    this.cardClicked.emit(tarea);
   }
 }

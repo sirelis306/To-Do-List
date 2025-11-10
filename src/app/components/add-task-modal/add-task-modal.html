@@ -22,5 +22,26 @@
     ></app-custom-dropdown>
   </div>
 
+  <div class="subtasks-section">
+    <h3>Sub-tareas ({{ subtareasCompletadas }}/{{ totalSubtareas }})</h3>
+    
+    <div class="add-subtask-form">
+      <input type="text" placeholder="Añadir sub-tarea..." [(ngModel)]="nuevoSubtareaDescripcion" (keyup.enter)="agregarSubtarea()"/>
+      <button class="add-subtask-btn" (click)="agregarSubtarea()">
+        <i class="fa-solid fa-plus"></i>
+      </button>
+    </div>
+
+    <div class="subtask-list">
+      @for (subtarea of nuevasSubtareas; track $index) {
+        <div class="subtask-item">
+          <span class="subtask-label">{{ subtarea }}</span>
+          <button class="delete-subtask-btn" (click)="eliminarSubtarea($index)">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      }
+    </div>
+
   <button class="add-task-btn" (click)="onAgregarTarea()">Añadir Tarea</button>
 </div>

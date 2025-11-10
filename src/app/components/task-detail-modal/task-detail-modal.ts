@@ -2,11 +2,12 @@ import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Tarea, Subtarea, Importancia, EstadoTarea } from '../../models/tarea';
-import { Task } from '../../services/task';
+import { Task } from '../../services/task/task';
 import { CustomDropdown } from '../custom-dropdown/custom-dropdown';
 
 @Component({
   selector: 'app-task-detail-modal',
+  standalone: true,
   imports: [CommonModule, FormsModule, CustomDropdown],
   templateUrl: './task-detail-modal.html',
   styleUrl: './task-detail-modal.css',
@@ -21,7 +22,8 @@ export class TaskDetailModal {
   public nuevoTituloTarea: string = "";
 
   public opcionesImportancia: string[] = Object.values(Importancia);
-  public opcionesEstado: string[] = ['por_hacer', 'en_progreso', 'completada'];
+  public estadoLabels: { [key in EstadoTarea]: string } = {'por_hacer': 'Por Hacer', 'en_progreso': 'En Progreso', 'completada': 'Completada'};
+  public opcionesEstado: string[] = ['Por Hacer', 'En Progreso', 'Completada'];
   public categoriasParaDropdown: string[] = [];
 
   constructor(private task: Task) { }
@@ -33,6 +35,11 @@ export class TaskDetailModal {
 
   onCerrar(): void {
     this.cerrarModal.emit();
+  }
+
+  onGuardar(): void {
+    this.tareaActualizada.emit(); 
+    this.onCerrar(); 
   }
 
   guardarTitulo(): void {
@@ -81,9 +88,12 @@ export class TaskDetailModal {
     this.tareaActualizada.emit(); 
   }
 
-  onEstadoChange(nuevoEstado: string): void {
-    this.task.moverTarea(this.tarea.id, nuevoEstado as EstadoTarea);
-    this.tareaActualizada.emit(); 
-  }
+  onEstadoChange(nuevaEtiqueta: string): void { 
+    const nuevoValor = Object.keys(this.estadoLabels).find(key => this.estadoLabels[key as EstadoTarea] === nuevaEtiqueta);
 
+    if (nuevoValor) {
+      this.task.moverTarea(this.tarea.id, nuevoValor as EstadoTarea);
+      this.tareaActualizada.emit(); 
+    }
+  }
 }

@@ -42,6 +42,10 @@ h2 {
   padding: 10px 5px;
 }
 
+.cdk-drag-preview {
+  overflow: hidden !important; 
+}
+
 .empty-column-msg {
   text-align: center;
   color: #777;

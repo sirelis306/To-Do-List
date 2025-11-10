@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Tarea, Subtarea, EstadoTarea, Importancia } from '../models/tarea'
+import { Tarea, Subtarea, EstadoTarea, Importancia } from '../../models/tarea'
 
 @Injectable({
   providedIn: 'root',
@@ -49,20 +49,27 @@ export class Task {
     return [...categorias];
   }
 
-  agregarTarea(titulo: string, categoria: string, importancia: Importancia){
-    if (titulo.trim()=== ""){
-      return;
-    }
+  agregarTarea(titulo: string, categoria: string, importancia: Importancia, subtareas: string[]): void {
+    const nuevasSubtareas: Subtarea[] = subtareas.map((desc, index) => {
+      return {
+        id: Date.now() + index, 
+        descripcion: desc,
+        completada: false 
+      };
+    });
     const nuevaTarea: Tarea = {
-      id: this.proximoId,
+      id: Date.now(),
       titulo: titulo,
-      estado: 'por_hacer',
       categoria: categoria,
-      importancia: importancia
+      importancia: importancia,
+      estado: 'por_hacer', 
+      subtareas: nuevasSubtareas 
     };
+
     this.tareas.push(nuevaTarea);
     this.proximoId++;
   }
+
 
   moverTarea(id: number, nuevoEstado: EstadoTarea){
     const tarea = this.tareas.find(t => t.id === id);

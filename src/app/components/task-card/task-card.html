@@ -1,5 +1,4 @@
-<div class="task-card" (click)="onCardClick()" cdkDrag [cdkDragData]="tarea"
-  [ngClass]="{
+<div class="task-card" [ngClass]="{
       'task-card-hacer': tarea.estado === 'por_hacer',
       'task-card-progreso': tarea.estado === 'en_progreso',
       'task-card-completada': tarea.estado === 'completada'
@@ -7,7 +6,7 @@
    >
   <div class="card-header">
     <span class="task-title">{{ tarea.titulo }}</span>
-    <button class="delete-btn" (click)="onEliminar()">
+    <button class="delete-btn" (click)="onEliminar(); $event.stopPropagation()">
       <i class="fa-solid fa-trash"></i>
     </button>
   </div>

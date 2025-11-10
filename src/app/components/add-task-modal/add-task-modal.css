@@ -25,7 +25,7 @@
 }
 .close-btn {
   position: absolute;
-  top: 10px; right: 15px;
+  top: 5px; right: 5px;
   background: none; border: none;
   font-size: 24px; color: #aaa;
   cursor: pointer;
@@ -76,4 +76,69 @@ h2 { margin-top: 0; color: #172b4d; }
   margin-bottom: 5px;
   font-weight: 600;
   color: #333;
+}
+
+.subtasks-section h3 {
+  margin-top: 10px;
+  color: #172b4d;
+  font-size: 1.2em;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.add-subtask-form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.add-subtask-form input {
+  flex-grow: 1;
+  padding: 10px 12px;
+  font-size: 15px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+}
+.add-subtask-btn {
+  background-color: #3240A5;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 15px;
+  cursor: pointer;
+  font-size: 15px;
+}
+.add-subtask-btn:hover { background-color: #2c389c; }
+
+.subtask-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 150px; 
+  overflow-y: auto;
+  padding-right: 5px;
+}
+.subtask-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px dashed #f0f0f0;
+}
+.subtask-item:last-child {
+  border-bottom: none;
+}
+.subtask-item .subtask-label { 
+  flex-grow: 1;
+  font-size: 15px;
+  color: #333;
+}
+.delete-subtask-btn {
+  background: none;
+  border: none;
+  color: #ccc;
+  cursor: pointer;
+  font-size: 14px;
+}
+.delete-subtask-btn:hover {
+  color: #e04a4a;
 }

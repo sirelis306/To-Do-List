@@ -1,6 +1,13 @@
 <div class="detail-modal-backdrop" (click)="onCerrar()"></div>
 <div class="detail-modal-content">
-  <button class="close-btn" (click)="onCerrar()">×</button>
+  <div class="modal-header-buttons">
+    
+    <button class="save-btn" (click)="onGuardar()" title="Guardar y Cerrar">
+      <i class="fa-solid fa-check"></i>
+    </button>
+    
+    <button class="close-btn" (click)="onCerrar()" title="Cerrar sin guardar">×</button>
+  </div>
   
   <div class="task-title-section">
     @if (!editandoTitulo) {
@@ -16,27 +23,17 @@
   <div class="task-controls">
     <div class="control-item">
       <span>Categoría:</span>
-      <app-custom-dropdown
-        label="Ninguna"
-        [options]="categoriasParaDropdown"
-        [selectedValue]="tarea.categoria || ''"
-        (valueChange)="onCategoriaChange($event)"
-      ></app-custom-dropdown>
+      <app-custom-dropdown label="Ninguna" [options]="categoriasParaDropdown" [selectedValue]="tarea.categoria || ''" (valueChange)="onCategoriaChange($event)"></app-custom-dropdown>
     </div>
 
     <div class="control-item">
       <span>Importancia:</span>
-      <app-custom-dropdown
-        label="Normal"
-        [options]="opcionesImportancia"
-        [selectedValue]="tarea.importancia || ''"
-        (valueChange)="onImportanciaChange($event)"
-      ></app-custom-dropdown>
+      <app-custom-dropdown label="Normal" [options]="opcionesImportancia" [selectedValue]="tarea.importancia || ''" (valueChange)="onImportanciaChange($event)"></app-custom-dropdown>
     </div>
 
     <div class="control-item">
       <span>Estado:</span>
-      <app-custom-dropdown label="Seleccionar" [options]="opcionesEstado" [selectedValue]="tarea.estado" (valueChange)="onEstadoChange($event)"></app-custom-dropdown>
+      <app-custom-dropdown label="Seleccionar" [options]="opcionesEstado" [selectedValue]="estadoLabels[tarea.estado]" (valueChange)="onEstadoChange($event)"></app-custom-dropdown>
     </div>
   </div>
 
