@@ -3,29 +3,25 @@
     <app-add-task-modal (tareaAgregada)="onAgregarTarea($event)" (cerrarModal)="mostrarModal = false"/>
   }
 
-  <h1>Mi Tablero Kanban</h1>
-
   <div class="header-controls">
     
-    <div class="search-bar">
-      <i class="fa-solid fa-magnifying-glass"></i>
+    <h1>Mi Tablero Kanban</h1>
+
+    <div class="controls-right">
       
-      <input type="text" placeholder="Buscar tareas.." [(ngModel)]="terminoBusqueda" (ngModelChange)="actualizarListas()"/>
-    </div>
+      <div class="search-bar">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" placeholder="Buscar tareas.." [(ngModel)]="terminoBusqueda" (ngModelChange)="actualizarListas()"/>
+      </div>
 
-    <div class="button-group">
-      
-      <app-custom-dropdown label="Filtrar" [options]="categoriasParaFiltrar" [selectedValue]="filtroCategoria" (valueChange)="onFiltroChange($event)"></app-custom-dropdown>
+      <div class="button-group">
+        <app-custom-dropdown label="Filtrar" [options]="categoriasParaFiltrar" [selectedValue]="filtroCategoria" (valueChange)="onFiltroChange($event)"></app-custom-dropdown>
 
-      <button class="add-task-btn" (click)="mostrarModal = true">
-        <i class="fa-solid fa-plus"></i>
-        <span>Nueva Tarea</span>
-      </button>
-
-      <button class="logout-btn" (click)="onLogout()" title="Cerrar Sesión">
-        <i class="fa-solid fa-right-from-bracket"></i>
-      </button>
-
+        <button class="add-task-btn" (click)="mostrarModal = true">
+          <i class="fa-solid fa-plus"></i>
+          <span>Nueva Tarea</span>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -34,6 +30,8 @@
   }
 
   <div class="kanban-board" cdkDropListGroup>
+
+    <app-kanban-column titulo="Backlog" [estado]="'backlog'" [tareas]="tareasBacklog" (eliminarTarea)="onEliminarTarea($event)" (tareaDropped)="onTareaDropped($event)" (cardClicked)="onTaskCardClicked($event)"></app-kanban-column>
     
     <app-kanban-column titulo="Por Hacer" [estado]="'por_hacer'" [tareas]="tareasPorHacer" (eliminarTarea)="onEliminarTarea($event)" (tareaDropped)="onTareaDropped($event)" (cardClicked)="onTaskCardClicked($event)"></app-kanban-column>
 

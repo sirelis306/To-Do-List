@@ -1,0 +1,43 @@
+<div class="form-header">
+  <h1>{{ tituloPagina }}</h1>
+  <button class="return-btn" (click)="onRegresarClick()">
+    <i class="fa-solid fa-arrow-left"></i>
+    <span>Regresar a la lista</span>
+  </button>
+</div>
+
+<form class="product-form" (ngSubmit)="onGuardar()" #productForm="ngForm">
+  
+  <div class="form-row">
+    <div class="input-group">
+      <label for="codigo">ID del Producto</label> 
+      <input id="codigo" type="text" [(ngModel)]="nuevoProducto.codigo" name="codigo" required>
+    </div>
+    <div class="input-group">
+      <label for="nombre">Nombre del Producto</label>
+      <input id="nombre" type="text" [(ngModel)]="nuevoProducto.nombre" name="nombre" required>
+    </div>
+    <div class="input-group">
+      <label for="serial">Serial</label>
+      <input id="serial" type="number" [(ngModel)]="nuevoProducto.serial" name="serial" required>
+    </div>
+  </div>
+  
+  <div class="form-row">
+    <div class="input-group">
+      <label for="marca">Marca</label>
+      <input id="marca" type="text" [(ngModel)]="nuevoProducto.marca" name="marca" required>
+    </div>
+    <div class="input-group">
+        <label for="modelo">Modelo</label>
+        <input id="modelo" type="text" [(ngModel)]="nuevoProducto.modelo" name="modelo" required>
+    </div>
+  </div>
+
+  <div class="form-buttons">
+    <button type="submit" class="save-btn" [disabled]="!productForm.valid">
+      Guardar Producto
+    </button>
+  </div>
+
+</form>

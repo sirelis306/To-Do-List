@@ -1,27 +1,34 @@
 :host {
   display: block;
   flex: 1; 
-  min-width: 380px;
+  min-width: 300px;
 }
 
 .kanban-column {
-  background-color: #ffffff; 
-  box-shadow: #e6e6e6 0px 2px 4px;
   border-radius: 6px;
-  border-radius: 5px;
   padding: 10px;
   height: 100%;
+  box-sizing: border-box;
+  background-color: rgba(238, 238, 235, 0.897); 
+  backdrop-filter: blur(10px); 
+  -webkit-backdrop-filter: blur(10px); 
+  border: 1px solid rgba(255, 255, 255, 0.849); 
+  box-shadow: 0 4px 30px rgba(112, 111, 111, 0.2); 
 }
 
 h2 {
   font-family: Arial, sans-serif;
   font-size: 18px;
   font-weight: 600;
-  color: #172b4d; 
+  color: #1d1d1b; 
   padding: 0 10px 10px 10px;
   border-bottom-width: 2px;
   border-bottom-style: solid;
   border-bottom-color: #dfe1e6;
+}
+
+.kanban-column-backlog h2 {
+  border-bottom-color: #adadaf; 
 }
 
 .kanban-column-hacer h2 {

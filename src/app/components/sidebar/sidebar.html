@@ -1,0 +1,39 @@
+<nav class="sidebar">
+  
+  <div class="sidebar-header">
+    <a routerLink="/board" class="logo">
+      <i class="fa-solid fa-bolt"></i> <span>Mi Kanban</span>
+    </a>
+  </div>
+
+    <ul class="nav-links">
+
+        <li>
+        <a routerLink="/p" routerLinkActive="active">
+            <i class="fa-solid fa-home"></i>
+            <span>inicio</span>
+        </a>
+        </li>
+
+        <li>
+        <a routerLink="/board" routerLinkActive="active">
+            <i class="fa-solid fa-table-columns"></i>
+            <span>Tablero</span>
+        </a>
+        </li>
+
+        <li>
+        <a routerLink="/articles" routerLinkActive="active">
+            <i class="fa-solid fa-box"></i>
+            <span>Inventario</span>
+        </a>
+        </li>
+    </ul>
+
+  <div class="sidebar-footer">
+    <button class="logout-btn" (click)="onLogout()">
+      <i class="fa-solid fa-right-from-bracket"></i>
+      <span>Cerrar Sesión</span>
+    </button>
+  </div>
+</nav>

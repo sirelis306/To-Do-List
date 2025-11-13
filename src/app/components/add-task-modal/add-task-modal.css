@@ -13,14 +13,17 @@
   background-color: rgba(0, 0, 0, 0.5);
 }
 .modal-content {
+  background-color: rgba(238, 238, 235, 0.76); 
+  backdrop-filter: blur(10px); 
+  -webkit-backdrop-filter: blur(10px);
+
   position: relative;
   z-index: 1001;
-  background: #ffffff;
   border-radius: 8px;
   padding: 25px;
   width: 90%;
   max-width: 500px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  box-shadow: 0 5px 15px rgba(112, 109, 109, 0.3);
   font-family: Arial, sans-serif;
 }
 .close-btn {
@@ -31,7 +34,7 @@
   cursor: pointer;
 }
 .close-btn:hover { color: #333; }
-h2 { margin-top: 0; color: #172b4d; }
+h2 { margin-top: 0; color: #1d1d1b; }
 
 .nueva-tarea-form {
   margin-bottom: 15px;
@@ -42,8 +45,15 @@ h2 { margin-top: 0; color: #172b4d; }
   box-sizing: border-box;
   padding: 12px;
   font-size: 16px;
-  border: 2px solid #ddd;
+  background-color: #ddd;
+  border: 1px solid #eeeded;
   border-radius: 4px;
+}
+
+.nueva-tarea-form input:focus {
+  outline: none; 
+  border-color: #3240A5; 
+  box-shadow: 0 0 0 3px rgba(50, 64, 165, 0.2); 
 }
 
 .add-task-btn {
@@ -80,10 +90,11 @@ h2 { margin-top: 0; color: #172b4d; }
 
 .subtasks-section h3 {
   margin-top: 10px;
-  color: #172b4d;
+  color: #1d1d1b;
   font-size: 1.2em;
   padding-bottom: 10px;
   margin-bottom: 15px;
+  border-bottom: 1px solid #eee;
 }
 
 .add-subtask-form {
@@ -95,9 +106,17 @@ h2 { margin-top: 0; color: #172b4d; }
   flex-grow: 1;
   padding: 10px 12px;
   font-size: 15px;
-  border: 2px solid #ddd;
+  border: 1px solid #eeeded;
+  background-color: #ddd;
   border-radius: 4px;
 }
+
+.add-subtask-form input:focus {
+  outline: none; 
+  border-color: #3240A5; 
+  box-shadow: 0 0 0 3px rgba(50, 64, 165, 0.2); 
+}
+
 .add-subtask-btn {
   background-color: #3240A5;
   color: white;

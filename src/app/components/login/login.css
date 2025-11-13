@@ -4,6 +4,23 @@
   align-items: center;
   width: 100%;
   height: 100%; 
+
+  background: #3240A5;
+  background: linear-gradient(211deg,rgba(50, 64, 165, 0.90) 33%, rgba(0, 141, 54, 0.90) 90%);
+  background-size: 300% 300%;
+  animation: animarGradiente 10s ease infinite;
+}
+
+@keyframes animarGradiente {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .login-form {
@@ -17,7 +34,6 @@
   width: 100%;
   max-width: 550px;
   box-sizing: border-box; 
-  margin-top: 200px;
 }
 
 h2 {
@@ -87,7 +103,7 @@ h2 {
 }
 
 .toggle-password:hover {
-  color: #ffffff; /* Color al pasar el ratón */
+  color: #ffffff; 
 }
 
 .login-button {

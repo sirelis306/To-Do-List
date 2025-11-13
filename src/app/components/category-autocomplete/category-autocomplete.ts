@@ -1,7 +1,7 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Task } from '../../services/task/task';
+import { TaskService } from '../../services/task/taskService';
 
 @Component({
   selector: 'app-category-autocomplete',
@@ -20,11 +20,11 @@ export class CategoryAutocomplete implements OnInit {
 
   private todasLasCategorias: string[] = []; 
 
-  constructor(private task: Task) { }
+  constructor(private taskService: TaskService) { }
 
  
   ngOnInit(): void {
-    this.todasLasCategorias = this.task.getCategorias();
+    this.todasLasCategorias = this.taskService.getCategorias();
   }
 
   onInput(): void {

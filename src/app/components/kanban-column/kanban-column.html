@@ -1,4 +1,5 @@
 <div class="kanban-column" [ngClass]="{
+      'kanban-column-backlog': titulo === 'Backlog',
       'kanban-column-hacer': titulo === 'Por Hacer',
       'kanban-column-progreso': titulo === 'En Progreso',
       'kanban-column-completada': titulo === 'Completada' 

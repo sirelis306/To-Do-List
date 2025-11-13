@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Auth } from '../../services/auth/auth';
+import { AuthService } from '../../services/auth/authService';
 
 @Component({
   selector: 'app-login',
@@ -17,11 +17,11 @@ export class Login {
   public errorMensaje:string = '';
   public showPassword: boolean = false;
 
-  constructor(private router: Router, private auth: Auth) {}
+  constructor(private router: Router, private authService: AuthService) {}
 
   onLogin(): void {
     this.errorMensaje = "";
-    const loginExitoso = this.auth.login(this.email, this.password);
+    const loginExitoso = this.authService.login(this.email, this.password);
 
     if (loginExitoso) {
       console.log('¡Login exitoso desde el servicio!');

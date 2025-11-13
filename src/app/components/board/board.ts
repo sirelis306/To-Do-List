@@ -5,13 +5,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormsModule } from '@angular/forms';
 
 import { Tarea, EstadoTarea, Importancia } from '../../models/tarea';
-import { Task } from '../../services/task/task';
+import { TaskService } from '../../services/task/taskService';
 import { KanbanColumn } from '../kanban-column/kanban-column';
 import { DragDropModule, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { AddTaskModal } from '../add-task-modal/add-task-modal';
 import { CustomDropdown } from '../custom-dropdown/custom-dropdown';
 import { TaskDetailModal } from '../task-detail-modal/task-detail-modal';
-import { Auth } from '../../services/auth/auth';
+import { AuthService } from '../../services/auth/authService';
 
 @Component({
   selector: 'app-board',
@@ -22,6 +22,7 @@ import { Auth } from '../../services/auth/auth';
 })
 
 export class Board {
+  public tareasBacklog: Tarea[] = [];
   public tareasPorHacer: Tarea[] = [];
   public tareasEnProgreso: Tarea[] = [];
   public tareasHechas: Tarea[] = [];
@@ -32,7 +33,7 @@ export class Board {
   public mostrarDetalleModal: boolean = false;
   public tareaSeleccionadaParaDetalle: Tarea | null = null;
  
-  constructor(private task: Task, private auth: Auth) {
+  constructor(private taskService: TaskService, private authService: AuthService) {
   }
   
   ngOnInit(): void {
@@ -41,19 +42,20 @@ export class Board {
   }
 
   cargarFiltrosDeCategoria(): void {
-    this.categoriasParaFiltrar = this.task.getCategorias();
+    this.categoriasParaFiltrar = this.taskService.getCategorias();
   }
 
   onAgregarTarea(nuevaTarea: { titulo: string, categoria: string, importancia: Importancia, subtareas: string[]}) {
-    this.task.agregarTarea(nuevaTarea.titulo, nuevaTarea.categoria, nuevaTarea.importancia, nuevaTarea.subtareas); 
+    this.taskService.agregarTarea(nuevaTarea.titulo, nuevaTarea.categoria, nuevaTarea.importancia, nuevaTarea.subtareas); 
     this.actualizarListas();      
     this.mostrarModal = false;     
   }
 
   actualizarListas() {
-    this.tareasPorHacer = this.task.getTareasPorEstado('por_hacer', this.terminoBusqueda, this.filtroCategoria);
-    this.tareasEnProgreso = this.task.getTareasPorEstado('en_progreso', this.terminoBusqueda, this.filtroCategoria);
-    this.tareasHechas = this.task.getTareasPorEstado('completada', this.terminoBusqueda, this.filtroCategoria);
+    this.tareasBacklog = this.taskService.getTareasPorEstado('backlog', this.terminoBusqueda, this.filtroCategoria);
+    this.tareasPorHacer = this.taskService.getTareasPorEstado('por_hacer', this.terminoBusqueda, this.filtroCategoria);
+    this.tareasEnProgreso = this.taskService.getTareasPorEstado('en_progreso', this.terminoBusqueda, this.filtroCategoria);
+    this.tareasHechas = this.taskService.getTareasPorEstado('completada', this.terminoBusqueda, this.filtroCategoria);
   }
 
   onFiltroChange(categoria: string) {
@@ -62,7 +64,7 @@ export class Board {
   }
 
   onEliminarTarea(id: number) {
-      this.task.eliminarTarea(id);
+      this.taskService.eliminarTarea(id);
       this.actualizarListas();
   }
 
@@ -79,12 +81,10 @@ export class Board {
     
     const tarea = event.item.data as Tarea;
     const nuevoEstado = event.container.id as EstadoTarea; 
-    this.task.moverTarea(tarea.id, nuevoEstado);
+    this.taskService.moverTarea(tarea.id, nuevoEstado);
     this.actualizarListas();
   }
 
-  onLogout(): void {
-    this.auth.logout();
-  }
+  
 }
 

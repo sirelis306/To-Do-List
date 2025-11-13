@@ -1,4 +1,5 @@
 <div class="task-card" [ngClass]="{
+      'task-card-backlog': tarea.estado === 'backlog',
       'task-card-hacer': tarea.estado === 'por_hacer',
       'task-card-progreso': tarea.estado === 'en_progreso',
       'task-card-completada': tarea.estado === 'completada'

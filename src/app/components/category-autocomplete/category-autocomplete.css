@@ -7,9 +7,16 @@ input {
   width: 100%;
   box-sizing: border-box; 
   padding: 12px;
+  background-color: #ddd;
   font-size: 16px;
-  border: 2px solid #ddd;
+  border: 1px solid #eeeded;
   border-radius: 4px;
+}
+
+input:focus {
+  outline: none; 
+  border-color: #3240A5; 
+  box-shadow: 0 0 0 3px rgba(50, 64, 165, 0.2); 
 }
 
 .suggestions-list {

@@ -1,4 +1,4 @@
-export type EstadoTarea = 'por_hacer' | 'en_progreso' | 'completada';
+export type EstadoTarea = 'backlog' | 'por_hacer' | 'en_progreso' | 'completada';
 
 export enum Importancia {
   alta = 'alta', 
