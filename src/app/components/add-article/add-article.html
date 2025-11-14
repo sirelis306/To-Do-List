@@ -34,6 +34,23 @@
     </div>
   </div>
 
+  <h3>Ubicación</h3>
+
+  <div class="form-row">
+    <div class="input-group">
+      <label for="sede">Sede</label> 
+      <input id="sede" type="text" [(ngModel)]="nuevoProducto.sede" name="sede" required>
+    </div>
+    <div class="input-group">
+      <label for="oficina">Oficina</label>
+      <input id="oficina" type="text" [(ngModel)]="nuevoProducto.oficina" name="oficina" required>
+    </div>
+    <div class="input-group">
+      <label for="detalle">Detalle</label>
+      <input id="detalle" type="text" [(ngModel)]="nuevoProducto.detalle" name="detalle" required>
+    </div>
+  </div>
+
   <div class="form-buttons">
     <button type="submit" class="save-btn" [disabled]="!productForm.valid">
       Guardar Producto

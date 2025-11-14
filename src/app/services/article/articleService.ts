@@ -15,8 +15,12 @@ export class ArticleService {
       this.articulos = JSON.parse(data);
     } else {
       this.articulos = [
-        { id: 1, codigo: 123, nombre: 'Producto A', marca: 'Aaaa', modelo: 'aaa', serial: 123 },
-        { id: 2, codigo: 124, nombre: 'Producto B', marca: 'Bbbb', modelo: 'bbb', serial: 456 }
+        { id: 1, codigo: 123, nombre: 'Producto A', marca: 'Aaaa', modelo: 'aaa', serial: 123, sede: 'El Recreo', oficina: 'Logistica', detalle: 'Estante 1' },
+        { id: 2, codigo: 124, nombre: 'Producto B', marca: 'Bbbb', modelo: 'bbb', serial: 456, sede: 'El Recreo', oficina: 'Logistica', detalle: 'Estante 2' },
+        { id: 3, codigo: 125, nombre: 'Producto C', marca: 'Cccc', modelo: 'ccc', serial: 789, sede: 'El Recreo', oficina: 'Logistica', detalle: 'Estante 3' },
+        { id: 4, codigo: 126, nombre: 'Producto D', marca: 'Dddd', modelo: 'ddd', serial: 123, sede: 'El Recreo', oficina: 'Logistica', detalle: 'Estante 4' },
+        { id: 5, codigo: 127, nombre: 'Producto E', marca: 'Eeee', modelo: 'eee', serial: 456, sede: 'El Recreo', oficina: 'Logistica', detalle: 'Estante 5' },
+        { id: 6, codigo: 128, nombre: 'Producto F', marca: 'Ffff', modelo: 'fff', serial: 789, sede: 'El Recreo', oficina: 'Logistica', detalle: 'Estante 6' }
       ];
       this.guardarArticulos();
     }
@@ -37,7 +41,9 @@ export class ArticleService {
         (a.nombre && a.nombre.toLowerCase().includes(busquedaLower)) ||
         (a.marca && a.marca.toLowerCase().includes(busquedaLower)) ||
         (a.modelo && a.modelo.toLowerCase().includes(busquedaLower)) ||
-        (a.serial && a.serial.toString().includes(busquedaLower)) 
+        (a.serial && a.serial.toString().includes(busquedaLower)) ||
+        (a.sede && a.sede.toLowerCase().includes(busquedaLower)) ||
+        (a.oficina && a.oficina.toLowerCase().includes(busquedaLower)) 
       );
     }
     return articulosFiltrados;

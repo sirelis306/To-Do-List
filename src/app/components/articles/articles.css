@@ -1,7 +1,8 @@
 :host {
   display: block;
   padding: 20px 40px;
-  height: 100%;
+  max-width: 1500px; 
+  margin: 0 auto;
 }
 
 .inventory-container {
@@ -20,7 +21,7 @@ h1 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 20px;
+  margin-top: 40px;
   margin-bottom: 50px; 
   gap: 20px; 
   border-bottom: 1px solid #ddd;
@@ -79,13 +80,13 @@ h1 {
 
 .table-wrapper { 
   overflow-y: auto; 
-  background-color: #ffffff; 
+  background-color: transparent; 
   border-radius: 12px; 
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); 
-  border: 1px solid #eee;
   overflow: hidden; 
   scrollbar-width: none; 
   -ms-overflow-style: none; 
+  border: 0.2px solid rgba(255, 255, 255, 0.459);
+  box-shadow: 0 4px 30px rgba(112, 111, 111, 0.2); 
 }
 .table-wrapper::-webkit-scrollbar {
   display: none; 
@@ -95,10 +96,7 @@ h1 {
   width: 100%; 
   border-collapse: collapse; 
   border-spacing: 0;
-  background-color: transparent; 
-  backdrop-filter: none; 
-  border: none;
-  border-radius: 0;
+  background-color: transparent;
 }
 
 .product-table th {
@@ -109,17 +107,13 @@ h1 {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-    background-color: rgba(221, 221, 219, 0.705); 
+  background-color: rgba(221, 221, 219, 0.7); 
   backdrop-filter: blur(10px); 
   -webkit-backdrop-filter: blur(10px); 
-  border: 1px solid rgba(255, 255, 255, 0.911);
   box-shadow: 0 4px 30px rgba(112, 111, 111, 0.2);   
-  border-bottom: 1px solid #ddd; 
   position: sticky; 
   top: 0;
   z-index: 1;
-  backdrop-filter: none;
-  border: none;
 }
 
 .product-table td {
@@ -252,4 +246,59 @@ h1 {
 }
 .btn-confirm:hover {
   background-color: #c83a3a;
+}
+
+::ng-deep .mat-mdc-paginator {
+  background-color: rgba(221, 221, 219, 0.7) !important; 
+  color: #b0b0c0 !important; 
+  font-family: Arial, sans-serif !important;
+  font-size: 14px !important;
+}
+
+::ng-deep .mat-mdc-paginator-container {
+  justify-content: flex-end; 
+  padding: 0 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1); 
+}
+
+::ng-deep .mat-mdc-select-value {
+  color: #4b4747 !important; 
+}
+::ng-deep .mat-mdc-select-arrow {
+  color: #5a5a5e !important; 
+}
+
+::ng-deep .mat-mdc-paginator-icon {
+  fill: #5a5a5e !important; 
+}
+
+::ng-deep .mat-mdc-icon-button[disabled] .mat-mdc-paginator-icon {
+  fill: rgba(255, 255, 255, 0.2) !important; 
+}
+
+::ng-deep .mat-mdc-icon-button:hover:not([disabled]) {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+::ng-deep .mat-mdc-select-panel {
+  background-color: #ddd !important; 
+  border: 1px solid rgba(255, 255, 255, 0.452);
+  color: #ffffff !important;
+}
+
+::ng-deep .mat-mdc-option {
+  color: #b0b0c0 !important;
+}
+::ng-deep .mat-mdc-option:hover, 
+::ng-deep .mat-mdc-option.mdc-list-item--selected {
+  background-color: rgba(72, 82, 160, 0.308) !important; 
+  color: #5a5a5e !important;
+}
+::ng-deep .mat-mdc-paginator-range-label,
+::ng-deep .mat-mdc-paginator-page-size-label {
+  color: #5a5a5e;
+}
+
+::ng-deep .cdk-overlay-container {
+    --mdc-text-field-focus-indicator-color: #3240A5 !important;
 }

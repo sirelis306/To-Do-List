@@ -14,17 +14,22 @@
 }
 .modal-content {
   background-color: rgba(238, 238, 235, 0.76); 
-  backdrop-filter: blur(10px); 
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(15px); 
+  -webkit-backdrop-filter: blur(15px);
 
   position: relative;
-  z-index: 1001;
+  z-index: 2001;
   border-radius: 8px;
   padding: 25px;
   width: 90%;
   max-width: 500px;
   box-shadow: 0 5px 15px rgba(112, 109, 109, 0.3);
   font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 20px; 
+  max-height: 90vh; 
+  overflow-y: auto;
 }
 .close-btn {
   position: absolute;

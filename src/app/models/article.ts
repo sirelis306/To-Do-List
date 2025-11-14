@@ -5,4 +5,7 @@ export interface Article {
   marca: string;
   modelo: string;
   serial: number;
+  sede: string;
+  oficina: string;
+  detalle: string;
 }

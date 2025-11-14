@@ -24,6 +24,9 @@ export class AddArticle implements OnInit {
     marca: '',
     modelo: '',
     serial: 0,
+    sede: '',
+    oficina: '',
+    detalle: '',
   };
 
   constructor(private router: Router, private articleService: ArticleService, private route: ActivatedRoute) { }

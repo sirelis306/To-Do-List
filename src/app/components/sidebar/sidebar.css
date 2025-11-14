@@ -91,6 +91,6 @@
   transition: all 0.2s ease-out;
 }
 .logout-btn:hover {
-  background-color: #e04a4a; 
+  background-color: #343f96; 
   color: #ffffff;
 }

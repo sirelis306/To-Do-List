@@ -9,15 +9,24 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 20px;
+  margin-top: 40px;
   margin-bottom: 50px; 
   border-bottom: 1px solid #ddd;
 }
 h1 {
-  font-size: 2.5em;
+  font-size: 40px;
   font-weight: 700;
   color: #1d1d1b;
   text-shadow: #383833 1px 1px 2px;
+}
+
+h3 {
+  font-size: 20px;
+  color: #1d1d1b;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 40px;
+  margin-top: 20px;
+  padding: 20px;
 }
 
 .return-btn {
@@ -40,10 +49,15 @@ h1 {
 }
 
 .product-form {
- background-color: rgba(238, 238, 235, 0.897); 
+  background-color: rgba(238, 238, 235, 0.897); 
   backdrop-filter: blur(10px); 
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.849);
+  box-shadow: 0 5px 10px rgba(112, 109, 109, 0.3);
+  position: relative;
+  z-index: 2001;
+  overflow-y: auto;
+
   border-radius: 8px;
   padding: 30px;
   max-width: 1000px;
@@ -71,12 +85,13 @@ h1 {
   width: 100%;
   padding: 12px 15px;
   border-radius: 8px;
-  border: 1px solid #eeeded;
+  border: 2px solid #ffffff;
   font-size: 15px;
   background-color: #ddd;
   color: #333; 
   box-sizing: border-box; 
 }
+
 .input-group input:focus {
   outline: none;
   border-color: #3240A5;
