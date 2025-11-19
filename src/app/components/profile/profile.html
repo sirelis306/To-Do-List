@@ -1,0 +1,109 @@
+<main class="profile-container">
+  
+  <h1>Mi Perfil</h1>
+
+  @if (mensajeEstado) {
+    <div class="success-message">{{ mensajeEstado }}</div>
+  }
+
+  <div class="profile-card">
+    @if (user) {
+      <div class="profile-header">
+        
+        @if (previewImageUrl) {
+        <img [src]="previewImageUrl" alt="Foto de Perfil" class="profile-avatar-img">
+        } @else {
+            <i class="fa-solid fa-user-circle profile-avatar-icon"></i>
+        }
+        
+        <h2>{{ tempUser.nombre | titlecase }} {{ tempUser.apellido | titlecase }}</h2>
+        <p class="user-email">{{ tempUser.email }}</p>
+
+        @if (!modoEdicion) {
+          <button class="edit-btn" (click)="activarEdicion()">
+            <i class="fa-solid fa-pen"></i> Editar Perfil
+          </button>
+        }
+      </div>
+
+      @if (modoEdicion) {
+        <div class="details-section">
+
+            <div class="image-upload-section">
+              <label for="profileImageInput" class="custom-file-upload">
+                <i class="fa-solid fa-camera"></i> Cambiar Foto
+              </label>
+              <input id="profileImageInput" type="file" accept="image/*" (change)="onFileSelected($event)">
+              
+              @if (previewImageUrl) {
+                <button type="button" class="delete-image-btn" (click)="eliminarImagenPerfil()">
+                  <i class="fa-solid fa-trash"></i> Eliminar Foto
+                </button>
+              }
+            </div>
+
+          <h3>Detalles de Usuario</h3>
+
+          <form (ngSubmit)="guardarPerfil()" #profileForm="ngForm">
+            
+            
+            <div class="form-group">
+              <label for="nombre">Nombre</label>
+              <input id="nombre" type="text" [(ngModel)]="tempUser.nombre" name="nombre" required>
+            </div>
+            <div class="form-group">
+              <label for="apellido">Apellido</label>
+              <input id="apellido" type="text" [(ngModel)]="tempUser.apellido" name="apellido" required>
+            </div>
+            <div class="form-group">
+              <label for="email">Correo Electrónico (Usuario)</label>
+              <input id="email" type="email" [(ngModel)]="tempUser.email" name="email" required>
+            </div>
+            
+            <div class="form-actions">
+              <button type="submit" class="save-btn" [disabled]="!profileForm.valid">
+                <i class="fa-solid fa-check"></i> Guardar Cambios
+              </button>
+              <button type="button" class="cancel-btn" (click)="cancelarEdicion()">
+                <i class="fa-solid fa-xmark"></i> Cancelar
+              </button>
+            </div>
+          </form>
+
+          <h3 class="password-title">Cambiar Contraseña</h3>
+          
+          <form (ngSubmit)="cambiarContrasena()" #passwordForm="ngForm" class="password-form">
+            <div class="password-fields-group">
+              <div class="form-group">
+                <label for="currentPassword">Contraseña Actual</label>
+                <input id="currentPassword" type="password" [(ngModel)]="currentPassword" name="currentPassword" required>
+              </div>
+              <div class="form-group">
+                <label for="newPassword">Nueva Contraseña</label>
+                <input id="newPassword" type="password" [(ngModel)]="newPassword" name="newPassword" required>
+              </div>
+              <div class="form-group">
+                <label for="confirmPassword">Confirmar Contraseña</label>
+                <input id="confirmPassword" type="password" [(ngModel)]="confirmPassword" name="confirmPassword" required>
+              </div>
+            </div>
+
+            @if (passwordError) {
+              <div class="error-message">{{ passwordError }}</div>
+            }
+
+            <div class="form-actions">
+              <button type="submit" class="change-password-btn" [disabled]="!passwordForm.valid">
+                <i class="fa-solid fa-key"></i> Cambiar Contraseña
+              </button>
+            </div>
+          </form>
+        </div>
+
+      }
+      } @else {
+      <p class="error-message">Error: No se pudieron cargar los datos del usuario.</p>
+    }
+  </div>
+
+</main>

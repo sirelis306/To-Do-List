@@ -72,7 +72,45 @@
 .sidebar-footer {
   padding-top: 15px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex; 
+  flex-direction: column; 
+  gap: 10px; 
 }
+
+.profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 10px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 15px;
+  color: #b0b0c0;
+  transition: all 0.2s ease-out;
+}
+
+.profile-btn:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+}
+
+.profile-btn.active {
+  background-color: #3240A5; 
+  color: #ffffff;
+}
+
+.profile-btn i {
+  font-size: 1.1em;
+  width: 20px;
+  text-align: center;
+  color: #a0a0ff; 
+}
+
+.profile-btn.active i {
+  color: #ffffff;
+}
+
 .logout-btn {
   display: flex;
   align-items: center;
@@ -89,8 +127,10 @@
   color: #b0b0c0;
   cursor: pointer;
   transition: all 0.2s ease-out;
+  margin-top: 0;
 }
+
 .logout-btn:hover {
-  background-color: #343f96; 
+  background-color: #3240A5; 
   color: #ffffff;
 }

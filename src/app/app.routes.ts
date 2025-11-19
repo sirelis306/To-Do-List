@@ -4,6 +4,7 @@ import { Board } from './components/board/board';
 import { authGuard } from './authGuard/auth-guard'; 
 import { Articles } from './components/articles/articles';
 import { AddArticle } from './components/add-article/add-article';
+import { Profile } from './components/profile/profile';
 
 export const routes: Routes = [
   { 
@@ -29,6 +30,11 @@ export const routes: Routes = [
     path: 'articles/edit/:id', 
     component: AddArticle,
     canActivate: [authGuard]
+  },
+  { 
+    path: 'profile', 
+    component: Profile, 
+    canActivate: [authGuard] 
   },
 
   { 
