@@ -1,8 +1,8 @@
-<nav class="sidebar">
+<nav class="sidebar" [class.collapsed]="isCollapsed">
   
   <div class="sidebar-header">
     <a routerLink="/board" class="logo">
-      <i class="fa-solid fa-bolt"></i> <span>Mi Kanban</span>
+      <i class="fa-solid fa-bolt"> </i> @if (!isCollapsed) { <span>Evolution</span>}
     </a>
   </div>
 
@@ -11,21 +11,28 @@
         <li>
         <a routerLink="/p" routerLinkActive="active">
             <i class="fa-solid fa-home"></i>
-            <span>inicio</span>
+            @if (!isCollapsed) { <span>inicio</span> }
         </a>
         </li>
 
         <li>
         <a routerLink="/board" routerLinkActive="active">
             <i class="fa-solid fa-table-columns"></i>
-            <span>Tablero</span>
+            @if (!isCollapsed) { <span>Tablero</span> }
+        </a>
+        </li>
+
+        <li>
+        <a routerLink="/chat" routerLinkActive="active">
+            <i class="fa-solid fa-comments"></i>
+            @if (!isCollapsed) { <span>Chat</span> }
         </a>
         </li>
 
         <li>
         <a routerLink="/articles" routerLinkActive="active">
             <i class="fa-solid fa-box"></i>
-            <span>Inventario</span>
+            @if (!isCollapsed) { <span>Inventario</span> }
         </a>
         </li>
     </ul>
@@ -33,11 +40,16 @@
   <div class="sidebar-footer">
     <a routerLink="/profile" routerLinkActive="active" class="profile-btn">
       <i class="fa-solid fa-user"></i>
-      <span>Perfil</span>
+      @if (!isCollapsed) { <span>Perfil</span>}
     </a>
     <button class="logout-btn" (click)="onLogout()">
       <i class="fa-solid fa-right-from-bracket"></i>
-      <span>Cerrar Sesión</span>
+      @if (!isCollapsed) { <span>Cerrar Sesión</span> }
     </button>
+  </div>
+    <div class="sidebar-toggle-section">
+      <button class="toggle-btn" (click)="onToggleSidebar()" [title]="isCollapsed ? 'Expandir' : 'Colapsar'">
+        <i class="fa-solid" [ngClass]="{'fa-chevron-left': !isCollapsed, 'fa-chevron-right': isCollapsed}"></i>
+      </button>
   </div>
 </nav>

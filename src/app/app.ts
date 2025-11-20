@@ -13,6 +13,7 @@ import { filter } from 'rxjs/operators';
 })
 export class App {
   public showSidebar: boolean = false; 
+  public isSidebarCollapsed: boolean = false;
 
   constructor(private router: Router) {
     this.router.events.pipe(
@@ -20,5 +21,9 @@ export class App {
     ).subscribe((event: any) => {
       this.showSidebar = (event.url !== '/login');
     });
+  }
+
+  toggleSidebar(): void {
+    this.isSidebarCollapsed = !this.isSidebarCollapsed;
   }
 }

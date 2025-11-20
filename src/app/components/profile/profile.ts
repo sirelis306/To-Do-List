@@ -17,9 +17,7 @@ export class Profile implements OnInit{
   public modoEdicion: boolean = false;
   public mensajeEstado: string = '';
 
-  public currentPassword = '';
   public newPassword = '';
-  public confirmPassword = '';
   public passwordError = '';
 
   public previewImageUrl: string | ArrayBuffer | null = null; 
@@ -92,18 +90,9 @@ export class Profile implements OnInit{
     this.passwordError = '';
     this.mensajeEstado = '';
 
-    if (this.newPassword !== this.confirmPassword) {
-      this.passwordError = 'La nueva contraseña y la confirmación no coinciden.';
-      return;
-    }
-
-    const exito = this.authService.updatePassword(this.currentPassword, this.newPassword);
-    
-    if (exito) {
+    if (this.newPassword) {
       this.mensajeEstado = 'Contraseña actualizada con éxito.';
-      this.currentPassword = '';
       this.newPassword = '';
-      this.confirmPassword = '';
     } else {
       this.passwordError = 'La contraseña actual es incorrecta.';
     }

@@ -1,0 +1,27 @@
+<div class="chat-window-header">
+  <div class="user-info">
+    <i class="fa-solid fa-user user-avatar"></i>
+    <span class="user-name">Sara</span>
+  </div>
+  <div class="chat-actions">
+    <i class="fa-solid fa-ellipsis-vertical"></i>
+  </div>
+</div>
+
+<div class="message-area">
+  @for (message of messages; track message.id) {
+    <div class="message-row" [class.sent]="message.senderId === currentUserId">
+      <div class="message-content">
+        <p>{{ message.content }}</p>
+        <span class="message-time">{{ message.timestamp }}</span>
+      </div>
+    </div>
+  }
+</div>
+
+<div class="chat-input-area">
+  <input type="text" placeholder="Message..." [(ngModel)]="newMessage" (keyup.enter)="onSendMessage()" />
+  <button class="send-btn" (click)="onSendMessage()">
+    <i class="fa-solid fa-paper-plane"></i>
+  </button>
+</div>

@@ -1,0 +1,24 @@
+<div class="chat-list-header">
+  <div class="search-bar">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="text" placeholder="Search" [(ngModel)]="searchTerm">
+  </div>
+</div>
+
+<div class="users-list">
+  @for (user of users; track user.id) {
+    <div class="user-item" [class.selected]="user.id === selectedUserId" [class.online]="user.isOnline" (click)="selectedUserId = user.id">
+      <div class="avatar-container">
+        <i class="fa-solid fa-user user-avatar"></i>
+        <div class="status-indicator" [class.offline]="!user.isOnline"></div>
+      </div>
+      
+      <div class="user-details">
+        <div class="user-name">{{ user.nombre }}</div>
+        <div class="last-message-preview">Mensaje....</div>
+      </div>
+      
+      <div class="time-stamp">{{ user.lastMessageTime }}</div>
+    </div>
+  }
+</div>

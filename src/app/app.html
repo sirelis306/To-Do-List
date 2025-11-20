@@ -1,7 +1,7 @@
-<div class="app-layout">
+<div class="app-layout" [class.sidebar-collapsed]="isSidebarCollapsed">
   
   @if (showSidebar) {
-    <app-sidebar></app-sidebar>
+    <app-sidebar [isCollapsed]="isSidebarCollapsed" (toggleCollapsed)="toggleSidebar()"></app-sidebar> 
   }
   
   <main class="main-content">

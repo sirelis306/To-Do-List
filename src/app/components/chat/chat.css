@@ -1,0 +1,32 @@
+:host {
+    display: block;
+    height: 100vh;
+    width: 100%;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.chat-container {
+    margin: 0;
+    height: 100%; 
+}
+
+.chat-layout {
+    display: flex;
+    height: 100%; 
+    background-color: #fcfcf5;
+    overflow: hidden;
+}
+
+.chat-list-pane {
+    width: 350px; 
+    min-width: 250px;
+    border-right: 1px solid #ddd;
+    background-color: #fcfcf5;
+}
+
+.chat-window-pane {
+    flex-grow: 1;
+    min-width: 400px;
+    background-color: #fcfcf5;
+}

@@ -5,6 +5,7 @@ import { authGuard } from './authGuard/auth-guard';
 import { Articles } from './components/articles/articles';
 import { AddArticle } from './components/add-article/add-article';
 import { Profile } from './components/profile/profile';
+import { Chat } from './components/chat/chat';
 
 export const routes: Routes = [
   { 
@@ -29,6 +30,11 @@ export const routes: Routes = [
   { 
     path: 'articles/edit/:id', 
     component: AddArticle,
+    canActivate: [authGuard]
+  },
+  { 
+    path: 'chat', 
+    component: Chat,
     canActivate: [authGuard]
   },
   { 
