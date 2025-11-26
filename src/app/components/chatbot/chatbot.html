@@ -1,0 +1,61 @@
+<div class="chat-wrapper">
+
+  @if (isOpen) {
+    <div class="chat-window">
+      
+      <div class="chat-header">
+        <div class="header-info">
+          <div class="bot-avatar">
+            <i class="fa-solid fa-robot"></i>
+          </div>
+          <div>
+            <h4>EvolutionBot</h4>
+            <span class="status">En línea</span>
+          </div>
+        </div>
+        <button class="close-btn" (click)="toggleChat()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="chat-messages">
+        @for (msg of messages; track $index) {
+          <div class="message" [ngClass]="msg.sender">
+            <div class="bubble">
+              {{ msg.text }}
+            </div>
+            <span class="time">{{ msg.time | date:'shortTime' }}</span>
+          </div>
+        }
+        
+        @if (isLoading) {
+          <div class="message bot">
+            <div class="bubble typing">
+              <span>.</span><span>.</span><span>.</span>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="chat-input-area">
+        <input type="text" 
+               placeholder="Escribe tu pregunta..." 
+               [(ngModel)]="newMessage" 
+               (keyup.enter)="sendMessage()">
+        <button (click)="sendMessage()" [disabled]="!newMessage.trim() || isLoading">
+          <i class="fa-solid fa-paper-plane"></i>
+        </button>
+      </div>
+
+    </div>
+  }
+
+  <button class="chat-toggle-btn" (click)="toggleChat()" [class.active]="isOpen">
+    @if (isOpen) {
+      <i class="fa-solid fa-chevron-down"></i>
+    } @else {
+      <i class="fa-solid fa-message"></i>
+    }
+  </button>
+
+</div>
