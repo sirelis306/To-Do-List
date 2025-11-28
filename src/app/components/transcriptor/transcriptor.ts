@@ -67,17 +67,34 @@ export class Transcriptor implements OnDestroy {
 
   uploadAndTranscribe() {
     if (!this.selectedFile) return;
-
     this.isLoading = true;
+    this.transcription = ''; 
+
     this.transcriptorService.transcribeFile(this.selectedFile).subscribe({
-      next: (res) => {
-        this.transcription = res.text;
+      next: (res: any) => {
+        console.log('Respuesta n8n:', res);
+
+        if (!res) {
+           this.transcription = "Error: La respuesta del servidor fue vacía. Probablemente el archivo excede el límite de 25MB de Groq.";
+           this.isLoading = false;
+           return;
+        }
+
+        const textoRecibido = res.text || res.transcription || res.output;
+
+        if (textoRecibido) {
+          this.transcription = textoRecibido;
+        } else {
+          console.warn('Recibido objeto vacío:', res);
+          this.transcription = "No se pudo extraer texto del audio. Intenta de nuevo.";
+        }
+
         this.isLoading = false;
       },
       error: (err) => {
-        console.error(err);
+        console.error('Error:', err);
+        this.transcription = "Ocurrió un error. Revisa la conexión.";
         this.isLoading = false;
-        this.transcription = "Error al transcribir. Revisa la consola.";
       }
     });
   }

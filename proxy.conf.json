@@ -1,8 +1,9 @@
 {
   "/webhook": {
-    "target": "http://localhost:5678",
+    "target": "http://127.0.0.1:5678",
     "secure": false,
-    "changeOrigin": false,
-    "logLevel": "debug"
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "timeout": 600000
   }
 }

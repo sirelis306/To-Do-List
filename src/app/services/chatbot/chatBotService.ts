@@ -8,7 +8,7 @@ import { ArticleService } from '../article/articleService';
   providedIn: 'root',
 })
 export class ChatBotService {
-  private readonly N8N_URL = '/webhook-test/a2ee73f4-072f-44e2-8101-a1f25f52d745';
+  private readonly N8N_URL = '/webhook/chatbot';
 
   constructor(
     private http: HttpClient,

@@ -6,7 +6,7 @@ import { Subject } from 'rxjs';
   providedIn: 'root'
 })
 export class VoiceService {
-  private readonly N8N_URL = '/webhook/transcribe'; 
+  private readonly N8N_URL = '/webhook-test/transcriptor'; 
 
   private mediaRecorder: MediaRecorder | null = null;
   public textStream$ = new Subject<string>();
