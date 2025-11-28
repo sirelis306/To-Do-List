@@ -6,6 +6,7 @@ import { Articles } from './components/articles/articles';
 import { AddArticle } from './components/add-article/add-article';
 import { Profile } from './components/profile/profile';
 import { Chat } from './components/chat/chat';
+import { Transcriptor } from './components/transcriptor/transcriptor';
 
 export const routes: Routes = [
   { 
@@ -36,6 +37,11 @@ export const routes: Routes = [
     path: 'chat', 
     component: Chat,
     canActivate: [authGuard]
+  },
+  { 
+    path: 'transcriptor', 
+    component: Transcriptor,
+    canActivate: [authGuard] 
   },
   { 
     path: 'profile', 

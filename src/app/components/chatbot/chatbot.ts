@@ -32,35 +32,46 @@ export class Chatbot {
   }
 
   sendMessage(): void {
-      if (!this.newMessage.trim()) return;
+    if (!this.newMessage.trim()) return;
 
-      const userMsgText = this.newMessage;
-      this.messages.push({ text: userMsgText, sender: 'user', time: new Date() });
-      
-      this.newMessage = "";
-      this.isLoading = true; 
+    const userMsgText = this.newMessage;
+    this.messages.push({ text: userMsgText, sender: 'user', time: new Date() });
+    
+    this.newMessage = "";
+    this.isLoading = true;
 
-      this.chatBotService.sendMessage(userMsgText).subscribe({
-        next: (response: any) => {
-          console.log('Respuesta de n8n:', response);
-          const botText = response.text || response.output || response.message || JSON.stringify(response);
+    this.chatBotService.sendMessage(userMsgText).subscribe({
+      next: (response: any) => {
+        console.log('Respuesta de n8n:', response);
+        if (!response) {
+          this.messages.push({ 
+            text: 'El servidor respondió, pero el mensaje estaba vacío.', 
+            sender: 'bot', 
+            time: new Date() 
+          });
+        } else {
+          const botText = response.text || 
+                          (response.content && response.content.parts && response.content.parts[0]?.text) || 
+                          JSON.stringify(response);
 
           this.messages.push({ 
             text: botText, 
             sender: 'bot', 
             time: new Date() 
           });
-          this.isLoading = false; 
-        },
-        error: (err) => {
-          console.error('Error de n8n:', err);
-          this.messages.push({ 
-            text: 'Error de conexión. Revisa la consola (F12).', 
-            sender: 'bot', 
-            time: new Date() 
-          });
-          this.isLoading = false;
         }
-      });
+        
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error de n8n:', err);
+        this.messages.push({ 
+          text: 'Hubo un error de comunicación.', 
+          sender: 'bot', 
+          time: new Date() 
+        });
+        this.isLoading = false;
+      }
+    });
   }
 }

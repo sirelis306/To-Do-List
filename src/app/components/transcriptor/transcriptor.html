@@ -1,0 +1,75 @@
+<div class="transcriber-wrapper">
+  
+  <div class="panel left-panel">
+    
+    @if (!selectedFile) {
+      <div class="drop-zone" 
+           [class.dragging]="isDragging"
+           (dragover)="onDragOver($event)" 
+           (dragleave)="onDragLeave($event)" 
+           (drop)="onDrop($event)">
+        
+        <div class="icon-circle">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+        </div>
+        <h3>Arrastra tu audio aquí</h3>
+        <p>o haz clic para buscar</p>
+        <span class="file-types">Soporta MP3, WAV, M4A (max 25MB)</span>
+        
+        <input type="file" id="fileInput" accept="audio/*" (change)="onFileSelected($event)" hidden>
+        <label for="fileInput" class="choose-btn">Elegir Archivo</label>
+      </div>
+    } @else {
+      <div class="file-loaded-state">
+        <div class="file-info">
+          <i class="fa-solid fa-music"></i>
+          <span>{{ selectedFile.name }}</span>
+          <button class="remove-btn" (click)="reset()"><i class="fa-solid fa-times"></i></button>
+        </div>
+
+        <div class="audio-visualization-card">
+          <h4><i class="fa-solid fa-volume-high"></i> Previsualización</h4>
+          
+          <div class="waveform" [class.animating]="isLoading">
+            @for (bar of visualizerBars; track $index) {
+              <div class="bar"></div>
+            }
+          </div>
+
+          <audio [src]="audioUrl" controls class="custom-audio"></audio>
+        </div>
+
+        <button class="transcribe-action-btn" (click)="uploadAndTranscribe()" [disabled]="isLoading">
+          @if (isLoading) {
+            <i class="fa-solid fa-circle-notch fa-spin"></i> Procesando...
+          } @else {
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Transcribir Audio
+          }
+        </button>
+      </div>
+    }
+  </div>
+
+  <div class="panel right-panel">
+    <div class="result-header">
+      <h3><i class="fa-solid fa-file-lines"></i> Resultado</h3>
+      <button class="copy-btn" (click)="copyToClipboard()" [disabled]="!transcription" title="Copiar texto">
+        <i class="fa-regular fa-copy"></i> Copiar
+      </button>
+    </div>
+
+    <div class="result-content" [class.placeholder]="!transcription">
+      @if (transcription) {
+        <p>{{ transcription }}</p>
+      } @else if (isLoading) {
+        <div class="loading-state">
+          <p>Escuchando y escribiendo...</p>
+          <div class="typing-indicator"><span>.</span><span>.</span><span>.</span></div>
+        </div>
+      } @else {
+        <p class="empty-msg">El texto transcrito aparecerá aquí.</p>
+      }
+    </div>
+  </div>
+
+</div>
