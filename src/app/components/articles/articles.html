@@ -38,27 +38,31 @@
     <table class="product-table">
       <thead>
         <tr>
-          <th>Id (Código)</th>
+          <th>Id</th>
           <th>Nombre</th>
+          <th>Categoría</th>
           <th>Marca</th>
           <th>Modelo</th>
+          <th>Características</th>
+          <th>Color</th>
           <th>Serial</th>
-          <th>Sede</th>
-          <th>Oficina</th>
-          <th>Detalle</th>
+          <th>Condición</th>
+          <th>Ubicación</th>
           <th>Acciones</th> </tr>
       </thead>
       <tbody>
          @for (articulo of articulosPaginados; track articulo.id) {
           <tr>
-            <td>{{ articulo.codigo }}</td>
+            <td>{{ articulo.id }}</td>
             <td>{{ articulo.nombre }}</td>
+            <td>{{ articulo.categoria }}</td>
             <td>{{ articulo.marca }}</td>
             <td>{{ articulo.modelo }}</td>
+            <td>{{ articulo.caracteristicas }}</td>
+            <td>{{ articulo.color }}</td>
             <td>{{ articulo.serial }}</td>
-            <td>{{ articulo.sede }}</td>
-            <td>{{ articulo.oficina }}</td>
-            <td>{{ articulo.detalle }}</td>
+            <td>{{ articulo.condicion }}</td>
+            <td>{{ articulo.locacion }}</td>
             <td>
               <button class="btn-icon btn-edit" [routerLink]="['/articles/edit', articulo.id]"><i class="fa-solid fa-pen"></i></button>
               <button class="btn-icon btn-delete" (click)="onDelete(articulo)"><i class="fa-solid fa-trash"></i></button>

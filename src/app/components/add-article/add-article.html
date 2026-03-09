@@ -10,13 +10,17 @@
   <h3>Detalles de producto</h3>
 
   <div class="form-row">
-    <div class="input-group">
+    <!-- <div class="input-group">
       <label for="codigo">ID del Producto</label> 
-      <input id="codigo" type="text" [(ngModel)]="nuevoProducto.codigo" name="codigo" required>
-    </div>
+      <input id="codigo" type="text" [(ngModel)]="nuevoProducto.id" name="id" required>
+    </div> -->
     <div class="input-group">
       <label for="nombre">Nombre del Producto</label>
       <input id="nombre" type="text" [(ngModel)]="nuevoProducto.nombre" name="nombre" required>
+    </div>
+    <div class="input-group">
+      <label for="categoria">Categoría del Producto</label>
+      <input id="categoria" type="text" [(ngModel)]="nuevoProducto.categoria" name="categoria" required>
     </div>
     <div class="input-group">
       <label for="serial">Serial</label>
@@ -33,22 +37,24 @@
         <label for="modelo">Modelo</label>
         <input id="modelo" type="text" [(ngModel)]="nuevoProducto.modelo" name="modelo" required>
     </div>
+    <div class="input-group">
+      <label for="caracteristicas">Características</label>
+      <input id="caracteristicas" type="text" [(ngModel)]="nuevoProducto.caracteristicas" name="caracteristicas" required>
+    </div>
   </div>
-
-  <h3>Ubicación</h3>
 
   <div class="form-row">
     <div class="input-group">
-      <label for="sede">Sede</label> 
-      <input id="sede" type="text" [(ngModel)]="nuevoProducto.sede" name="sede" required>
+      <label for="color">Color</label> 
+      <input id="color" type="text" [(ngModel)]="nuevoProducto.color" name="color" required>
     </div>
     <div class="input-group">
-      <label for="oficina">Oficina</label>
-      <input id="oficina" type="text" [(ngModel)]="nuevoProducto.oficina" name="oficina" required>
+      <label for="condicion">Condición</label>
+      <input id="condicion" type="text" [(ngModel)]="nuevoProducto.condicion" name="condicion" required>
     </div>
     <div class="input-group">
-      <label for="detalle">Detalle</label>
-      <input id="detalle" type="text" [(ngModel)]="nuevoProducto.detalle" name="detalle" required>
+      <label for="locacion">Ubicación</label>
+      <input id="locacion" type="text" [(ngModel)]="nuevoProducto.locacion" name="locacion" required>
     </div>
   </div>
 

@@ -19,14 +19,15 @@ export class AddArticle implements OnInit {
   private idArticuloActual: number | null = null;
 
   public nuevoProducto: Partial<Article> = {
-    codigo: 0,
     nombre: '',
+    categoria: '',
     marca: '',
     modelo: '',
+    caracteristicas: '',
+    color: '',
     serial: 0,
-    sede: '',
-    oficina: '',
-    detalle: '',
+    condicion: '',
+    locacion: '',
   };
 
   constructor(private router: Router, private articleService: ArticleService, private route: ActivatedRoute) { }

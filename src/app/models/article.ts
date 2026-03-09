@@ -1,11 +1,12 @@
 export interface Article {
   id: number;
-  codigo: number;
   nombre: string;
   marca: string;
+  categoria: string;
   modelo: string;
+  caracteristicas: string;
+  color: string;
   serial: number;
-  sede: string;
-  oficina: string;
-  detalle: string;
+  condicion: string;
+  locacion: string;
 }

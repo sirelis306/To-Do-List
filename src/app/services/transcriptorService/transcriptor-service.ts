@@ -7,7 +7,7 @@ import { switchMap } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class TranscriptorService {
-  private readonly N8N_API_URL = '/webhook/transcribe'; 
+  private readonly N8N_API_URL = '/webhook-test/transcribe'; 
 
   constructor(private http: HttpClient) {}
   

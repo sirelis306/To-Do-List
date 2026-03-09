@@ -80,7 +80,9 @@ export class Transcriptor implements OnDestroy {
            return;
         }
 
-        const textoRecibido = res.text || res.transcription || res.output;
+        // Si es un array, toma el primer elemento
+        const data = Array.isArray(res) && res.length > 0 ? res[0] : res;
+        const textoRecibido = data.text || data.transcription || data.output;
 
         if (textoRecibido) {
           this.transcription = textoRecibido;
