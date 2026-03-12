@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChatList } from '../chat-list/chat-list';
 import { ChatWindow } from '../chat-window/chat-window';
+import { ChatBotService } from '../../services/chatbot/chatBotService';
 
 @Component({
   selector: 'app-chat',
@@ -10,6 +11,17 @@ import { ChatWindow } from '../chat-window/chat-window';
   styleUrl: './chat.css',
   standalone: true,
 })
-export class Chat {
+export class Chat implements OnInit, OnDestroy {
 
+  constructor(private chatBotService: ChatBotService) {}
+
+  ngOnInit(): void {
+    // Oculta el chatbot cuando entras a la página de chat
+    this.chatBotService.setVisibility(false);
+  }
+
+  ngOnDestroy(): void {
+    // Muestra el chatbot cuando sales de la página de chat
+    this.chatBotService.setVisibility(true);
+  }
 }

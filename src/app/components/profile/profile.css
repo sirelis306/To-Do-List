@@ -177,8 +177,6 @@ h1 {
 }
 
 
-
-
 .profile-avatar-img {
   width: 150px;
   height: 150px;
@@ -205,7 +203,7 @@ h1 {
 }
 
 .custom-file-upload {
-  background-color: #007bff; 
+  background-color: #0c0cb5; 
   color: white;
   padding: 8px 15px;
   border-radius: 5px;
@@ -219,7 +217,7 @@ h1 {
 }
 
 .custom-file-upload:hover {
-  background-color: #0056b3;
+  background-color: #101072;
 }
 
 #profileImageInput {

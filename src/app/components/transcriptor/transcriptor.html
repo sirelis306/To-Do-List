@@ -30,13 +30,13 @@
         <div class="audio-visualization-card">
           <h4><i class="fa-solid fa-volume-high"></i> Previsualización</h4>
           
-          <div class="waveform" [class.animating]="isLoading">
+          <div class="waveform" [class.animating]="isPlaying">
             @for (bar of visualizerBars; track $index) {
               <div class="bar"></div>
             }
           </div>
 
-          <audio [src]="audioUrl" controls class="custom-audio"></audio>
+          <audio [src]="audioUrl" controls class="custom-audio" (play)="onAudioPlay()" (pause)="onAudioPause()" (ended)="onAudioEnded()"></audio>
         </div>
 
         <button class="transcribe-action-btn" (click)="uploadAndTranscribe()" [disabled]="isLoading">

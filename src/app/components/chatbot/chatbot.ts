@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Subscription } from 'rxjs';
 import { ChatBotService } from '../../services/chatbot/chatBotService';
-
 
 interface ChatMessage {
   text: string;
@@ -20,12 +20,38 @@ export class Chatbot {
   isOpen: boolean = false;
   isLoading: boolean = false;
   newMessage: string = "";
+  isVisible: boolean = true;
   
   messages: ChatMessage[] = [
     { text: '¡Hola! Soy tu asistente virtual. Pregúntame sobre tus tareas o el inventario.', sender: 'bot', time: new Date() }
   ];
+  
+  private visibilitySubscription: Subscription | null = null;
 
-  constructor(private chatBotService: ChatBotService) {}
+  constructor(private chatBotService: ChatBotService, private cdr: ChangeDetectorRef) {
+    this.chatBotService.visibility$.subscribe(visible => {
+      this.isVisible = visible;
+      if (!visible) {
+        this.isOpen = false; // Cierra el chat si está oculto
+      }
+    });
+  }
+
+  //visibilidad del chatbot en el chat
+  ngOnInit(): void {
+    this.visibilitySubscription = this.chatBotService.visibility$.subscribe(visible => {
+      this.isVisible = visible;
+      if (!visible) {
+        this.isOpen = false;
+      }
+      // Forzar la detección de cambios
+      this.cdr.detectChanges();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.visibilitySubscription?.unsubscribe();
+  }
 
   toggleChat(): void {
     this.isOpen = !this.isOpen;

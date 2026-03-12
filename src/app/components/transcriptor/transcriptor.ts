@@ -17,8 +17,9 @@ export class Transcriptor implements OnDestroy {
   selectedFile: File | null = null;
   audioUrl: SafeUrl | null = null;
   isDragging: boolean = false;
+  isPlaying: boolean = false;
   
-  visualizerBars = new Array(20).fill(0); 
+  visualizerBars = new Array(20).fill(3); 
 
   constructor(
     private transcriptorService: TranscriptorService,
@@ -63,7 +64,22 @@ export class Transcriptor implements OnDestroy {
     const objectUrl = URL.createObjectURL(file);
     this.audioUrl = this.sanitizer.bypassSecurityTrustUrl(objectUrl);
     this.transcription = "";
+    this.isPlaying = false; 
   }
+
+  // Métodos para controlar la reproducción
+  onAudioPlay() {
+    this.isPlaying = true;
+  }
+
+  onAudioPause() {
+    this.isPlaying = false;
+  }
+
+  onAudioEnded() {
+    this.isPlaying = false;
+  }
+
 
   uploadAndTranscribe() {
     if (!this.selectedFile) return;
@@ -111,6 +127,7 @@ export class Transcriptor implements OnDestroy {
     this.selectedFile = null;
     this.audioUrl = null;
     this.transcription = '';
+    this.isPlaying = false;
   }
 
   ngOnDestroy() {
