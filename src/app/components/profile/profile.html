@@ -1,101 +1,145 @@
-<main class="profile-container">
-  
-  <h1>Mi Perfil</h1>
-
-  @if (mensajeEstado) {
-    <div class="success-message">{{ mensajeEstado }}</div>
-  }
-
-  <div class="profile-card">
-    @if (user) {
-      <div class="profile-header">
-        
-        @if (previewImageUrl) {
-        <img [src]="previewImageUrl" alt="Foto de Perfil" class="profile-avatar-img">
-        } @else {
-            <i class="fa-solid fa-user-circle profile-avatar-icon"></i>
-        }
-        
-        <h2>{{ tempUser.nombre | titlecase }} {{ tempUser.apellido | titlecase }}</h2>
-        <p class="user-email">{{ tempUser.email }}</p>
-
-        @if (!modoEdicion) {
-          <button class="edit-btn" (click)="activarEdicion()">
-            <i class="fa-solid fa-pen"></i> Editar Perfil
-          </button>
-        }
-      </div>
-
-      @if (modoEdicion) {
-        <div class="details-section">
-
-            <div class="image-upload-section">
-              <label for="profileImageInput" class="custom-file-upload">
-                <i class="fa-solid fa-camera"></i> Cambiar Foto
-              </label>
-              <input id="profileImageInput" type="file" accept="image/*" (change)="onFileSelected($event)">
-              
-              @if (previewImageUrl) {
-                <button type="button" class="delete-image-btn" (click)="eliminarImagenPerfil()">
-                  <i class="fa-solid fa-trash"></i> Eliminar Foto
-                </button>
-              }
-            </div>
-
-          <h3>Detalles de Usuario</h3>
-
-          <form (ngSubmit)="guardarPerfil()" #profileForm="ngForm">
-            
-            
-            <div class="form-group">
-              <label for="nombre">Nombre</label>
-              <input id="nombre" type="text" [(ngModel)]="tempUser.nombre" name="nombre" required>
-            </div>
-            <div class="form-group">
-              <label for="apellido">Apellido</label>
-              <input id="apellido" type="text" [(ngModel)]="tempUser.apellido" name="apellido" required>
-            </div>
-            <div class="form-group">
-              <label for="email">Correo Electrónico (Usuario)</label>
-              <input id="email" type="email" [(ngModel)]="tempUser.email" name="email" required>
-            </div>
-            
-            <div class="form-actions">
-              <button type="submit" class="save-btn" [disabled]="!profileForm.valid">
-                <i class="fa-solid fa-check"></i> Guardar Cambios
-              </button>
-              <button type="button" class="cancel-btn" (click)="cancelarEdicion()">
-                <i class="fa-solid fa-xmark"></i> Cancelar
-              </button>
-            </div>
-          </form>
-
-          <h3 class="password-title">Cambiar Contraseña</h3>
-          
-          <form (ngSubmit)="cambiarContrasena()" #passwordForm="ngForm" class="password-form">
-            <div class="password-fields-group">
-              <div class="form-group">
-                <label for="newPassword">Nueva Contraseña</label>
-                <input id="newPassword" type="password" [(ngModel)]="newPassword" name="newPassword" required>
-              </div>
-            </div>
-
-            @if (passwordError) {
-              <div class="error-message">{{ passwordError }}</div>
-            }
-
-            <div class="form-actions">
-              <button type="submit" class="change-password-btn" [disabled]="!passwordForm.valid">
-                <i class="fa-solid fa-key"></i> Cambiar Contraseña
-              </button>
-            </div>
-          </form>
-        </div>
-
-      }
-      } @else {
-      <p class="error-message">Error: No se pudieron cargar los datos del usuario.</p>
-    }
+<div class="admin-page">
+  <div class="page-header">
+    <div class="breadcrumb">
+      <span class="root">Perfil</span>
+      <span class="separator">/</span>
+      <span class="current">Usuario</span>
+    </div>
   </div>
 
-</main>
+  <div class="content-card profile-main-card">
+    @if (mensajeEstado) {
+      <div class="success-toast">
+        <i class="fa-solid fa-circle-check"></i> {{ mensajeEstado }}
+      </div>
+    }
+
+    @if (user) {
+      <div class="profile-layout">
+        <div class="profile-sidebar">
+          <div class="avatar-container">
+            @if (previewImageUrl) {
+              <img [src]="previewImageUrl" alt="Foto de Perfil" class="profile-img">
+            } @else {
+              <div class="profile-placeholder">
+                <i class="fa-solid fa-user"></i>
+              </div>
+            }
+            <div class="avatar-overlay" *ngIf="modoEdicion">
+              <label for="profileImageInput">
+                <i class="fa-solid fa-camera"></i>
+              </label>
+              <input id="profileImageInput" type="file" accept="image/*" (change)="onFileSelected($event)" style="display: none;">
+            </div>
+          </div>
+          
+          <div class="user-main-info">
+            <h2>{{ tempUser.nombre | titlecase }} {{ tempUser.apellido | titlecase }}</h2>
+            <p>{{ tempUser.email }}</p>
+          </div>
+
+          @if (!modoEdicion) {
+            <button class="action-btn edit-btn" (click)="activarEdicion()">
+              <i class="fa-solid fa-pen-to-square"></i> Editar Perfil
+            </button>
+          }
+        </div>
+
+        <div class="profile-content">
+          @if (modoEdicion) {
+            <div class="edit-section">
+              <h3><i class="fa-solid fa-address-card"></i> Detalles de Usuario</h3>
+              
+              <form (ngSubmit)="guardarPerfil()" #profileForm="ngForm" class="modern-form">
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label>Nombre</label>
+                    <div class="input-wrapper">
+                      <i class="fa-solid fa-user"></i>
+                      <input type="text" [(ngModel)]="tempUser.nombre" name="nombre" required>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>Apellido</label>
+                    <div class="input-wrapper">
+                      <i class="fa-solid fa-user"></i>
+                      <input type="text" [(ngModel)]="tempUser.apellido" name="apellido" required>
+                    </div>
+                  </div>
+                  <div class="form-group full-width">
+                    <label>Correo Electrónico</label>
+                    <div class="input-wrapper">
+                      <i class="fa-solid fa-envelope"></i>
+                      <input type="email" [(ngModel)]="tempUser.email" name="email" required>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-actions">
+                  <button type="button" class="btn-cancel" (click)="cancelarEdicion()">Cancelar</button>
+                  <button type="submit" class="btn-save" [disabled]="!profileForm.valid">Guardar Cambios</button>
+                </div>
+              </form>
+
+              <div class="divider"></div>
+
+              <h3><i class="fa-solid fa-lock"></i> Seguridad</h3>
+              <form (ngSubmit)="cambiarContrasena()" #passwordForm="ngForm" class="modern-form">
+                <div class="form-group">
+                  <label>Nueva Contraseña</label>
+                  <div class="input-wrapper">
+                    <i class="fa-solid fa-key"></i>
+                    <input type="password" [(ngModel)]="newPassword" name="newPassword" placeholder="Mínimo 6 caracteres" required>
+                  </div>
+                </div>
+                
+                @if (passwordError) {
+                  <div class="error-text">{{ passwordError }}</div>
+                }
+
+                <div class="form-actions">
+                  <button type="submit" class="btn-password" [disabled]="!passwordForm.valid">Actualizar Contraseña</button>
+                </div>
+              </form>
+            </div>
+          } @else {
+            <div class="view-section">
+              <div class="info-card">
+                <div class="info-item">
+                  <span class="label">Nombre Completo</span>
+                  <span class="value">{{ user.nombre }} {{ user.apellido }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="label">Correo Electrónico</span>
+                  <span class="value">{{ user.email }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="label">Rol en el Sistema</span>
+                  <div class="value">
+                    <span class="role-chip" [ngClass]="user.role">
+                      <i class="fa-solid" [ngClass]="{
+                        'fa-crown': user.role === 'superadmin',
+                        'fa-shield-halved': user.role === 'admin',
+                        'fa-user': user.role === 'regular'
+                      }"></i>
+                      {{ user.role === 'superadmin' ? 'Super Admin' : user.role === 'admin' ? 'Administrador' : 'Regular' }}
+                    </span>
+                  </div>
+                </div>
+                <div class="info-item">
+                  <span class="label">Estado de la Cuenta</span>
+                  <span class="value status-active">Activo</span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    } @else {
+      <div class="error-state">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <p>No se pudieron cargar los datos del perfil.</p>
+      </div>
+    }
+  </div>
+</div>

@@ -6,10 +6,12 @@ import { Article } from '../../models/article';
 import { ArticleService} from '../../services/article/articleService';
 
 
+import { CustomDropdown } from '../custom-dropdown/custom-dropdown';
+
 @Component({
   selector: 'app-add-article',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, CustomDropdown],
   templateUrl: './add-article.html',
   styleUrl: './add-article.css',
 })
@@ -17,6 +19,7 @@ export class AddArticle implements OnInit {
   public modoEdicion: boolean = false;
   public tituloPagina: string = "Nuevo Producto";
   private idArticuloActual: number | null = null;
+  public opcionesCondicion: string[] = ['Nuevo', 'Usado'];
 
   public nuevoProducto: Partial<Article> = {
     nombre: '',

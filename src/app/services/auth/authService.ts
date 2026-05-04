@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { User, AuthData } from '../../models/user';
+import { User, AuthData, UserRole } from '../../models/user';
 
 @Injectable({
   providedIn: 'root'
@@ -8,9 +8,10 @@ import { User, AuthData } from '../../models/user';
 export class AuthService {
   private mockUser: User = {
     id: 1,
-    email: 'ssire006@gmail.com',
+    email: 'Qa@gmail.com',
     nombre: 'Sirelis',
     apellido: 'Sarmiento',
+    role: 'superadmin',
     foto: '',
   };
 
@@ -20,14 +21,13 @@ export class AuthService {
   constructor(private router: Router) {
     if (!localStorage.getItem(this.USER_KEY) && this.isAuthenticated()) {
       localStorage.setItem(this.USER_KEY, JSON.stringify(this.mockUser));
-   }
+    }
   }
 
   login(email: string, pass: string): boolean {
     if (email === 'ssire006@gmail.com' && pass === '1234') {
-
       localStorage.setItem('kanban_token', 'true');
-      localStorage.setItem(this.USER_KEY, JSON.stringify(this.mockUser)); 
+      localStorage.setItem(this.USER_KEY, JSON.stringify(this.mockUser));
       return true;
     }
     return false;
@@ -35,7 +35,7 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem('kanban_token');
-    localStorage.removeItem(this.USER_KEY); 
+    localStorage.removeItem(this.USER_KEY);
     this.router.navigate(['/login']);
   }
 
@@ -43,16 +43,30 @@ export class AuthService {
     return !!localStorage.getItem('kanban_token');
   }
 
+  getUserRole(): UserRole | null {
+    const user = this.getUserProfile();
+    return user ? user.role : null;
+  }
+
+  isAdmin(): boolean {
+    const role = this.getUserRole();
+    return role === 'admin' || role === 'superadmin';
+  }
+
+  isSuperAdmin(): boolean {
+    return this.getUserRole() === 'superadmin';
+  }
+
   getUserProfile(): User | null {
-    const userJson = localStorage.getItem(this.USER_KEY); 
-    return userJson ? JSON.parse(userJson) : null; 
+    const userJson = localStorage.getItem(this.USER_KEY);
+    return userJson ? JSON.parse(userJson) : null;
   }
 
   updateUserProfile(updatedUser: Partial<User>): void {
-    const currentUser = this.getUserProfile(); 
+    const currentUser = this.getUserProfile();
     if (currentUser) {
-      const newUser = { ...currentUser, ...updatedUser }; 
-      localStorage.setItem(this.USER_KEY, JSON.stringify(newUser)); 
+      const newUser = { ...currentUser, ...updatedUser } as User;
+      localStorage.setItem(this.USER_KEY, JSON.stringify(newUser));
     }
   }
 

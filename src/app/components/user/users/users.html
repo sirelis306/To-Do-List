@@ -1,0 +1,91 @@
+<div class="admin-page">
+  <div class="page-header">
+    <div class="breadcrumb">
+      <span class="root">Usuarios</span>
+      <span class="separator">/</span>
+      <span class="current">Listado</span>
+    </div>
+    <button *ngIf="isSuperAdmin" class="new-user-btn" routerLink="/user/users/add">
+      <i class="fas fa-plus"></i> Nuevo Usuario
+    </button>
+  </div>
+
+  <div class="content-card">
+    <div class="filters-bar">
+      <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" placeholder="Buscar usuario..." [(ngModel)]="searchTerm">
+      </div>
+      <div class="filter-dropdown">
+        <app-custom-dropdown 
+          [options]="roleOptions" 
+          [selectedValue]="roleFilter" 
+          label="Todos los roles"
+          (valueChange)="roleFilter = $event">
+        </app-custom-dropdown>
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table class="modern-table">
+        <thead>
+          <tr>
+            <th>USUARIO</th>
+            <th>ROL</th>
+            <th>ESTADO</th>
+            <th>ACCIONES</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of paginatedUsers">
+            <td class="user-cell">
+              <div class="user-info">
+                <span class="user-name">{{ user.nombre }} {{ user.apellido }}</span>
+                <span class="user-email">{{ user.email }}</span>
+              </div>
+            </td>
+            <td>
+              <div class="role-cell-wrapper">
+                <span class="role-chip" [ngClass]="user.role">
+                  <i class="fa-solid" [ngClass]="{
+                    'fa-crown': user.role === 'superadmin',
+                    'fa-shield-halved': user.role === 'admin',
+                    'fa-user': user.role === 'regular'
+                  }"></i>
+                  {{ user.role === 'superadmin' ? 'Super Admin' : user.role === 'admin' ? 'Administrador' : 'Regular' }}
+                </span>
+              </div>
+            </td>
+            <td>
+              <div class="status-cell-wrapper">
+                <span class="status-indicator">
+                  <span class="dot" [style.background]="user.estado === 'Activo' ? '#10b981' : '#ef4444'"></span>
+                  {{ user.estado }}
+                </span>
+              </div>
+            </td>
+            <td class="actions-cell">
+              <div class="actions-cell-wrapper">
+                <div class="actions-cell">
+                  <button class="icon-btn edit" title="Editar"><i class="fa-solid fa-pen-to-square"></i></button>
+                  <button class="icon-btn delete" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination-container">
+      <mat-paginator
+        (page)="onPageChange($event)"
+        [length]="filteredUsers.length"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="pageSizeOptions"
+        [pageIndex]="pageIndex"
+        aria-label="Seleccionar página">
+      </mat-paginator>
+    </div>
+  </div>
+</div>

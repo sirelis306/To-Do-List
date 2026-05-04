@@ -8,6 +8,9 @@ import { ArticleService } from '../../services/article/articleService';
 import { MatPaginatorModule, PageEvent, MatPaginatorIntl } from '@angular/material/paginator';
 
 
+import { CustomDropdown } from '../custom-dropdown/custom-dropdown';
+
+
 @Injectable()
 export class MyPaginatorIntl extends MatPaginatorIntl {
   override itemsPerPageLabel = 'Artículos por página:';
@@ -16,7 +19,7 @@ export class MyPaginatorIntl extends MatPaginatorIntl {
 @Component({
   selector: 'app-articles',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, MatPaginatorModule],
+  imports: [CommonModule, FormsModule, RouterLink, MatPaginatorModule, CustomDropdown],
   templateUrl: './articles.html',
   styleUrl: './articles.css',
   providers: [
@@ -27,6 +30,8 @@ export class MyPaginatorIntl extends MatPaginatorIntl {
 export class Articles implements OnInit {
   public articulosFiltrados: Article[] = [];
   public terminoBusqueda: string = "";
+  public categoryFilter: string = "";
+  public categoryOptions: string[] = [];
   public showConfirmModal: boolean = false;
   public articleToDeleteId: number | null = null;
   public confirmMessage: string = "";
@@ -39,11 +44,19 @@ export class Articles implements OnInit {
   constructor(private router: Router, private articleService: ArticleService) { }
 
   ngOnInit(): void {
+    const allArticles = this.articleService.getArticles("");
+    this.categoryOptions = [...new Set(allArticles.map(a => a.categoria))].filter(c => c);
     this.onBuscar(); 
   }
 
   onBuscar(): void {
-    this.articulosFiltrados = this.articleService.getArticles(this.terminoBusqueda);
+    let results = this.articleService.getArticles(this.terminoBusqueda);
+    
+    if (this.categoryFilter) {
+      results = results.filter(a => a.categoria === this.categoryFilter);
+    }
+
+    this.articulosFiltrados = results;
     this.pageIndex = 0;
     this.actualizarVistaPaginada();
   }

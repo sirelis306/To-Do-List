@@ -16,6 +16,10 @@ export class Sidebar {
 
   constructor(private authService: AuthService) { }
 
+  get isAdmin(): boolean {
+    return this.authService.isAdmin();
+  }
+
   onLogout(): void {
     this.authService.logout();
   }

@@ -1,13 +1,15 @@
 :host {
   display: block;
-  font-family: Arial, sans-serif;
-  min-height: 100vh; 
+  background: #f8fafc;
+  min-height: 100vh;
+  padding: 3.5rem 2rem 2rem 2rem;
+  /* Más espacio arriba */
 }
 
 .container {
-  max-width: 1500px;
-  margin: 0 auto;
-  padding: 20px;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 h1 {
@@ -17,85 +19,149 @@ h1 {
 }
 
 .header-controls {
-  display: flex; 
+  display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 40px;
-  margin-bottom: 40px; 
-  gap: 20px;
-  border-bottom: 1px solid #ddd;
-  box-sizing: border-box;
+  margin-bottom: 2.5rem;
+  padding: 0;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.breadcrumb .root {
+  color: #6366f1;
+  font-weight: 600;
+}
+
+.breadcrumb .separator {
+  color: #94a3b8;
+}
+
+.breadcrumb .current {
+  color: #64748b;
 }
 
 .controls-right {
   display: flex;
-  align-items: center; 
+  align-items: center;
   gap: 20px;
 }
 
 .search-bar {
   position: relative;
-  min-width: 300px;
+  width: 350px;
+  flex-shrink: 0;
 }
 
 .search-bar .fa-magnifying-glass {
   position: absolute;
+  left: 1.25rem;
   top: 50%;
-  left: 15px;
   transform: translateY(-50%);
-  color: #9e9e9e;
+  color: #94a3b8;
+  font-size: 1rem;
+  z-index: 10;
 }
 
 .search-bar input {
   width: 100%;
-  padding: 12px 20px 12px 45px; 
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  font-size: 15px;
-  background-color: #eeeded;
-  box-shadow: none;
+  height: 48px;
+  padding: 0 1rem 0 3.2rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: white;
+  color: #1e293b;
+  font-size: 0.95rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   box-sizing: border-box;
 }
 
 .search-bar input:focus {
   outline: none;
-  border-color: #3240A5;
-  background-color: #ffffff;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.08);
 }
 
 .button-group {
   display: flex;
-  align-items: baseline;
-  gap: 10px;
-  flex-shrink: 0;
-  position: relative;
+  align-items: center;
+  gap: 1.5rem;
 }
 
 .add-task-btn {
+  background: #4338ca;
+  color: white;
+  border: none;
+  padding: 0.7rem 1.5rem;
+  height: 48px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
   display: flex;
   align-items: center;
-  gap: 20px;
-  padding: 14px 16px;
-  font-size: 14px;
-  font-weight: 600;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.2s;
+  gap: 0.8rem;
 }
 
-.add-task-btn {
-  background-color: #3240A5;
-  color: white;
+.add-task-btn:hover {
+  background: #3730a3;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
-.add-task-btn:hover { background-color: #303a87; }
 
 .kanban-board {
   flex-grow: 1;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
-  gap: 20px; 
+  gap: 20px;
   align-items: flex-start;
-  justify-content: center;
+  justify-content: flex-start;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+}
+
+/* Responsividad */
+@media (max-width: 1024px) {
+  .header-controls {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+
+  .controls-right {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-bar {
+    width: 100%;
+  }
+
+  .button-group {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 768px) {
+  :host {
+    padding: 2.5rem 1rem 1rem 1rem;
+  }
+
+  .kanban-board {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .add-task-btn {
+    width: 100%;
+    justify-content: center;
+  }
 }

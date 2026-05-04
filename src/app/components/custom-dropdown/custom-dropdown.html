@@ -1,18 +1,20 @@
 <div class="custom-select-container">
   
-  <button class="custom-btn" (click)="menuAbierto = !menuAbierto">
-    <i class="fa-solid fa-filter"></i> <span>{{ getNombreSeleccion() }}</span>
-    
+  <button type="button" class="custom-btn" (click)="menuAbierto = !menuAbierto">
+    <div class="btn-content">
+      <i [class]="'fa-solid ' + icon"></i> 
+      <span>{{ getNombreSeleccion() }}</span>
+    </div>
     <i class="fa-solid fa-chevron-down arrow-icon"></i>
   </button>
   
   @if (menuAbierto) {
     <div class="custom-menu">
       
-      <button (click)="seleccionarOpcion('')">Todos los Filtros</button>
+      <button type="button" (click)="seleccionarOpcion('')">{{ label }}</button>
       
       @for (op of options; track op) {
-        <button (click)="seleccionarOpcion(op)">{{ op | titlecase }}</button>
+        <button type="button" (click)="seleccionarOpcion(op)">{{ getLabel(op) }}</button>
       }
     </div>
   }

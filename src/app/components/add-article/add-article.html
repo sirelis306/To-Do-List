@@ -1,67 +1,104 @@
-<div class="form-header">
-  <h1>{{ tituloPagina }}</h1>
-  <button class="return-btn" (click)="onRegresarClick()">
-    <i class="fa-solid fa-arrow-left"></i>
-    <span>Regresar a la lista</span>
-  </button>
+<div class="admin-page">
+  <div class="page-header">
+    <div class="breadcrumb">
+      <span class="root">Inventario</span>
+      <span class="separator">/</span>
+      <span class="current">{{ tituloPagina }}</span>
+    </div>
+  </div>
+
+  <div class="content-card">
+    <form (ngSubmit)="onGuardar()" #productForm="ngForm">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Nombre del Producto</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-box"></i>
+            <input type="text" [(ngModel)]="nuevoProducto.nombre" name="nombre" placeholder="Ej: Laptop" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Categoría</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-tags"></i>
+            <input type="text" [(ngModel)]="nuevoProducto.categoria" name="categoria" placeholder="Ej: Electrónica"
+              required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Marca</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-copyright"></i>
+            <input type="text" [(ngModel)]="nuevoProducto.marca" name="marca" placeholder="Ej: Apple" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Modelo</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-code-branch"></i>
+            <input type="text" [(ngModel)]="nuevoProducto.modelo" name="modelo" placeholder="Ej: MacBook Air" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Serial / Código</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-barcode"></i>
+            <input type="text" [(ngModel)]="nuevoProducto.serial" name="serial" placeholder="Número de serie" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Condición</label>
+          <div class="form-custom-select">
+            <app-custom-dropdown 
+              [options]="opcionesCondicion" 
+              [selectedValue]="nuevoProducto.condicion || ''" 
+              label="Seleccionar..."
+              icon="fa-star"
+              (valueChange)="nuevoProducto.condicion = $event">
+            </app-custom-dropdown>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Color</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-palette"></i>
+            <input type="text" [(ngModel)]="nuevoProducto.color" name="color" placeholder="Ej: Gris" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Ubicación</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-location-dot"></i>
+            <input type="text" [(ngModel)]="nuevoProducto.locacion" name="locacion" placeholder="Ej: Logística"
+              required>
+          </div>
+        </div>
+
+        <div class="form-group full-width">
+          <label>Características</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-list-ul"></i>
+            <input type="text" [(ngModel)]="nuevoProducto.caracteristicas" name="caracteristicas"
+              placeholder="Ej: 16GB RAM, 512GB SSD" required>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="action-btn back" (click)="onRegresarClick()">
+          Regresar <i class="fa-solid fa-arrow-left"></i>
+        </button>
+        <button type="submit" class="action-btn save" [disabled]="!productForm.valid">
+          Guardar Producto <i class="fa-solid fa-check"></i>
+        </button>
+      </div>
+    </form>
+  </div>
 </div>
-
-<form class="product-form" (ngSubmit)="onGuardar()" #productForm="ngForm">
-  <h3>Detalles de producto</h3>
-
-  <div class="form-row">
-    <!-- <div class="input-group">
-      <label for="codigo">ID del Producto</label> 
-      <input id="codigo" type="text" [(ngModel)]="nuevoProducto.id" name="id" required>
-    </div> -->
-    <div class="input-group">
-      <label for="nombre">Nombre del Producto</label>
-      <input id="nombre" type="text" [(ngModel)]="nuevoProducto.nombre" name="nombre" required>
-    </div>
-    <div class="input-group">
-      <label for="categoria">Categoría del Producto</label>
-      <input id="categoria" type="text" [(ngModel)]="nuevoProducto.categoria" name="categoria" required>
-    </div>
-    <div class="input-group">
-      <label for="serial">Serial</label>
-      <input id="serial" type="number" [(ngModel)]="nuevoProducto.serial" name="serial" required>
-    </div>
-  </div>
-  
-  <div class="form-row">
-    <div class="input-group">
-      <label for="marca">Marca</label>
-      <input id="marca" type="text" [(ngModel)]="nuevoProducto.marca" name="marca" required>
-    </div>
-    <div class="input-group">
-        <label for="modelo">Modelo</label>
-        <input id="modelo" type="text" [(ngModel)]="nuevoProducto.modelo" name="modelo" required>
-    </div>
-    <div class="input-group">
-      <label for="caracteristicas">Características</label>
-      <input id="caracteristicas" type="text" [(ngModel)]="nuevoProducto.caracteristicas" name="caracteristicas" required>
-    </div>
-  </div>
-
-  <div class="form-row">
-    <div class="input-group">
-      <label for="color">Color</label> 
-      <input id="color" type="text" [(ngModel)]="nuevoProducto.color" name="color" required>
-    </div>
-    <div class="input-group">
-      <label for="condicion">Condición</label>
-      <input id="condicion" type="text" [(ngModel)]="nuevoProducto.condicion" name="condicion" required>
-    </div>
-    <div class="input-group">
-      <label for="locacion">Ubicación</label>
-      <input id="locacion" type="text" [(ngModel)]="nuevoProducto.locacion" name="locacion" required>
-    </div>
-  </div>
-
-  <div class="form-buttons">
-    <button type="submit" class="save-btn" [disabled]="!productForm.valid">
-      Guardar Producto
-    </button>
-  </div>
-
-</form>

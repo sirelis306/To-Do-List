@@ -1,111 +1,91 @@
 :host {
   display: block;
-  margin-bottom: 10px;
 }
 
 .task-card {
-  background-color: rgba(247, 247, 247, 0.87); 
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 251, 251, 0.699); 
-  box-shadow: 0 2px 10px rgba(255, 254, 254, 0.1);
-
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
   position: relative;
-  border-radius: 8px;
-  padding: 15px;
-  display: flex;;
-  font-family: Arial, sans-serif;
-  flex-direction: column;
-  gap: 10px; 
-  transition: all 0.2s ease-out;
+  overflow: hidden;
 }
-
 
 .task-card:hover {
-  box-shadow: 0 4px 8px #00000033;
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 16px rgba(99, 102, 241, 0.08);
+  border-color: #6366f1;
 }
 
-.task-card-backlog {
-  border-left: 2px solid #adadaf;
-}
-
-.task-card-hacer {
-  border-left: 2px solid #3240A5;
-}
-
-.task-card-progreso {
-  border-left: 2px solid #67ac91;
-}
-
-.task-card-completada {
-  border-left: 2px solid #008D36;
-}
-
-.task-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px; 
-}
-
-.delete-btn {
+/* Indicador de estado lateral */
+.task-card::before {
+  content: '';
   position: absolute;
-  top: 5px;
-  right: 8px;
-  background: none;
-  border: none;
-  color: #aaa;
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
 }
 
-.delete-btn:hover {
-  color: #ff0000;
-}
+.task-card-backlog::before { background: #94a3b8; }
+.task-card-hacer::before { background: #6366f1; }
+.task-card-progreso::before { background: #10b981; }
+.task-card-completada::before { background: #4338ca; }
 
 .card-header {
+  margin-bottom: 0.8rem;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
 }
 
 .task-title {
+  font-size: 0.95rem;
   font-weight: 600;
-  color: #1d1d1b;
-  font-size: 15px;
-  flex-grow: 1; 
-  margin-right: 10px; 
+  color: #1e293b;
+  line-height: 1.4;
+  margin-right: 1.5rem;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: #cbd5e1;
+  cursor: pointer;
+  padding: 0.2rem;
+  transition: color 0.2s;
+  font-size: 1rem;
+}
+
+.delete-btn:hover {
+  color: #ef4444;
 }
 
 .card-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 5px;
+  margin-top: 1rem;
 }
 
 .task-category {
-  background-color: rgb(0, 141, 54);
-  color: #ddd9d9;
-  font-size: 11px;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-weight: 500;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
 .task-flag {
-  font-size: 14px; 
+  font-size: 0.9rem;
 }
 
-.flag-alta {
-  color: #e04a4a; 
-}
-
-.flag-media {
-  color: #f7a500; 
-}
-
-.flag-baja {
-  color: #a0acba; 
-}
+.flag-alta { color: #ef4444; }
+.flag-media { color: #f59e0b; }
+.flag-baja { color: #10b981; }
