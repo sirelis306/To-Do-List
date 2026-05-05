@@ -79,6 +79,9 @@
                   <button class="icon-btn edit" [routerLink]="['/articles/edit', articulo.id]" title="Editar">
                     <i class="fa-solid fa-pen-to-square"></i>
                   </button>
+                  <button class="icon-btn barcode" (click)="onShowBarcode(articulo)" title="Código de Barras">
+                    <i class="fa-solid fa-barcode"></i>
+                  </button>
                   <button class="icon-btn delete" (click)="onDelete(articulo)" title="Eliminar">
                     <i class="fa-solid fa-trash"></i>
                   </button>
@@ -103,5 +106,29 @@
         aria-label="Seleccionar página">
       </mat-paginator>
     </div>
+  </div>
+</div>
+
+<!-- Modal de Código de Barras -->
+<div *ngIf="showBarcodeModal" class="barcode-modal-backdrop" (click)="onCloseBarcodeModal()"></div>
+<div *ngIf="showBarcodeModal" class="barcode-modal-content no-print">
+  <div class="barcode-modal-header">
+    <h4>Etiqueta de Producto</h4>
+    <button class="close-btn" (click)="onCloseBarcodeModal()">&times;</button>
+  </div>
+  <div class="barcode-display-area" id="print-section">
+    <div class="barcode-info">
+      <span class="product-name">{{ selectedArticle?.nombre }}</span>
+      <span class="product-meta">{{ selectedArticle?.marca }} - {{ selectedArticle?.modelo }}</span>
+    </div>
+    <div class="barcode-image-container">
+      <svg id="barcode"></svg>
+    </div>
+  </div>
+  <div class="modal-actions">
+    <button class="btn btn-cancel" (click)="onCloseBarcodeModal()">Cerrar</button>
+    <button class="btn btn-confirm" (click)="onPrintBarcode()">
+      <i class="fa-solid fa-print"></i> Imprimir
+    </button>
   </div>
 </div>

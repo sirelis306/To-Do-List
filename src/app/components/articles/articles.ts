@@ -6,6 +6,7 @@ import { RouterLink } from '@angular/router';
 import { Article } from '../../models/article';
 import { ArticleService } from '../../services/article/articleService'; 
 import { MatPaginatorModule, PageEvent, MatPaginatorIntl } from '@angular/material/paginator';
+import JsBarcode from 'jsbarcode';
 
 
 import { CustomDropdown } from '../custom-dropdown/custom-dropdown';
@@ -35,6 +36,9 @@ export class Articles implements OnInit {
   public showConfirmModal: boolean = false;
   public articleToDeleteId: number | null = null;
   public confirmMessage: string = "";
+
+  public showBarcodeModal: boolean = false;
+  public selectedArticle: Article | null = null;
 
   public articulosPaginados: Article[] = [];
   public pageSize: number = 10;  
@@ -96,4 +100,31 @@ export class Articles implements OnInit {
     this.articleToDeleteId = null;
     this.confirmMessage = "";
   }
-}
+
+  onShowBarcode(articulo: Article): void {
+    this.selectedArticle = articulo;
+    this.showBarcodeModal = true;
+    
+    setTimeout(() => {
+      if (this.selectedArticle) {
+        const serialStr = this.selectedArticle.serial ? this.selectedArticle.serial.toString() : "0";
+        JsBarcode("#barcode", serialStr, {
+          format: "CODE128",
+          lineColor: "#000",
+          width: 2,
+          height: 80,
+          displayValue: true
+        });
+      }
+    }, 50);
+  }
+
+  onCloseBarcodeModal(): void {
+    this.showBarcodeModal = false;
+    this.selectedArticle = null;
+  }
+
+  onPrintBarcode(): void {
+    window.print();
+  }
+}
