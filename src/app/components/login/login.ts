@@ -20,18 +20,19 @@ export class Login {
   constructor(private router: Router, private authService: AuthService) {}
 
   onLogin(): void {
+    console.log('Botón de login presionado con:', this.email);
     this.errorMensaje = "";
-    const loginExitoso = this.authService.login(this.email, this.password);
-
-    if (loginExitoso) {
-      console.log('¡Login exitoso desde el servicio!');
-      this.router.navigate(['/board']);
-
-    } else {
-      console.log('Login fallido desde el servicio');
-      this.errorMensaje = "Correo o contraseña incorrectos.";
-    }
-   
+    this.authService.login(this.email, this.password).subscribe({
+      next: (res) => {
+        console.log('¡Login exitoso desde el servicio!');
+        // Redirigir al tablero o dashboard
+        this.router.navigate(['/board']);
+      },
+      error: (err) => {
+        console.log('Login fallido:', err);
+        this.errorMensaje = "Correo o contraseña incorrectos.";
+      }
+    });
   }
 
   togglePasswordVisibility(): void {

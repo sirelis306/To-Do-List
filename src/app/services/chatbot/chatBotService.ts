@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, switchMap, map } from 'rxjs';
 import { TaskService } from '../task/taskService';
 import { ArticleService } from '../article/articleService'; 
 
@@ -23,17 +23,21 @@ export class ChatBotService {
   }
 
   sendMessage(userMessage: string): Observable<any> {
-    const contexto = {
-      tareas: this.taskService.getTareas(), 
-      inventario: this.articleService.getArticles('') 
-    };
+    return this.articleService.getArticles('').pipe(
+      switchMap(articulos => {
+        const contexto = {
+          tareas: this.taskService.getTareas(), 
+          inventario: articulos 
+        };
 
-    const body = {
-      message: userMessage,
-      context: contexto,
-      timestamp: new Date().toISOString()
-    };
+        const body = {
+          message: userMessage,
+          context: contexto,
+          timestamp: new Date().toISOString()
+        };
 
-    return this.http.post(this.N8N_URL, body);
+        return this.http.post(this.N8N_URL, body);
+      })
+    );
   }
 }

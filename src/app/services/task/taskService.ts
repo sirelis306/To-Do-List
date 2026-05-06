@@ -54,6 +54,10 @@ export class TaskService {
     return this.tareas;
   }
 
+  getTareaPorId(id: number): Tarea | undefined {
+    return this.tareas.find(t => t.id === id);
+  }
+
   getCategorias(): string[] {
     const todasLasCategorias = this.tareas.map(t => t.categoria);
     const categoriasFiltradas = todasLasCategorias.filter((c): c is string => !!c);

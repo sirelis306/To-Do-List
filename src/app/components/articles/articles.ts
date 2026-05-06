@@ -1,10 +1,10 @@
 import { Component, OnInit, Injectable } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router'; 
+import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Article } from '../../models/article';
-import { ArticleService } from '../../services/article/articleService'; 
+import { ArticleService } from '../../services/article/articleService';
 import { MatPaginatorModule, PageEvent, MatPaginatorIntl } from '@angular/material/paginator';
 import JsBarcode from 'jsbarcode';
 
@@ -31,6 +31,7 @@ export class MyPaginatorIntl extends MatPaginatorIntl {
 
 export class Articles implements OnInit {
   public articulosFiltrados: Article[] = [];
+  public todosLosArticulos: Article[] = [];
   public terminoBusqueda: string = "";
   public categoryFilter: string = "";
   public categoryOptions: string[] = [];
@@ -43,16 +44,17 @@ export class Articles implements OnInit {
   public selectedArticle: Article | null = null;
 
   public articulosPaginados: Article[] = [];
-  public pageSize: number = 10;  
-  public pageIndex: number = 0; 
+  public pageSize: number = 10;
+  public pageIndex: number = 0;
   public pageSizeOptions = [5, 10, 25];
 
   constructor(private router: Router, private articleService: ArticleService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.articleService.getArticles("").subscribe(allArticles => {
+      this.todosLosArticulos = allArticles;
       this.categoryOptions = [...new Set(allArticles.map(a => a.categoria))].filter(c => c);
-      this.onBuscar(); 
+      this.onBuscar();
     });
 
     // Auto-abrir escáner si viene de parámetro
@@ -70,30 +72,28 @@ export class Articles implements OnInit {
   }
 
   onBuscar(): void {
-    this.articleService.getArticles(this.terminoBusqueda).subscribe(results => {
-      let filteredResults = results;
-      
-      // Filtrado local por término de búsqueda (si la API no lo hace)
-      if (this.terminoBusqueda.trim()) {
-        const busquedaLower = this.terminoBusqueda.toLowerCase();
-        filteredResults = filteredResults.filter(a => 
-          (a.id && a.id.toString().includes(busquedaLower)) ||
-          (a.nombre && a.nombre.toLowerCase().includes(busquedaLower)) ||
-          (a.marca && a.marca.toLowerCase().includes(busquedaLower)) ||
-          (a.modelo && a.modelo.toLowerCase().includes(busquedaLower)) ||
-          (a.serial && a.serial.toLowerCase().includes(busquedaLower)) ||
-          (a.locacion && a.locacion.toLowerCase().includes(busquedaLower))
-        );
-      }
+    let filteredResults = [...this.todosLosArticulos];
 
-      if (this.categoryFilter) {
-        filteredResults = filteredResults.filter(a => a.categoria === this.categoryFilter);
-      }
+    // Filtrado local por término de búsqueda
+    if (this.terminoBusqueda.trim()) {
+      const busquedaLower = this.terminoBusqueda.toLowerCase();
+      filteredResults = filteredResults.filter(a =>
+        (a.id && a.id.toString().includes(busquedaLower)) ||
+        (a.nombre && a.nombre.toLowerCase().includes(busquedaLower)) ||
+        (a.marca && a.marca.toLowerCase().includes(busquedaLower)) ||
+        (a.modelo && a.modelo.toLowerCase().includes(busquedaLower)) ||
+        (a.serial && a.serial.toLowerCase().includes(busquedaLower)) ||
+        (a.locacion && a.locacion.toLowerCase().includes(busquedaLower))
+      );
+    }
 
-      this.articulosFiltrados = filteredResults;
-      this.pageIndex = 0;
-      this.actualizarVistaPaginada();
-    });
+    if (this.categoryFilter) {
+      filteredResults = filteredResults.filter(a => a.categoria === this.categoryFilter);
+    }
+
+    this.articulosFiltrados = filteredResults;
+    this.pageIndex = 0;
+    this.actualizarVistaPaginada();
   }
 
   actualizarVistaPaginada(): void {
@@ -109,7 +109,7 @@ export class Articles implements OnInit {
   }
 
   onNuevoProductoClick(): void {
-    this.router.navigate(['/articles/add']); 
+    this.router.navigate(['/articles/add']);
   }
 
   onDelete(articulo: Article): void {
@@ -117,11 +117,15 @@ export class Articles implements OnInit {
     this.confirmMessage = `¿Estás seguro de que quieres eliminar "${articulo.nombre}"?`;
     this.showConfirmModal = true;
   }
-  
+
   onConfirmDelete(): void {
     if (this.articleToDeleteId) {
+      const idToDelete = this.articleToDeleteId; // Guardar ID porque onCancelDelete lo limpia
       this.articleService.deleteArticle(this.articleToDeleteId).subscribe(() => {
-        this.onBuscar(); 
+        // Eliminar el artículo de nuestra memoria local (caché)
+        this.todosLosArticulos = this.todosLosArticulos.filter(a => a.id !== idToDelete);
+        // Volver a filtrar y actualizar la tabla visualmente
+        this.onBuscar();
       });
     }
     this.onCancelDelete();
@@ -136,7 +140,7 @@ export class Articles implements OnInit {
   onShowBarcode(articulo: Article): void {
     this.selectedArticle = articulo;
     this.showBarcodeModal = true;
-    
+
     setTimeout(() => {
       if (this.selectedArticle) {
         const serialStr = this.selectedArticle.serial ? this.selectedArticle.serial.toString() : "0";
@@ -168,10 +172,9 @@ export class Articles implements OnInit {
     this.showScannerModal = false;
     this.terminoBusqueda = result;
     this.onBuscar();
-    
+
     // Si solo hay un resultado, podríamos seleccionarlo o dar feedback
     if (this.articulosFiltrados.length === 0) {
-      // Tal vez el serial es numérico y el resultado es texto
       const serialNum = parseInt(result);
       if (!isNaN(serialNum)) {
         this.terminoBusqueda = serialNum.toString();

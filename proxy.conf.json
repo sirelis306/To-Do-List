@@ -1,4 +1,10 @@
 {
+  "/api": {
+    "target": "https://intranet.pafar.com.ve/public",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
   "/webhook": {
     "target": "http://127.0.0.1:5678",
     "secure": false,

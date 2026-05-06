@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, map } from 'rxjs';
 import { Article } from '../../models/article';
 
 @Injectable({
@@ -6,71 +8,41 @@ import { Article } from '../../models/article';
 })
 export class ArticleService {
 
-  private readonly STORAGE_KEY = 'articles';
-  private articulos: Article[] = [];
+  private apiUrl = '/api/products';
 
-  constructor() {
-    const data = localStorage.getItem(this.STORAGE_KEY);
-    if (data) {
-      this.articulos = JSON.parse(data);
-    } else {
-      this.articulos = [
-        { id: 1, nombre: 'Producto A', categoria: 'Categoría A', marca: 'Aaaa', modelo: 'aaa', caracteristicas: 'AA', color: 'negro', serial: 123, condicion: 'nuevo', locacion: 'Logistica' },
-        { id: 2, nombre: 'Producto B', categoria: 'Categoría B', marca: 'Bbbb', modelo: 'bbb', caracteristicas: 'BB', color: 'negro', serial: 456, condicion: 'nuevo', locacion: 'Logistica' },
-        { id: 3, nombre: 'Producto C', categoria: 'Categoría C', marca: 'Cccc', modelo: 'ccc', caracteristicas: 'CC', color: 'negro', serial: 789, condicion: 'nuevo', locacion: 'Logistica' },
-        { id: 4, nombre: 'Producto D', categoria: 'Categoría D', marca: 'Dddd', modelo: 'ddd', caracteristicas: 'DD', color: 'negro', serial: 123, condicion: 'nuevo', locacion: 'Logistica' },
-        { id: 5, nombre: 'Producto E', categoria: 'Categoría E', marca: 'Eeee', modelo: 'eee', caracteristicas: 'EE', color: 'negro', serial: 456, condicion: 'nuevo', locacion: 'Logistica' },
-        { id: 6, nombre: 'Producto F', categoria: 'Categoría F', marca: 'Ffff', modelo: 'fff', caracteristicas: 'FF', color: 'negro', serial: 789, condicion: 'nuevo', locacion: 'Logistica' }
-      ];
-      this.guardarArticulos();
-    }
+  constructor(private http: HttpClient) { }
+
+  /* Obtiene la lista de productos desde la API */
+  getArticles(busqueda: string = ''): Observable<Article[]> {
+    return this.http.get<any>(this.apiUrl).pipe(
+      map(response => {
+        // Si la API devuelve un array directamente, lo usamos.
+        // Si devuelve un objeto con propiedad 'data' (común en paginación o recursos), usamos 'data'.
+        if (Array.isArray(response)) {
+          return response;
+        } else if (response && response.data && Array.isArray(response.data)) {
+          return response.data;
+        } else {
+          console.warn('Estructura de respuesta de API no esperada:', response);
+          return [];
+        }
+      })
+    );
   }
 
-  private guardarArticulos(): void {
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.articulos));
+  getArticleById(id: number | string): Observable<Article> {
+    return this.http.get<Article>(`${this.apiUrl}/${id}`);
   }
 
-  getArticles(busqueda: string): Article[] {
-    let articulosFiltrados = [...this.articulos]; 
-    
-    if (busqueda.trim()) {
-      const busquedaLower = busqueda.toLowerCase();
-      
-      articulosFiltrados = this.articulos.filter(a => 
-        (a.id && a.id.toString().includes(busquedaLower)) ||
-        (a.nombre && a.nombre.toLowerCase().includes(busquedaLower)) ||
-        (a.marca && a.marca.toLowerCase().includes(busquedaLower)) ||
-        (a.modelo && a.modelo.toLowerCase().includes(busquedaLower)) ||
-        (a.serial && a.serial.toString().includes(busquedaLower)) ||
-        (a.locacion && a.locacion.toLowerCase().includes(busquedaLower)) 
-      );
-    }
-    return articulosFiltrados;
-  }
-  addArticle(nuevoProducto: Partial<Article>): void {
-    const productoGuardado: Article = {
-      id: Date.now(),
-      ...nuevoProducto
-    } as Article;
-    
-    this.articulos.push(productoGuardado);
-    this.guardarArticulos(); 
+  addArticle(nuevoProducto: Partial<Article>): Observable<Article> {
+    return this.http.post<Article>(this.apiUrl, nuevoProducto);
   }
 
-  getArticleById(id: number): Article | undefined {
-    return this.articulos.find(a => a.id === id);
+  updateArticle(id: number | string, dataActualizada: Partial<Article>): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}`, dataActualizada);
   }
 
-  updateArticle(id: number, dataActualizada: Partial<Article>): void {
-    const index = this.articulos.findIndex(a => a.id === id);
-    if (index !== -1) {
-      this.articulos[index] = { ...this.articulos[index], ...dataActualizada };
-      this.guardarArticulos();
-    }
-  }
-
-  deleteArticle(id: number): void {
-    this.articulos = this.articulos.filter(a => a.id !== id);
-    this.guardarArticulos();
+  deleteArticle(id: number | string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
   }
 }
