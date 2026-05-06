@@ -1,0 +1,18 @@
+<div class="scanner-overlay" (click)="onClose()"></div>
+<div class="scanner-container">
+  <div class="scanner-header">
+    <h3>Escáner de Código de Barras</h3>
+    <button class="close-btn" (click)="onClose()">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </div>
+  
+  <div class="scanner-body">
+    <div id="reader"></div>
+    <p class="scanner-hint">Apunta con la cámara al código de barras del producto</p>
+  </div>
+  
+  <div class="scanner-footer">
+    <button class="cancel-btn" (click)="onClose()">Cancelar</button>
+  </div>
+</div>

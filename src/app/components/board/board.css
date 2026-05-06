@@ -125,6 +125,12 @@ h1 {
   padding-bottom: 1rem;
 }
 
+@media (max-width: 1200px) {
+  .kanban-board {
+    gap: 10px;
+  }
+}
+
 /* Responsividad */
 @media (max-width: 1024px) {
   .header-controls {

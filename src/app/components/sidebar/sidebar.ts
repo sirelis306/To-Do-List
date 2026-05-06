@@ -27,4 +27,10 @@ export class Sidebar {
   onToggleSidebar(): void {
     this.toggleCollapsed.emit();
   }
+
+  closeOnMobile(): void {
+    if (window.innerWidth <= 768 && !this.isCollapsed) {
+      this.toggleCollapsed.emit();
+    }
+  }
 }

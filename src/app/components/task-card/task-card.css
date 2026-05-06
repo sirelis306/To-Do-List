@@ -6,12 +6,18 @@
   background: white;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
-  padding: 1.2rem;
+  padding: 1rem; /* Reducido de 1.2rem */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   transition: all 0.2s ease-in-out;
   cursor: pointer;
   position: relative;
   overflow: hidden;
+}
+
+@media (max-width: 1200px) {
+  .task-card {
+    padding: 0.7rem;
+  }
 }
 
 .task-card:hover {
@@ -50,6 +56,12 @@
   margin-right: 1.5rem;
 }
 
+@media (max-width: 1200px) {
+  .task-title {
+    font-size: 0.85rem;
+  }
+}
+
 .delete-btn {
   background: none;
   border: none;
@@ -71,6 +83,12 @@
   margin-top: 1rem;
 }
 
+@media (max-width: 1200px) {
+  .card-footer {
+    margin-top: 0.6rem;
+  }
+}
+
 .task-category {
   background: #f1f5f9;
   color: #64748b;
@@ -80,6 +98,13 @@
   border-radius: 20px;
   text-transform: uppercase;
   letter-spacing: 0.02em;
+}
+
+@media (max-width: 1200px) {
+  .task-category {
+    font-size: 0.65rem;
+    padding: 0.2rem 0.6rem;
+  }
 }
 
 .task-flag {

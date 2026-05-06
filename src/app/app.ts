@@ -21,7 +21,16 @@ export class App {
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
       this.showSidebar = (event.url !== '/login');
+      // Colapsar sidebar automáticamente en móviles al cambiar de ruta
+      if (window.innerWidth <= 768) {
+        this.isSidebarCollapsed = true;
+      }
     });
+
+    // Detectar tamaño inicial
+    if (window.innerWidth <= 768) {
+      this.isSidebarCollapsed = true;
+    }
   }
 
   toggleSidebar(): void {

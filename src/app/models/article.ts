@@ -6,7 +6,7 @@ export interface Article {
   modelo: string;
   caracteristicas: string;
   color: string;
-  serial: number;
+  serial: string | null;
   condicion: string;
   locacion: string;
 }

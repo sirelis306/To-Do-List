@@ -28,10 +28,14 @@ export class AddArticle implements OnInit {
     modelo: '',
     caracteristicas: '',
     color: '',
-    serial: 0,
+    serial: null,
     condicion: '',
     locacion: '',
   };
+
+  public showSuccessModal: boolean = false;
+  public modalTitle: string = "";
+  public modalMessage: string = "";
 
   constructor(private router: Router, private articleService: ArticleService, private route: ActivatedRoute) { }
 
@@ -43,12 +47,13 @@ export class AddArticle implements OnInit {
       this.tituloPagina = "Editar Producto";
       this.idArticuloActual = +id; 
       
-      const articuloExistente = this.articleService.getArticleById(this.idArticuloActual);
-      if (articuloExistente) {
-        this.nuevoProducto = { ...articuloExistente };
-      } else {
-        this.router.navigate(['/articles']);
-      }
+      this.articleService.getArticleById(this.idArticuloActual).subscribe(articuloExistente => {
+        if (articuloExistente) {
+          this.nuevoProducto = { ...articuloExistente };
+        } else {
+          this.router.navigate(['/articles']);
+        }
+      });
       
     } else {
       this.modoEdicion = false;
@@ -58,10 +63,22 @@ export class AddArticle implements OnInit {
 
   onGuardar(): void {
     if (this.modoEdicion && this.idArticuloActual) {
-      this.articleService.updateArticle(this.idArticuloActual, this.nuevoProducto);
+      this.articleService.updateArticle(this.idArticuloActual, this.nuevoProducto).subscribe(() => {
+        this.modalTitle = "¡Cambios Guardados!";
+        this.modalMessage = "El producto ha sido actualizado correctamente.";
+        this.showSuccessModal = true;
+      });
     } else {
-      this.articleService.addArticle(this.nuevoProducto);
+      this.articleService.addArticle(this.nuevoProducto).subscribe(() => {
+        this.modalTitle = "¡Producto Registrado!";
+        this.modalMessage = "El nuevo producto ha sido agregado al inventario.";
+        this.showSuccessModal = true;
+      });
     }
+  }
+
+  onCloseSuccess() {
+    this.showSuccessModal = false;
     this.router.navigate(['/articles']);
   }
 

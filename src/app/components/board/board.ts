@@ -33,6 +33,13 @@ export class Board {
   public mostrarDetalleModal: boolean = false;
   public tareaSeleccionadaParaDetalle: Tarea | null = null;
  
+  // Modales de Confirmación y Éxito
+  public showConfirmModal: boolean = false;
+  public showSuccessModal: boolean = false;
+  public modalTitle: string = "";
+  public modalMessage: string = "";
+  private idTareaAEliminar: number | null = null;
+
   constructor(private taskService: TaskService, private authService: AuthService) {
   }
   
@@ -48,7 +55,12 @@ export class Board {
   onAgregarTarea(nuevaTarea: { titulo: string, categoria: string, importancia: Importancia, subtareas: string[]}) {
     this.taskService.agregarTarea(nuevaTarea.titulo, nuevaTarea.categoria, nuevaTarea.importancia, nuevaTarea.subtareas); 
     this.actualizarListas();      
-    this.mostrarModal = false;     
+    this.mostrarModal = false;
+    
+    // Mostrar éxito
+    this.modalTitle = "¡Tarea Creada!";
+    this.modalMessage = `La tarea "${nuevaTarea.titulo}" ha sido agregada con éxito.`;
+    this.showSuccessModal = true;
   }
 
   actualizarListas() {
@@ -64,13 +76,44 @@ export class Board {
   }
 
   onEliminarTarea(id: number) {
-      this.taskService.eliminarTarea(id);
+    const tarea = this.taskService.getTareaPorId(id);
+    if (tarea) {
+      this.idTareaAEliminar = id;
+      this.modalTitle = "Confirmación";
+      this.modalMessage = `¿Estás seguro de que quieres eliminar la tarea "${tarea.titulo}"?`;
+      this.showConfirmModal = true;
+    }
+  }
+
+  onConfirmDelete() {
+    if (this.idTareaAEliminar !== null) {
+      this.taskService.eliminarTarea(this.idTareaAEliminar);
       this.actualizarListas();
+      this.showConfirmModal = false;
+      this.idTareaAEliminar = null;
+    }
+  }
+
+  onCancelDelete() {
+    this.showConfirmModal = false;
+    this.idTareaAEliminar = null;
+  }
+
+  onCloseSuccess() {
+    this.showSuccessModal = false;
   }
 
   onTaskCardClicked(tarea: Tarea): void {
     this.tareaSeleccionadaParaDetalle = tarea;
     this.mostrarDetalleModal = true;
+  }
+
+  onTareaActualizada() {
+    this.actualizarListas();
+    // Opcionalmente mostrar éxito aquí también si se desea
+    this.modalTitle = "¡Tarea Actualizada!";
+    this.modalMessage = "Los cambios han sido guardados correctamente.";
+    this.showSuccessModal = true;
   }
 
   onTareaDropped(event: CdkDragDrop<Tarea[]>) {

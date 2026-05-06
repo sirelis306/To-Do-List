@@ -1,5 +1,5 @@
 import { Component, OnInit, Injectable } from '@angular/core';
-import { Router } from '@angular/router'; 
+import { Router, ActivatedRoute } from '@angular/router'; 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -10,6 +10,7 @@ import JsBarcode from 'jsbarcode';
 
 
 import { CustomDropdown } from '../custom-dropdown/custom-dropdown';
+import { Scanner } from '../scanner/scanner';
 
 
 @Injectable()
@@ -20,7 +21,7 @@ export class MyPaginatorIntl extends MatPaginatorIntl {
 @Component({
   selector: 'app-articles',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, MatPaginatorModule, CustomDropdown],
+  imports: [CommonModule, FormsModule, RouterLink, MatPaginatorModule, CustomDropdown, Scanner],
   templateUrl: './articles.html',
   styleUrl: './articles.css',
   providers: [
@@ -38,6 +39,7 @@ export class Articles implements OnInit {
   public confirmMessage: string = "";
 
   public showBarcodeModal: boolean = false;
+  public showScannerModal: boolean = false;
   public selectedArticle: Article | null = null;
 
   public articulosPaginados: Article[] = [];
@@ -45,24 +47,53 @@ export class Articles implements OnInit {
   public pageIndex: number = 0; 
   public pageSizeOptions = [5, 10, 25];
 
-  constructor(private router: Router, private articleService: ArticleService) { }
+  constructor(private router: Router, private articleService: ArticleService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
-    const allArticles = this.articleService.getArticles("");
-    this.categoryOptions = [...new Set(allArticles.map(a => a.categoria))].filter(c => c);
-    this.onBuscar(); 
+    this.articleService.getArticles("").subscribe(allArticles => {
+      this.categoryOptions = [...new Set(allArticles.map(a => a.categoria))].filter(c => c);
+      this.onBuscar(); 
+    });
+
+    // Auto-abrir escáner si viene de parámetro
+    this.route.queryParams.subscribe(params => {
+      if (params['scan'] === 'true' || params['scan'] === true) {
+        this.showScannerModal = true;
+        // Limpiar el parámetro para permitir volver a activarlo al hacer clic
+        this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: { scan: null },
+          queryParamsHandling: 'merge'
+        });
+      }
+    });
   }
 
   onBuscar(): void {
-    let results = this.articleService.getArticles(this.terminoBusqueda);
-    
-    if (this.categoryFilter) {
-      results = results.filter(a => a.categoria === this.categoryFilter);
-    }
+    this.articleService.getArticles(this.terminoBusqueda).subscribe(results => {
+      let filteredResults = results;
+      
+      // Filtrado local por término de búsqueda (si la API no lo hace)
+      if (this.terminoBusqueda.trim()) {
+        const busquedaLower = this.terminoBusqueda.toLowerCase();
+        filteredResults = filteredResults.filter(a => 
+          (a.id && a.id.toString().includes(busquedaLower)) ||
+          (a.nombre && a.nombre.toLowerCase().includes(busquedaLower)) ||
+          (a.marca && a.marca.toLowerCase().includes(busquedaLower)) ||
+          (a.modelo && a.modelo.toLowerCase().includes(busquedaLower)) ||
+          (a.serial && a.serial.toLowerCase().includes(busquedaLower)) ||
+          (a.locacion && a.locacion.toLowerCase().includes(busquedaLower))
+        );
+      }
 
-    this.articulosFiltrados = results;
-    this.pageIndex = 0;
-    this.actualizarVistaPaginada();
+      if (this.categoryFilter) {
+        filteredResults = filteredResults.filter(a => a.categoria === this.categoryFilter);
+      }
+
+      this.articulosFiltrados = filteredResults;
+      this.pageIndex = 0;
+      this.actualizarVistaPaginada();
+    });
   }
 
   actualizarVistaPaginada(): void {
@@ -89,8 +120,9 @@ export class Articles implements OnInit {
   
   onConfirmDelete(): void {
     if (this.articleToDeleteId) {
-      this.articleService.deleteArticle(this.articleToDeleteId);
-      this.onBuscar(); 
+      this.articleService.deleteArticle(this.articleToDeleteId).subscribe(() => {
+        this.onBuscar(); 
+      });
     }
     this.onCancelDelete();
   }
@@ -127,4 +159,28 @@ export class Articles implements OnInit {
   onPrintBarcode(): void {
     window.print();
   }
-}
+
+  onOpenScanner(): void {
+    this.showScannerModal = true;
+  }
+
+  onScanResult(result: string): void {
+    this.showScannerModal = false;
+    this.terminoBusqueda = result;
+    this.onBuscar();
+    
+    // Si solo hay un resultado, podríamos seleccionarlo o dar feedback
+    if (this.articulosFiltrados.length === 0) {
+      // Tal vez el serial es numérico y el resultado es texto
+      const serialNum = parseInt(result);
+      if (!isNaN(serialNum)) {
+        this.terminoBusqueda = serialNum.toString();
+        this.onBuscar();
+      }
+    }
+  }
+
+  onCloseScanner(): void {
+    this.showScannerModal = false;
+  }
+}
