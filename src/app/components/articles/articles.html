@@ -25,6 +25,9 @@
       <div class="search-box">
         <i class="fa-solid fa-magnifying-glass"></i>
         <input type="text" placeholder="Buscar producto..." [(ngModel)]="terminoBusqueda" (ngModelChange)="onBuscar()">
+        <button class="scan-input-btn" (click)="onOpenScanner()" title="Escanear Código">
+          <i class="fa-solid fa-camera"></i>
+        </button>
       </div>
       <div class="filter-dropdown">
         <app-custom-dropdown 
@@ -132,3 +135,8 @@
     </button>
   </div>
 </div>
+
+<!-- Modal de Escáner -->
+@if (showScannerModal) {
+  <app-scanner (scanResult)="onScanResult($event)" (close)="onCloseScanner()"></app-scanner>
+}

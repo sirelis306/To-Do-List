@@ -10,7 +10,7 @@
     @if (isAdmin) {
     <span class="section-title">Admin</span>
     <li>
-      <a routerLink="/user/users" routerLinkActive="active">
+      <a routerLink="/user/users" routerLinkActive="active" (click)="closeOnMobile()">
         <i class="fa-solid fa-users-gear"></i>
         @if (!isCollapsed) { <span>Usuarios</span> }
       </a>
@@ -25,7 +25,7 @@
     </li> -->
 
     <li>
-      <a routerLink="/board" routerLinkActive="active">
+      <a routerLink="/board" routerLinkActive="active" (click)="closeOnMobile()">
         <i class="fa-solid fa-table-columns"></i>
         @if (!isCollapsed) { <span>Tablero</span> }
       </a>
@@ -39,9 +39,16 @@
     </li> -->
 
     <li>
-      <a routerLink="/articles" routerLinkActive="active">
+      <a routerLink="/articles" routerLinkActive="active" (click)="closeOnMobile()">
         <i class="fa-solid fa-box"></i>
         @if (!isCollapsed) { <span>Inventario</span> }
+      </a>
+    </li>
+    
+    <li>
+      <a [routerLink]="['/articles']" [queryParams]="{ scan: 'true' }" (click)="closeOnMobile()">
+        <i class="fa-solid fa-camera"></i>
+        @if (!isCollapsed) { <span>Escanear</span> }
       </a>
     </li>
 
@@ -61,7 +68,7 @@
   </ul>
 
   <div class="sidebar-footer">
-    <a routerLink="/profile" routerLinkActive="active" class="profile-btn">
+    <a routerLink="/profile" routerLinkActive="active" class="profile-btn" (click)="closeOnMobile()">
       <i class="fa-solid fa-user"></i>
       @if (!isCollapsed) { <span>Perfil</span>}
     </a>

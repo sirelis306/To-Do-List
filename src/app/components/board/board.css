@@ -3,7 +3,6 @@
   background: #f8fafc;
   min-height: 100vh;
   padding: 3.5rem 2rem 2rem 2rem;
-  /* Más espacio arriba */
 }
 
 .container {
@@ -152,7 +151,7 @@ h1 {
 
 @media (max-width: 768px) {
   :host {
-    padding: 2.5rem 1rem 1rem 1rem;
+    padding: 4.5rem 1rem 1rem 1rem;
   }
 
   .kanban-board {
@@ -163,5 +162,24 @@ h1 {
   .add-task-btn {
     width: 100%;
     justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  :host {
+    padding: 4.5rem 0.5rem 1rem 0.5rem;
+  }
+
+  .kanban-board {
+    gap: 15px;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+  }
+
+  .breadcrumb {
+    font-size: 0.9rem;
   }
 }

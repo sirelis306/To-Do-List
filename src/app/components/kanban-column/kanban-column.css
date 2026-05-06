@@ -5,15 +5,15 @@
   max-width: 400px;
 }
 
-@media (max-width: 1440px) {
+@media (max-width: 768px) {
   :host {
-    min-width: 250px;
+    min-width: 100%;
+    max-width: 100%;
   }
 }
 
 .kanban-column {
   background: rgba(241, 245, 249, 0.5);
-  /* Sutil fondo gris pizarra */
   border-radius: 16px;
   padding: 1.5rem;
   height: 100%;

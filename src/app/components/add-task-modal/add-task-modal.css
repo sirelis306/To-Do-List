@@ -166,3 +166,14 @@ h2 { margin-top: 0; color: #1d1d1b; }
 .delete-subtask-btn:hover {
   color: #e04a4a;
 }
+
+@media (max-width: 480px) {
+  .add-subtask-form {
+    flex-direction: column;
+  }
+  
+  .modal-content {
+    padding: 15px;
+    width: 95%;
+  }
+}

@@ -1,7 +1,7 @@
 :host {
   display: block;
   height: 100vh;
-  width: 100vw;
+  width: 100%;
   overflow: hidden; 
 }
 
@@ -9,13 +9,88 @@
   display: flex;
   height: 100%;
   width: 100%;
+  position: relative;
+  overflow: hidden;
 }
 
 .main-content {
-  flex-grow: 1; 
-  min-height: 100vh;
+  flex: 1;
+  height: 100%;
   overflow-y: auto; 
+  overflow-x: hidden;
   margin: 0;
+  padding: 0;
+  transition: margin-left 0.3s ease-in-out;
+  width: 100%;
+}
+
+/* Base sidebar host style */
+app-sidebar {
+  flex-shrink: 0;
+  z-index: 1000;
+}
+
+.mobile-menu-toggle {
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  z-index: 1050;
+  background: #3240A5;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  transition: all 0.2s;
+}
+
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: none; /* Oculto por defecto en desktop */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .sidebar-overlay {
+    display: block; /* Solo visible en móvil */
+  }
+  .mobile-menu-toggle {
+    display: flex;
+  }
+
+  .app-layout {
+    flex-direction: column;
+  }
+
+  .main-content {
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+
+  /* Force sidebar host to be an overlay on mobile if it exists */
+  app-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+  }
+  
+  .app-layout:not(.sidebar-collapsed) app-sidebar {
+    width: 260px;
+  }
 }
 
 

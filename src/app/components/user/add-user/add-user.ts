@@ -24,6 +24,8 @@ export class AddUser implements OnInit {
   };
   isSuperAdmin: boolean = false;
 
+  public showSuccessModal: boolean = false;
+
   constructor(
     private userService: UserService,
     private authService: AuthService,
@@ -36,6 +38,11 @@ export class AddUser implements OnInit {
 
   onSubmit(): void {
     this.userService.addUser(this.userData);
-    this.router.navigate(['/admin/users']);
+    this.showSuccessModal = true;
+  }
+
+  onCloseSuccess() {
+    this.showSuccessModal = false;
+    this.router.navigate(['/user/users']);
   }
 }

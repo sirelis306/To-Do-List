@@ -4,36 +4,159 @@ body {
   -webkit-backdrop-filter: blur(12px);
 }
 
+*, *::before, *::after {
+  box-sizing: border-box;
+}
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html, body { 
+  height: 100%; 
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
 
-/* Reglas Globales de Impresión - Estilo Etiqueta Pequeña */
+body { 
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-size: 16px;
+}
+
+/* Typography scaling for different screen sizes */
+@media (max-width: 1200px) {
+  body { font-size: 15px; }
+}
+
+@media (max-width: 768px) {
+  body { font-size: 13px; } /* ~80% de 16px */
+  
+  h1 { font-size: 1.7rem !important; }
+  h2 { font-size: 1.4rem !important; }
+  h3 { font-size: 1.2rem !important; }
+}
+
+@media (max-width: 480px) {
+  body { font-size: 12px; } /* ~75% de 16px para extra compactación */
+  
+  h1 { font-size: 1.5rem !important; }
+  .admin-page, .main-content { padding: 1rem !important; }
+  .admin-page { padding-top: 4.5rem !important; }
+}
+
+/* Reglas Globales de Impresión */
 @media print {
-  /* Ocultar elementos de la interfaz */
-  app-sidebar, 
-  app-chatbot, 
-  .barcode-modal-backdrop, 
-  .barcode-modal-header, 
-  .modal-actions,
-  .admin-page,
+  @page {
+    size: 58mm auto; /* Típico de impresora térmica */
+    margin: 0;
+  }
+  
+  body * {
+    visibility: hidden;
+  }
+  
+  #print-section, #print-section * {
+    visibility: visible;
+  }
+  
+  #print-section {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 58mm;
+    padding: 2mm;
+    background: white !important;
+  }
+  
   .no-print {
     display: none !important;
   }
+}
 
-  /* Reset de body para impresión */
-  body {
-    background: white !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
+/* Modales Globales de Confirmación y Éxito */
+.confirm-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+}
 
-  /* Configurar el Modal como una etiqueta pequeña */
+.confirm-modal-content {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 2.5rem;
+  border-radius: 20px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  z-index: 10000;
+  width: 90%;
+  max-width: 450px;
+  text-align: center;
+  animation: modalAppear 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modalAppear {
+  from { opacity: 0; transform: translate(-50%, -45%) scale(0.95); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+.confirm-modal-content h4 {
+  font-size: 1.5rem;
+  color: #1e293b;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.confirm-modal-content p {
+  color: #64748b;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.modal-actions .btn {
+  padding: 0.8rem 2rem;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.modal-actions .btn-cancel {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.modal-actions .btn-confirm {
+  background: #ef4444;
+  color: white;
+}
+
+.modal-actions .btn-success {
+  background: #3240A5;
+  color: white;
+}
+
+.modal-actions .btn:hover {
+  transform: translateY(-1px);
+}
+
+/* Reglas de Impresión Específicas para Códigos de Barras */
+@media print {
   .barcode-modal-content {
     position: absolute !important;
     top: 0 !important;
     left: 0 !important;
-    width: 6cm !important; /* Tamaño pequeño de etiqueta */
+    width: 6cm !important;
     height: auto !important;
     border: none !important;
     box-shadow: none !important;
@@ -62,18 +185,9 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     display: block !important;
   }
 
-  /* Ajustar el SVG del código de barras */
   #barcode {
     width: 100% !important;
     height: auto !important;
     max-height: 2cm !important;
   }
-
-  /* Ajuste de página */
-  @page {
-    size: auto;
-    margin: 0;
-  }
 }
-
-

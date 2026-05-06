@@ -139,3 +139,14 @@ h2 {
   font-weight: 500;
   font-size: 15px;
 }
+
+@media (max-width: 600px) {
+  .login-form {
+    padding: 30px 20px;
+    width: 90%;
+  }
+  
+  h2 {
+    font-size: 1.8em;
+  }
+}

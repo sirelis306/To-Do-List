@@ -53,3 +53,15 @@
     </form>
   </div>
 </div>
+
+<!-- Modal de Éxito -->
+@if (showSuccessModal) {
+  <div class="confirm-modal-backdrop" (click)="onCloseSuccess()"></div>
+  <div class="confirm-modal-content">
+    <h4>¡Usuario Creado!</h4>
+    <p>El nuevo usuario ha sido registrado exitosamente en el sistema.</p>
+    <div class="modal-actions">
+      <button class="btn btn-success" (click)="onCloseSuccess()">Aceptar</button>
+    </div>
+  </div>
+}

@@ -5,7 +5,7 @@
       <i [class]="'fa-solid ' + icon"></i> 
       <span>{{ getNombreSeleccion() }}</span>
     </div>
-    <i class="fa-solid fa-chevron-down arrow-icon"></i>
+    <i class="fa-solid fa-chevron-down arrow-icon" [class.rotated]="menuAbierto"></i>
   </button>
   
   @if (menuAbierto) {
