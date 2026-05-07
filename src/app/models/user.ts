@@ -7,7 +7,8 @@ export interface User {
   segundoNombre?: string;
   apellido: string;
   segundoApellido?: string;
-  role: UserRole;
+  role: UserRole | string;
+  roles?: string[];
   cargo?: string;
   estado?: 'Activo' | 'Inactivo';
   foto?: string;

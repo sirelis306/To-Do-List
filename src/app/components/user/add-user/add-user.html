@@ -3,7 +3,7 @@
     <div class="breadcrumb">
       <span class="root">Usuarios</span>
       <span class="separator">/</span>
-      <span class="current">Crear Usuario</span>
+      <span class="current">{{ tituloPagina }}</span>
     </div>
   </div>
 
@@ -58,8 +58,8 @@
 @if (showSuccessModal) {
   <div class="confirm-modal-backdrop" (click)="onCloseSuccess()"></div>
   <div class="confirm-modal-content">
-    <h4>¡Usuario Creado!</h4>
-    <p>El nuevo usuario ha sido registrado exitosamente en el sistema.</p>
+    <h4>{{ modoEdicion ? '¡Usuario Actualizado!' : '¡Usuario Creado!' }}</h4>
+    <p>{{ modoEdicion ? 'El usuario ha sido actualizado exitosamente.' : 'El nuevo usuario ha sido registrado exitosamente en el sistema.' }}</p>
     <div class="modal-actions">
       <button class="btn btn-success" (click)="onCloseSuccess()">Aceptar</button>
     </div>

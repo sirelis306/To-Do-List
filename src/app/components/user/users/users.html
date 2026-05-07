@@ -14,14 +14,14 @@
     <div class="filters-bar">
       <div class="search-box">
         <i class="fa-solid fa-magnifying-glass"></i>
-        <input type="text" placeholder="Buscar usuario..." [(ngModel)]="searchTerm">
+        <input type="text" placeholder="Buscar usuario..." [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange()">
       </div>
       <div class="filter-dropdown">
         <app-custom-dropdown 
           [options]="roleOptions" 
           [selectedValue]="roleFilter" 
           label="Todos los roles"
-          (valueChange)="roleFilter = $event">
+          (valueChange)="onRoleFilterChange($event)">
         </app-custom-dropdown>
       </div>
     </div>
@@ -67,8 +67,10 @@
             <td class="actions-cell">
               <div class="actions-cell-wrapper">
                 <div class="actions-cell">
-                  <button class="icon-btn edit" title="Editar"><i class="fa-solid fa-pen-to-square"></i></button>
-                  <button class="icon-btn delete" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+                  <button class="icon-btn edit" title="Editar" (click)="onEditUser(user.id)"><i class="fa-solid fa-pen-to-square"></i></button>
+                  <button *ngIf="isAdminUser" class="icon-btn delete" [title]="user.estado === 'Activo' ? 'Eliminar (Desactivar)' : 'Activar'" (click)="onToggleActive(user.id)">
+                    <i class="fa-solid" [ngClass]="user.estado === 'Activo' ? 'fa-trash' : 'fa-rotate-left'"></i>
+                  </button>
                 </div>
               </div>
             </td>
@@ -80,7 +82,7 @@
     <div class="pagination-container">
       <mat-paginator
         (page)="onPageChange($event)"
-        [length]="filteredUsers.length"
+        [length]="totalUsers"
         [pageSize]="pageSize"
         [pageSizeOptions]="pageSizeOptions"
         [pageIndex]="pageIndex"

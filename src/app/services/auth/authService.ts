@@ -18,25 +18,56 @@ export class AuthService {
 
   /* Inicia sesión en la API y guarda el token */
   login(email: string, password: string): Observable<any> {
-    console.log('Intentando login en:', `${this.apiUrl}/login`);
-    console.log('Con datos:', { email, password });
-
     return this.http.post<any>(`${this.apiUrl}/login`, { email, password }).pipe(
       tap(res => {
-        console.log('Respuesta de API recibida:', res);
         if (res.token) {
           localStorage.setItem(this.TOKEN_KEY, res.token);
           localStorage.setItem('authorized', res.token);
+          
+          if (res.user) {
+            localStorage.setItem(this.USER_KEY, JSON.stringify(res.user));
+          }
+
           if (res.refresh_token) {
             localStorage.setItem(this.REFRESH_TOKEN_KEY, res.refresh_token);
           }
         }
-      }),
-      catchError(err => {
-        console.error('Error en la petición de login:', err);
-        throw err;
       })
     );
+  }
+
+  /* Registra un nuevo usuario */
+  register(userData: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/register`, userData);
+  }
+
+  /* Obtiene el perfil del usuario actual */
+  getMe(): Observable<User> {
+    return this.http.get<User>(`${this.apiUrl}/me`).pipe(
+      tap((userData: any) => {
+        // Asegurar que actualizamos el localStorage con los datos más recientes del usuario,
+        // incluyendo los roles, para que el sidebar pueda leerlos correctamente.
+        const currentLocal = this.getUserProfile() || {};
+        const updated = { ...currentLocal, ...userData };
+        localStorage.setItem(this.USER_KEY, JSON.stringify(updated));
+      })
+    );
+  }
+
+  /* Solicita enlace de restablecimiento de contraseña */
+  requestReset(email: string): Observable<any> {
+    return this.http.post(`${this.apiUrl.replace('/api', '')}/reset-password`, { email });
+  }
+
+  /* Confirma el restablecimiento de contraseña con el token */
+  resetPasswordConfirm(token: string, newPassword: string): Observable<any> {
+    const body = {
+      plainPassword: {
+        first: newPassword,
+        second: newPassword
+      }
+    };
+    return this.http.post(`${this.apiUrl.replace('/api', '')}/reset-password/reset/${token}`, body);
   }
 
   /* Refresca el token JWT usando el refresh_token almacenado */
@@ -73,14 +104,17 @@ export class AuthService {
     return localStorage.getItem(this.TOKEN_KEY) || localStorage.getItem('authorized');
   }
 
-  getUserRole(): UserRole | null {
+  getUserRole(): any {
     const user = this.getUserProfile();
-    return user ? user.role : null;
+    return user ? (user.roles || user.role) : null;
   }
 
   isAdmin(): boolean {
-    const role = this.getUserRole();
-    return role === 'admin' || role === 'superadmin';
+    const roles = this.getUserRole();
+    if (Array.isArray(roles)) {
+      return roles.includes('ROLE_SUPER_ADMIN') || roles.includes('ROLE_ADMIN');
+    }
+    return roles === 'admin' || roles === 'superadmin' || roles === 'ROLE_SUPER_ADMIN' || roles === 'ROLE_ADMIN';
   }
 
   getUserProfile(): User | null {
@@ -89,7 +123,11 @@ export class AuthService {
   }
 
   isSuperAdmin(): boolean {
-    return this.getUserRole() === 'superadmin';
+    const roles = this.getUserRole();
+    if (Array.isArray(roles)) {
+      return roles.includes('ROLE_SUPER_ADMIN');
+    }
+    return roles === 'superadmin' || roles === 'ROLE_SUPER_ADMIN';
   }
 
   updateUserProfile(updatedUser: Partial<User>): void {
