@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router'; 
 import { CommonModule } from '@angular/common'; 
 import { AuthService } from '../../services/auth/authService';
@@ -10,11 +10,18 @@ import { AuthService } from '../../services/auth/authService';
   styleUrl: './sidebar.css',
   standalone: true,
 })
-export class Sidebar {
+export class Sidebar implements OnInit {
   @Input() isCollapsed: boolean = false;
   @Output() toggleCollapsed = new EventEmitter<void>();
 
   constructor(private authService: AuthService) { }
+
+  ngOnInit(): void {
+    // Forzar la actualización del perfil para asegurar que tenemos los roles correctos
+    if (this.authService.isAuthenticated()) {
+      this.authService.getMe().subscribe();
+    }
+  }
 
   get isAdmin(): boolean {
     return this.authService.isAdmin();

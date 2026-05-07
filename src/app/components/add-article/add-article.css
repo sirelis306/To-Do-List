@@ -2,6 +2,7 @@
   padding: 3.5rem 2rem 2rem 2rem;
   background: #f8fafc;
   min-height: 100vh;
+  box-sizing: border-box;
 }
 
 .page-header {
@@ -39,6 +40,7 @@
   border-radius: 16px;
   box-shadow: 0 4px 25px rgba(0, 0, 0, 0.05);
   padding: 3rem;
+  box-sizing: border-box;
 }
 
 .form-grid {
@@ -215,10 +217,52 @@
   .form-actions {
     flex-direction: column-reverse;
     gap: 0.8rem;
+    padding-bottom: 3rem; /* Espacio extra para que no se pegue al borde inferior */
   }
 
   .action-btn {
     width: 100%;
     justify-content: center;
+    box-sizing: border-box;
   }
+}
+
+/* Estados de validación */
+.input-wrapper input.is-invalid,
+.form-custom-select.is-invalid ::ng-deep .custom-btn {
+  border-color: #ef4444 !important;
+  background-color: #fef2f2 !important;
+}
+
+.input-wrapper input.is-invalid:focus {
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+}
+
+/* Estilos extra para modales */
+.modal-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.modal-icon.success {
+  color: #10b981;
+}
+
+.modal-icon.error {
+  color: #ef4444;
+}
+
+.confirm-modal-content h4 {
+  margin-top: 0;
+  color: #1e293b;
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.confirm-modal-content p {
+  color: #64748b;
+  text-align: center;
+  margin-bottom: 2rem;
 }

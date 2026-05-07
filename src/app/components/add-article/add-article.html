@@ -14,7 +14,8 @@
           <label>Nombre del Producto</label>
           <div class="input-wrapper">
             <i class="fa-solid fa-box"></i>
-            <input type="text" [(ngModel)]="nuevoProducto.nombre" name="nombre" placeholder="Ej: Laptop" required>
+            <input type="text" [(ngModel)]="nuevoProducto.nombre" name="nombre" placeholder="Ej: Laptop" required
+              [class.is-invalid]="submitted && !nuevoProducto.nombre">
           </div>
         </div>
 
@@ -23,7 +24,7 @@
           <div class="input-wrapper">
             <i class="fa-solid fa-tags"></i>
             <input type="text" [(ngModel)]="nuevoProducto.categoria" name="categoria" placeholder="Ej: Electrónica"
-              required>
+              required [class.is-invalid]="submitted && !nuevoProducto.categoria">
           </div>
         </div>
 
@@ -31,7 +32,8 @@
           <label>Marca</label>
           <div class="input-wrapper">
             <i class="fa-solid fa-copyright"></i>
-            <input type="text" [(ngModel)]="nuevoProducto.marca" name="marca" placeholder="Ej: Apple" required>
+            <input type="text" [(ngModel)]="nuevoProducto.marca" name="marca" placeholder="Ej: Apple" required
+              [class.is-invalid]="submitted && !nuevoProducto.marca">
           </div>
         </div>
 
@@ -39,7 +41,8 @@
           <label>Modelo</label>
           <div class="input-wrapper">
             <i class="fa-solid fa-code-branch"></i>
-            <input type="text" [(ngModel)]="nuevoProducto.modelo" name="modelo" placeholder="Ej: MacBook Air" required>
+            <input type="text" [(ngModel)]="nuevoProducto.modelo" name="modelo" placeholder="Ej: MacBook Air" required
+              [class.is-invalid]="submitted && !nuevoProducto.modelo">
           </div>
         </div>
 
@@ -47,13 +50,14 @@
           <label>Serial / Código</label>
           <div class="input-wrapper">
             <i class="fa-solid fa-barcode"></i>
-            <input type="text" [(ngModel)]="nuevoProducto.serial" name="serial" placeholder="Número de serie" required>
+            <input type="text" [(ngModel)]="nuevoProducto.serial" name="serial" placeholder="Número de serie" required
+              [class.is-invalid]="submitted && !nuevoProducto.serial">
           </div>
         </div>
 
         <div class="form-group">
           <label>Condición</label>
-          <div class="form-custom-select">
+          <div class="form-custom-select" [class.is-invalid]="submitted && !nuevoProducto.condicion">
             <app-custom-dropdown 
               [options]="opcionesCondicion" 
               [selectedValue]="nuevoProducto.condicion || ''" 
@@ -68,7 +72,8 @@
           <label>Color</label>
           <div class="input-wrapper">
             <i class="fa-solid fa-palette"></i>
-            <input type="text" [(ngModel)]="nuevoProducto.color" name="color" placeholder="Ej: Gris" required>
+            <input type="text" [(ngModel)]="nuevoProducto.color" name="color" placeholder="Ej: Gris" required
+              [class.is-invalid]="submitted && !nuevoProducto.color">
           </div>
         </div>
 
@@ -77,7 +82,7 @@
           <div class="input-wrapper">
             <i class="fa-solid fa-location-dot"></i>
             <input type="text" [(ngModel)]="nuevoProducto.locacion" name="locacion" placeholder="Ej: Logística"
-              required>
+              required [class.is-invalid]="submitted && !nuevoProducto.locacion">
           </div>
         </div>
 
@@ -86,7 +91,7 @@
           <div class="input-wrapper">
             <i class="fa-solid fa-list-ul"></i>
             <input type="text" [(ngModel)]="nuevoProducto.caracteristicas" name="caracteristicas"
-              placeholder="Ej: 16GB RAM, 512GB SSD" required>
+              placeholder="Ej: 16GB RAM, 512GB SSD" required [class.is-invalid]="submitted && !nuevoProducto.caracteristicas">
           </div>
         </div>
       </div>
@@ -95,8 +100,12 @@
         <button type="button" class="action-btn back" (click)="onRegresarClick()">
           Regresar <i class="fa-solid fa-arrow-left"></i>
         </button>
-        <button type="submit" class="action-btn save" [disabled]="!productForm.valid">
-          Guardar Producto <i class="fa-solid fa-check"></i>
+        <button type="submit" class="action-btn save" [disabled]="isSaving">
+          @if (!isSaving) {
+            Guardar Producto <i class="fa-solid fa-check"></i>
+          } @else {
+            Guardando... <i class="fa-solid fa-spinner fa-spin"></i>
+          }
         </button>
       </div>
     </form>
@@ -107,10 +116,28 @@
 @if (showSuccessModal) {
   <div class="confirm-modal-backdrop" (click)="onCloseSuccess()"></div>
   <div class="confirm-modal-content">
+    <div class="modal-icon success">
+      <i class="fa-solid fa-circle-check"></i>
+    </div>
     <h4>{{ modalTitle }}</h4>
     <p>{{ modalMessage }}</p>
     <div class="modal-actions">
       <button class="btn btn-success" (click)="onCloseSuccess()">Aceptar</button>
+    </div>
+  </div>
+}
+
+<!-- Modal de Error -->
+@if (showErrorModal) {
+  <div class="confirm-modal-backdrop" (click)="onCloseError()"></div>
+  <div class="confirm-modal-content">
+    <div class="modal-icon error">
+      <i class="fa-solid fa-circle-exclamation"></i>
+    </div>
+    <h4>{{ modalTitle }}</h4>
+    <p>{{ modalMessage }}</p>
+    <div class="modal-actions">
+      <button class="btn btn-confirm" (click)="onCloseError()">Entendido</button>
     </div>
   </div>
 }

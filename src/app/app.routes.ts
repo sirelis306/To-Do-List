@@ -58,6 +58,11 @@ export const routes: Routes = [
     loadComponent: () => import('./components/user/add-user/add-user').then(m => m.AddUser),
     canActivate: [authGuard]
   },
+  {
+    path: 'user/users/edit/:id',
+    loadComponent: () => import('./components/user/add-user/add-user').then(m => m.AddUser),
+    canActivate: [authGuard]
+  },
 
   { 
     path: '', 

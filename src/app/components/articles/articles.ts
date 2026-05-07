@@ -1,8 +1,10 @@
-import { Component, OnInit, Injectable } from '@angular/core';
+import { Component, OnInit, OnDestroy, Injectable } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { Article } from '../../models/article';
 import { ArticleService } from '../../services/article/articleService';
 import { MatPaginatorModule, PageEvent, MatPaginatorIntl } from '@angular/material/paginator';
@@ -29,12 +31,10 @@ export class MyPaginatorIntl extends MatPaginatorIntl {
   ]
 })
 
-export class Articles implements OnInit {
-  public articulosFiltrados: Article[] = [];
-  public todosLosArticulos: Article[] = [];
+export class Articles implements OnInit, OnDestroy {
   public terminoBusqueda: string = "";
   public categoryFilter: string = "";
-  public categoryOptions: string[] = [];
+  public categoryOptions: string[] = ['Electrónica', 'Mobiliario', 'Herramientas', 'Oficina', 'Computación', 'Redes', 'Seguridad']; // Categorías por defecto
   public showConfirmModal: boolean = false;
   public articleToDeleteId: number | null = null;
   public confirmMessage: string = "";
@@ -44,24 +44,31 @@ export class Articles implements OnInit {
   public selectedArticle: Article | null = null;
 
   public articulosPaginados: Article[] = [];
+  public totalArticles: number = 0;
   public pageSize: number = 10;
   public pageIndex: number = 0;
-  public pageSizeOptions = [5, 10, 25];
+  public pageSizeOptions = [10, 25, 50, 100];
+
+  private searchSubject = new Subject<string>();
+  private searchSubscription!: Subscription;
 
   constructor(private router: Router, private articleService: ArticleService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
-    this.articleService.getArticles("").subscribe(allArticles => {
-      this.todosLosArticulos = allArticles;
-      this.categoryOptions = [...new Set(allArticles.map(a => a.categoria))].filter(c => c);
-      this.onBuscar();
+    this.searchSubscription = this.searchSubject.pipe(
+      debounceTime(500),
+      distinctUntilChanged()
+    ).subscribe(() => {
+      this.pageIndex = 0;
+      this.cargarArticulos();
     });
+
+    this.cargarArticulos();
 
     // Auto-abrir escáner si viene de parámetro
     this.route.queryParams.subscribe(params => {
       if (params['scan'] === 'true' || params['scan'] === true) {
         this.showScannerModal = true;
-        // Limpiar el parámetro para permitir volver a activarlo al hacer clic
         this.router.navigate([], {
           relativeTo: this.route,
           queryParams: { scan: null },
@@ -71,41 +78,29 @@ export class Articles implements OnInit {
     });
   }
 
-  onBuscar(): void {
-    let filteredResults = [...this.todosLosArticulos];
-
-    // Filtrado local por término de búsqueda
-    if (this.terminoBusqueda.trim()) {
-      const busquedaLower = this.terminoBusqueda.toLowerCase();
-      filteredResults = filteredResults.filter(a =>
-        (a.id && a.id.toString().includes(busquedaLower)) ||
-        (a.nombre && a.nombre.toLowerCase().includes(busquedaLower)) ||
-        (a.marca && a.marca.toLowerCase().includes(busquedaLower)) ||
-        (a.modelo && a.modelo.toLowerCase().includes(busquedaLower)) ||
-        (a.serial && a.serial.toLowerCase().includes(busquedaLower)) ||
-        (a.locacion && a.locacion.toLowerCase().includes(busquedaLower))
-      );
+  ngOnDestroy(): void {
+    if (this.searchSubscription) {
+      this.searchSubscription.unsubscribe();
     }
-
-    if (this.categoryFilter) {
-      filteredResults = filteredResults.filter(a => a.categoria === this.categoryFilter);
-    }
-
-    this.articulosFiltrados = filteredResults;
-    this.pageIndex = 0;
-    this.actualizarVistaPaginada();
   }
 
-  actualizarVistaPaginada(): void {
-    const startIndex = this.pageIndex * this.pageSize;
-    const endIndex = startIndex + this.pageSize;
-    this.articulosPaginados = this.articulosFiltrados.slice(startIndex, endIndex);
+  cargarArticulos(): void {
+    this.articleService.getArticles(this.terminoBusqueda, this.categoryFilter, this.pageIndex + 1, this.pageSize).subscribe(response => {
+      let data = Array.isArray(response) ? response : (response.data || []);
+      
+      this.articulosPaginados = data;
+      this.totalArticles = response.meta?.total_items !== undefined ? response.meta.total_items : (response.total !== undefined ? response.total : data.length);
+    });
+  }
+
+  onBuscar(): void {
+    this.searchSubject.next(this.terminoBusqueda);
   }
 
   onPageChange(event: PageEvent): void {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
-    this.actualizarVistaPaginada();
+    this.cargarArticulos();
   }
 
   onNuevoProductoClick(): void {
@@ -120,12 +115,8 @@ export class Articles implements OnInit {
 
   onConfirmDelete(): void {
     if (this.articleToDeleteId) {
-      const idToDelete = this.articleToDeleteId; // Guardar ID porque onCancelDelete lo limpia
       this.articleService.deleteArticle(this.articleToDeleteId).subscribe(() => {
-        // Eliminar el artículo de nuestra memoria local (caché)
-        this.todosLosArticulos = this.todosLosArticulos.filter(a => a.id !== idToDelete);
-        // Volver a filtrar y actualizar la tabla visualmente
-        this.onBuscar();
+        this.cargarArticulos();
       });
     }
     this.onCancelDelete();
@@ -171,16 +162,8 @@ export class Articles implements OnInit {
   onScanResult(result: string): void {
     this.showScannerModal = false;
     this.terminoBusqueda = result;
-    this.onBuscar();
-
-    // Si solo hay un resultado, podríamos seleccionarlo o dar feedback
-    if (this.articulosFiltrados.length === 0) {
-      const serialNum = parseInt(result);
-      if (!isNaN(serialNum)) {
-        this.terminoBusqueda = serialNum.toString();
-        this.onBuscar();
-      }
-    }
+    this.pageIndex = 0;
+    this.cargarArticulos();
   }
 
   onCloseScanner(): void {

@@ -171,12 +171,12 @@
 }
 
 .modern-table td {
-  padding: 0 1rem;
+  padding: 0 0.8rem;
   border-bottom: 1px solid #f1f5f9;
   color: #1e293b;
-  font-size: 0.92rem;
+  font-size: 0.82rem;
   vertical-align: middle;
-  height: 65px;
+  height: 48px;
 }
 
 .modern-table tr:last-child td {
@@ -197,7 +197,7 @@
 }
 
 .item-id {
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   color: #94a3b8;
 }
 
@@ -205,9 +205,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.4rem 1rem;
+  padding: 0.3rem 0.8rem;
   border-radius: 20px;
-  font-size: 0.8rem;
+  font-size: 0.72rem;
   font-weight: 600;
   background: rgba(99, 102, 241, 0.1);
   color: #6366f1;
@@ -217,10 +217,10 @@
 .condition-chip {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.4rem 1rem;
+  gap: 0.4rem;
+  padding: 0.3rem 0.8rem;
   border-radius: 20px;
-  font-size: 0.8rem;
+  font-size: 0.72rem;
   font-weight: 600;
 }
 
@@ -252,7 +252,7 @@
   border: none;
   color: #94a3b8;
   cursor: pointer;
-  font-size: 1.2rem;
+  font-size: 1rem;
   padding: 0;
   display: flex;
   align-items: center;
@@ -508,13 +508,13 @@
   }
 
   .modern-table td {
-    height: 55px;
-    font-size: 0.85rem;
+    height: 44px;
+    font-size: 0.78rem;
   }
 
   .category-chip, .condition-chip {
-    padding: 0.3rem 0.8rem;
-    font-size: 0.75rem;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.68rem;
   }
 }
 
