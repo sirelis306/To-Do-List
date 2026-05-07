@@ -10,12 +10,13 @@ export interface ChatMessage {
   timestamp?: string;
   updatedAt?: string;
 }
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChatService {
-  private apiUrl = '/api/chat';
+  private apiUrl = `${environment.apiUrl}/chat`;
 
   constructor(private http: HttpClient) {}
 

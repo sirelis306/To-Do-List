@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap, map, of } from 'rxjs';
 import { Tarea, Subtarea, EstadoTarea, Importancia } from '../../models/tarea';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TaskService {
-  private apiUrl = '/api/board';
+  private apiUrl = `${environment.apiUrl}/board`;
   private tareasCache: Tarea[] = [];
 
   constructor(private http: HttpClient) {}

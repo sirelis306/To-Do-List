@@ -42,6 +42,8 @@ export class Articles implements OnInit, OnDestroy {
   public showBarcodeModal: boolean = false;
   public showScannerModal: boolean = false;
   public selectedArticle: Article | null = null;
+  public showScannedDetailsModal: boolean = false;
+  public scannedArticle: Article | null = null;
 
   public articulosPaginados: Article[] = [];
   public totalArticles: number = 0;
@@ -97,6 +99,11 @@ export class Articles implements OnInit, OnDestroy {
     this.searchSubject.next(this.terminoBusqueda);
   }
 
+  clearSearch(): void {
+    this.terminoBusqueda = '';
+    this.onBuscar();
+  }
+
   onPageChange(event: PageEvent): void {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
@@ -134,8 +141,8 @@ export class Articles implements OnInit, OnDestroy {
 
     setTimeout(() => {
       if (this.selectedArticle) {
-        const serialStr = this.selectedArticle.serial ? this.selectedArticle.serial.toString() : "0";
-        JsBarcode("#barcode", serialStr, {
+        const idStr = this.selectedArticle.id ? this.selectedArticle.id.toString() : "0";
+        JsBarcode("#barcode", idStr, {
           format: "CODE128",
           lineColor: "#000",
           width: 2,
@@ -161,12 +168,32 @@ export class Articles implements OnInit, OnDestroy {
 
   onScanResult(result: string): void {
     this.showScannerModal = false;
-    this.terminoBusqueda = result;
-    this.pageIndex = 0;
-    this.cargarArticulos();
+    
+    // Hacemos la búsqueda rápida del producto escaneado
+    this.articleService.getArticles(result, '', 1, 50).subscribe(response => {
+      let data = Array.isArray(response) ? response : (response.data || []);
+      
+      const exactMatch = data.find((a: Article) => a.serial === result || a.id.toString() === result);
+      
+      if (exactMatch) {
+        // Mostramos el modal de detalles
+        this.scannedArticle = exactMatch;
+        this.showScannedDetailsModal = true;
+      } else {
+        // Si no hay match exacto, usamos el buscador normal
+        this.terminoBusqueda = result;
+        this.pageIndex = 0;
+        this.cargarArticulos();
+      }
+    });
   }
 
   onCloseScanner(): void {
     this.showScannerModal = false;
+  }
+
+  onCloseScannedDetails(): void {
+    this.showScannedDetailsModal = false;
+    this.scannedArticle = null;
   }
 }

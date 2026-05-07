@@ -3,12 +3,13 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap, catchError, of } from 'rxjs';
 import { User, UserRole } from '../../models/user';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = '/api';
+  private apiUrl = environment.apiUrl;
 
   private readonly USER_KEY = 'kanban_user';
   private readonly TOKEN_KEY = 'kanban_token';

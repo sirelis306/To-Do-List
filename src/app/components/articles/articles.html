@@ -25,8 +25,8 @@
       <div class="search-box">
         <i class="fa-solid fa-magnifying-glass"></i>
         <input type="text" placeholder="Buscar producto..." [(ngModel)]="terminoBusqueda" (ngModelChange)="onBuscar()">
-        <button class="scan-input-btn" (click)="onOpenScanner()" title="Escanear Código">
-          <i class="fa-solid fa-camera"></i>
+        <button class="clear-input-btn" (click)="clearSearch()" *ngIf="terminoBusqueda" title="Limpiar búsqueda">
+          <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
       <div class="filter-dropdown">
@@ -140,3 +140,49 @@
 @if (showScannerModal) {
   <app-scanner (scanResult)="onScanResult($event)" (close)="onCloseScanner()"></app-scanner>
 }
+
+<!-- Modal de Detalles de Producto Escaneado -->
+<div *ngIf="showScannedDetailsModal" class="confirm-modal-backdrop" (click)="onCloseScannedDetails()"></div>
+<div *ngIf="showScannedDetailsModal" class="details-modal-content">
+  <div class="details-header">
+    <h4><i class="fa-solid fa-check-circle success-icon"></i> Producto Encontrado</h4>
+    <button class="close-btn" (click)="onCloseScannedDetails()">&times;</button>
+  </div>
+  <div class="details-body" *ngIf="scannedArticle">
+    <div class="detail-row header-row">
+      <span class="detail-name">{{ scannedArticle.nombre }}</span>
+      <span class="detail-id">ID: {{ scannedArticle.id }}</span>
+    </div>
+    
+    <div class="detail-grid">
+      <div class="detail-item">
+        <span class="detail-label">Categoría</span>
+        <span class="detail-value">{{ scannedArticle.categoria }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Marca / Modelo</span>
+        <span class="detail-value">{{ scannedArticle.marca }} - {{ scannedArticle.modelo }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Serial</span>
+        <span class="detail-value highlight-value">{{ scannedArticle.serial }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Ubicación</span>
+        <span class="detail-value">{{ scannedArticle.locacion }}</span>
+      </div>
+      <div class="detail-item full-width">
+        <span class="detail-label">Condición</span>
+        <span class="condition-chip" [ngClass]="scannedArticle.condicion.toLowerCase()">
+          {{ scannedArticle.condicion }}
+        </span>
+      </div>
+    </div>
+  </div>
+  <div class="modal-actions">
+    <button class="btn btn-cancel" (click)="onCloseScannedDetails()">Cerrar</button>
+    <button class="btn btn-primary" [routerLink]="['/articles/edit', scannedArticle?.id]" (click)="onCloseScannedDetails()">
+      <i class="fa-solid fa-pen-to-square"></i> Editar Producto
+    </button>
+  </div>
+</div>
