@@ -12,8 +12,14 @@
   @for (message of messages; track message.id) {
     <div class="message-row" [class.sent]="message.senderId === currentUserId">
       <div class="message-content">
-        <p>{{ message.content }}</p>
-        <span class="message-time">{{ message.timestamp }}</span>
+        <p>{{ message.message }}</p>
+        <span class="message-time">
+          {{ message.timestamp | date:'shortTime' }}
+          <span *ngIf="message.senderId === currentUserId" class="msg-actions">
+            <i class="fa-solid fa-pen action-icon" (click)="onEditMessage(message)" title="Editar"></i>
+            <i class="fa-solid fa-trash action-icon" (click)="onDeleteMessage(message.id)" title="Eliminar"></i>
+          </span>
+        </span>
       </div>
     </div>
   }

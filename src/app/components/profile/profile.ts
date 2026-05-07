@@ -30,11 +30,21 @@ export class Profile implements OnInit{
   }
 
   cargarDatosUsuario(): void {
-    this.user = this.authService.getUserProfile();
-    if (this.user) {
-      this.tempUser = { ...this.user }; 
-      this.previewImageUrl = this.user.foto || null;
-    }
+    this.authService.getMe().subscribe(
+      (userData: any) => {
+        this.user = {
+          ...userData,
+          nombre: userData.name,
+          apellido: userData.surname,
+          role: userData.roles?.includes('ROLE_SUPER_ADMIN') ? 'superadmin' : userData.roles?.includes('ROLE_ADMIN') ? 'admin' : 'regular'
+        };
+        this.tempUser = { ...this.user }; 
+        this.previewImageUrl = this.user?.foto || null;
+      },
+      (error) => {
+        console.error('Error al cargar el perfil', error);
+      }
+    );
   }
 
   activarEdicion(): void {

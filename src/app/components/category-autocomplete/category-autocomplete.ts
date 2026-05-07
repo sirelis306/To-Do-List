@@ -24,7 +24,9 @@ export class CategoryAutocomplete implements OnInit {
 
  
   ngOnInit(): void {
-    this.todasLasCategorias = this.taskService.getCategorias();
+    this.taskService.getCategorias().subscribe(cats => {
+      this.todasLasCategorias = cats;
+    });
   }
 
   onInput(): void {

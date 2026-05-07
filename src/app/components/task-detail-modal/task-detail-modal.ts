@@ -36,7 +36,9 @@ export class TaskDetailModal {
 
   ngOnInit(): void {
     this.nuevoTituloTarea = this.tarea.titulo;
-    this.categoriasParaDropdown = this.taskService.getCategorias();
+    this.taskService.getCategorias().subscribe(cats => {
+      this.categoriasParaDropdown = cats;
+    });
   }
 
   onCerrar(): void {
@@ -44,40 +46,32 @@ export class TaskDetailModal {
     this.cerrarModal.emit();
   }
 
- onGuardar(): void {
-    const originalSubtasks = this.tarea.subtareas ? [...this.tarea.subtareas] : [];
-    const tempSubtasks = this.tempSubtareas;
+  onGuardar(): void {
+    const updatedData = {
+      ...this.tarea,
+      title: this.tempTitulo.trim(),
+      category: this.tempCategoria,
+      importance: this.tempImportancia,
+      status: this.tempEstado,
+      subTasks: this.tempSubtareas.map(s => ({ title: s.descripcion, isCompleted: s.completada }))
+    };
 
-    this.taskService.actualizarTarea(
-        this.tarea.id,
-        this.tempTitulo.trim(),
-        this.tempCategoria,
-        this.tempImportancia
-    );
-    
-    const deletedSubs = originalSubtasks.filter(os => !tempSubtasks.some(ts => ts.id === os.id));
-    for (const sub of deletedSubs) {
-      this.taskService.eliminarSubtarea(this.tarea.id, sub.id);
-    }
-
-    for (const tempSub of tempSubtasks) {
-      const originalSub = originalSubtasks.find(os => os.id === tempSub.id);
-
-      if (!originalSub) {
-        this.taskService.agregarSubtarea(this.tarea.id, tempSub.descripcion);
-      } else if (originalSub.completada !== tempSub.completada) {
-        this.taskService.marcarSubtarea(this.tarea.id, tempSub.id, tempSub.completada);
+    this.taskService.actualizarTarea(this.tarea.id, updatedData.title, updatedData.category, updatedData.importance).subscribe(() => {
+      if (this.tempEstado !== this.tarea.estado) {
+        this.taskService.moverTarea(this.tarea.id, this.tempEstado).subscribe(() => {
+          this.finalizarGuardado();
+        });
+      } else {
+        this.finalizarGuardado();
       }
-    }
-    
-    if (this.tempEstado !== this.tarea.estado) {
-      this.taskService.moverTarea(this.tarea.id, this.tempEstado); 
-    }
-    
+    });
+  }
+
+  private finalizarGuardado(): void {
     this.modoEdicion = false;
-    this.tareaActualizada.emit(); 
-    this.cerrarModal.emit(); 
-}
+    this.tareaActualizada.emit();
+    this.cerrarModal.emit();
+  }
 
   onActivarEdicion(): void {
     this.modoEdicion = true;
@@ -96,9 +90,10 @@ export class TaskDetailModal {
 
   agregarSubtarea(): void {
     if (this.nuevoSubtareaDescripcion.trim() === '') return;
-    this.taskService.agregarSubtarea(this.tarea.id, this.nuevoSubtareaDescripcion.trim());
-    this.nuevoSubtareaDescripcion = "";
-        this.tareaActualizada.emit(); 
+    this.taskService.agregarSubtarea(this.tarea.id, this.nuevoSubtareaDescripcion.trim()).subscribe(() => {
+      this.nuevoSubtareaDescripcion = "";
+      this.tareaActualizada.emit();
+    });
   }
 
   marcarSubtarea(subtarea: Subtarea): void {
