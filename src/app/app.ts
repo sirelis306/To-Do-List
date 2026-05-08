@@ -4,6 +4,7 @@ import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { Sidebar } from './components/sidebar/sidebar';
 import { filter } from 'rxjs/operators';
 import { Chatbot } from './components/chatbot/chatbot';
+import { AuthService } from './services/auth/authService';
 
 @Component({
   selector: 'app-root',
@@ -15,22 +16,41 @@ import { Chatbot } from './components/chatbot/chatbot';
 export class App {
   public showSidebar: boolean = false; 
   public isSidebarCollapsed: boolean = false;
+  public showPasswordWarning: boolean = false;
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private authService: AuthService) {
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
       this.showSidebar = (event.url !== '/login');
-      // Colapsar sidebar automáticamente en móviles al cambiar de ruta
+      
+      this.verificarCambioContrasena();
+
       if (window.innerWidth <= 768) {
         this.isSidebarCollapsed = true;
       }
     });
 
-    // Detectar tamaño inicial
     if (window.innerWidth <= 768) {
       this.isSidebarCollapsed = true;
     }
+  }
+
+  verificarCambioContrasena(): void {
+    const user = this.authService.getUserProfile();
+    const isProfilePage = this.router.url.includes('/profile');
+    const isLoginPage = this.router.url === '/login';
+
+    if (user && user.mustChangePassword && !isProfilePage && !isLoginPage) {
+      this.showPasswordWarning = true;
+    } else {
+      this.showPasswordWarning = false;
+    }
+  }
+
+  goToProfile(): void {
+    this.showPasswordWarning = false;
+    this.router.navigate(['/profile']);
   }
 
   toggleSidebar(): void {

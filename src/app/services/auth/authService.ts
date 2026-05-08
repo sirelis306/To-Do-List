@@ -131,16 +131,42 @@ export class AuthService {
     return roles === 'superadmin' || roles === 'ROLE_SUPER_ADMIN';
   }
 
-  updateUserProfile(updatedUser: Partial<User>): void {
+  /* Actualiza el perfil del usuario actual en el servidor */
+  updateProfile(data: any): Observable<User> {
+    const user = this.getUserProfile();
+    if (!user || !user.id) throw new Error('No user logged in');
+    
+    return this.http.put<User>(`${this.apiUrl}/users/${user.id}`, data).pipe(
+      tap(updatedUser => {
+        this.updateLocalProfile(updatedUser);
+      })
+    );
+  }
+
+  /* Cambia la contraseña del usuario actual */
+  changePassword(newPassword: string): Observable<any> {
+    const user = this.getUserProfile();
+    if (!user || !user.id) throw new Error('No user logged in');
+
+    // Usamos el mismo endpoint de actualización de usuario para cambiar la contraseña
+    const body = {
+      password: newPassword,
+      mustChangePassword: false // Al cambiarla el mismo, lo marcamos como cumplido
+    };
+
+    return this.http.put(`${this.apiUrl}/users/${user.id}`, body).pipe(
+      tap(() => {
+        this.updateLocalProfile({ mustChangePassword: false });
+      })
+    );
+  }
+
+  /* Actualiza los datos en LocalStorage */
+  updateLocalProfile(updatedUser: Partial<User>): void {
     const currentUser = this.getUserProfile();
     if (currentUser) {
       const newUser = { ...currentUser, ...updatedUser } as User;
       localStorage.setItem(this.USER_KEY, JSON.stringify(newUser));
     }
-  }
-
-  updatePassword(oldPass: string, newPass: string): boolean {
-    console.log('Intento de actualización de contraseña');
-    return true;
   }
 }

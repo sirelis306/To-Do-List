@@ -18,6 +18,7 @@ export class Profile implements OnInit{
   public mensajeEstado: string = '';
 
   public newPassword = '';
+  public confirmPassword = '';
   public passwordError = '';
 
   public previewImageUrl: string | ArrayBuffer | null = null; 
@@ -51,6 +52,8 @@ export class Profile implements OnInit{
     this.modoEdicion = true;
     this.mensajeEstado = '';
     this.selectedFile = null;
+    this.newPassword = '';
+    this.confirmPassword = '';
   }
 
   cancelarEdicion(): void {
@@ -59,6 +62,9 @@ export class Profile implements OnInit{
     this.mensajeEstado = '';
     this.previewImageUrl = this.user?.foto || null; 
     this.selectedFile = null;
+    this.newPassword = '';
+    this.confirmPassword = '';
+    this.passwordError = '';
   }
 
   onFileSelected(event: Event): void {
@@ -80,19 +86,32 @@ export class Profile implements OnInit{
 
   guardarPerfil(): void {
     if (this.user && this.tempUser.nombre && this.tempUser.apellido && this.tempUser.email) {
-      if (this.selectedFile) {
-        this.tempUser.foto = this.previewImageUrl as string; 
-        this.selectedFile = null; 
-      } else if (!this.previewImageUrl) {
-        this.tempUser.foto = undefined; 
-      }
-      
-      this.authService.updateUserProfile(this.tempUser);
-      this.cargarDatosUsuario(); 
-      this.modoEdicion = false;
-      this.mensajeEstado = 'Perfil actualizado con éxito.';
+      const apiData = {
+        name: this.tempUser.nombre,
+        surname: this.tempUser.apellido,
+        email: this.tempUser.email,
+        foto: this.selectedFile ? (this.previewImageUrl as string) : this.user.foto
+      };
+
+      this.authService.updateProfile(apiData).subscribe({
+        next: (updatedUser) => {
+          this.user = {
+            ...updatedUser,
+            nombre: updatedUser.nombre || (updatedUser as any).name,
+            apellido: updatedUser.apellido || (updatedUser as any).surname,
+            role: this.user?.role || 'regular'
+          };
+          this.modoEdicion = false;
+          this.mensajeEstado = 'Perfil actualizado con éxito.';
+          this.selectedFile = null;
+        },
+        error: (err) => {
+          console.error('Error al actualizar perfil', err);
+          this.mensajeEstado = 'Error al guardar los cambios.';
+        }
+      });
     } else {
-        this.mensajeEstado = 'Por favor, rellena todos los campos.';
+      this.mensajeEstado = 'Por favor, rellena todos los campos.';
     }
   }
 
@@ -101,10 +120,35 @@ export class Profile implements OnInit{
     this.mensajeEstado = '';
 
     if (this.newPassword) {
-      this.mensajeEstado = 'Contraseña actualizada con éxito.';
-      this.newPassword = '';
+      if (this.newPassword.length < 6) {
+        this.passwordError = 'La contraseña debe tener al menos 6 caracteres.';
+        return;
+      }
+
+      if (this.newPassword !== this.confirmPassword) {
+        this.passwordError = 'Las contraseñas no coinciden.';
+        return;
+      }
+
+      this.authService.changePassword(this.newPassword).subscribe({
+        next: () => {
+          this.mensajeEstado = 'Contraseña actualizada con éxito.';
+          this.newPassword = '';
+          this.confirmPassword = '';
+          // Si estamos en un estado de "debe cambiar contraseña", esto lo limpiará
+          const user = this.authService.getUserProfile();
+          if (user) {
+            user.mustChangePassword = false;
+            this.authService.updateLocalProfile(user);
+          }
+        },
+        error: (err) => {
+          console.error('Error al cambiar contraseña', err);
+          this.passwordError = 'Hubo un error al intentar cambiar la contraseña.';
+        }
+      });
     } else {
-      this.passwordError = 'La contraseña actual es incorrecta.';
+      this.passwordError = 'Por favor ingrese una nueva contraseña.';
     }
   }
 
