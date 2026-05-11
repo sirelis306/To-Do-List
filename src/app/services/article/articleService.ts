@@ -25,7 +25,7 @@ export class ArticleService {
       params = params.set('search', busqueda);
     }
     if (category) {
-      params = params.set('categoria', category);
+      params = params.set('category', category);
     }
 
     return this.http.get<any>(this.apiUrl, { params });

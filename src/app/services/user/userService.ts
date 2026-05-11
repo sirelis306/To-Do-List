@@ -38,7 +38,11 @@ export class UserService {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
 
-  toggleActive(id: number): Observable<any> {
-    return this.http.post(`${this.apiUrl}/${id}/toggle-active`, {});
+  toggleActive(id: number, newStatus: boolean): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${id}/toggle-active`, { 
+      isActive: newStatus,
+      active: newStatus,
+      enabled: newStatus
+    });
   }
 }

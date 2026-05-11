@@ -34,7 +34,7 @@ export class MyPaginatorIntl extends MatPaginatorIntl {
 export class Articles implements OnInit, OnDestroy {
   public terminoBusqueda: string = "";
   public categoryFilter: string = "";
-  public categoryOptions: string[] = ['Electrónica', 'Mobiliario', 'Herramientas', 'Oficina', 'Computación', 'Redes', 'Seguridad']; // Categorías por defecto
+  public categoryOptions: string[] = ['Tecnología', 'Mobiliario', 'Crafty', 'Alimento', 'Limpieza', 'Herramientas', 'Almacenamiento', 'Comunicación', 'Video'];
   public showConfirmModal: boolean = false;
   public articleToDeleteId: number | null = null;
   public confirmMessage: string = "";
@@ -89,7 +89,7 @@ export class Articles implements OnInit, OnDestroy {
   cargarArticulos(): void {
     this.articleService.getArticles(this.terminoBusqueda, this.categoryFilter, this.pageIndex + 1, this.pageSize).subscribe(response => {
       let data = Array.isArray(response) ? response : (response.data || []);
-      
+
       this.articulosPaginados = data;
       this.totalArticles = response.meta?.total_items !== undefined ? response.meta.total_items : (response.total !== undefined ? response.total : data.length);
     });
@@ -97,6 +97,12 @@ export class Articles implements OnInit, OnDestroy {
 
   onBuscar(): void {
     this.searchSubject.next(this.terminoBusqueda);
+  }
+
+  onCategoryChange(newCategory: string): void {
+    this.categoryFilter = newCategory;
+    this.pageIndex = 0;
+    this.cargarArticulos();
   }
 
   clearSearch(): void {
@@ -168,13 +174,13 @@ export class Articles implements OnInit, OnDestroy {
 
   onScanResult(result: string): void {
     this.showScannerModal = false;
-    
+
     // Hacemos la búsqueda rápida del producto escaneado
     this.articleService.getArticles(result, '', 1, 50).subscribe(response => {
       let data = Array.isArray(response) ? response : (response.data || []);
-      
+
       const exactMatch = data.find((a: Article) => a.serial === result || a.id.toString() === result);
-      
+
       if (exactMatch) {
         // Mostramos el modal de detalles
         this.scannedArticle = exactMatch;

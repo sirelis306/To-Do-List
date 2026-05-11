@@ -113,9 +113,12 @@ export class AuthService {
   isAdmin(): boolean {
     const roles = this.getUserRole();
     if (Array.isArray(roles)) {
-      return roles.includes('ROLE_SUPER_ADMIN') || roles.includes('ROLE_ADMIN');
+      return roles.includes('ROLE_SUPER_ADMIN') || roles.includes('ROLE_ADMIN') || 
+             roles.includes('SUPER_ADMIN') || roles.includes('ADMIN');
     }
-    return roles === 'admin' || roles === 'superadmin' || roles === 'ROLE_SUPER_ADMIN' || roles === 'ROLE_ADMIN';
+    return roles === 'admin' || roles === 'superadmin' || 
+           roles === 'ROLE_SUPER_ADMIN' || roles === 'ROLE_ADMIN' ||
+           roles === 'SUPER_ADMIN' || roles === 'ADMIN';
   }
 
   getUserProfile(): User | null {
@@ -126,9 +129,9 @@ export class AuthService {
   isSuperAdmin(): boolean {
     const roles = this.getUserRole();
     if (Array.isArray(roles)) {
-      return roles.includes('ROLE_SUPER_ADMIN');
+      return roles.includes('ROLE_SUPER_ADMIN') || roles.includes('SUPER_ADMIN');
     }
-    return roles === 'superadmin' || roles === 'ROLE_SUPER_ADMIN';
+    return roles === 'superadmin' || roles === 'ROLE_SUPER_ADMIN' || roles === 'SUPER_ADMIN';
   }
 
   /* Actualiza el perfil del usuario actual en el servidor */

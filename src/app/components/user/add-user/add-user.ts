@@ -44,6 +44,13 @@ export class AddUser implements OnInit {
     this.isSuperAdmin = this.authService.isSuperAdmin();
     this.isAdmin = this.authService.isAdmin();
     
+    // Si no es administrador, redirigir al tablero (Seguridad básica de ruta)
+    if (!this.isAdmin) {
+      console.warn('Acceso denegado: Se requieren permisos de administrador.');
+      this.router.navigate(['/board']);
+      return;
+    }
+
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.modoEdicion = true;
@@ -59,28 +66,34 @@ export class AddUser implements OnInit {
   cargarUsuario(id: number): void {
     this.userService.getUserById(id).subscribe(
       (user: any) => {
-        const rawRole = user.roles && user.roles.length > 0 ? user.roles[0] : 'ROLE_USER';
+        const rolesArray = Array.isArray(user.roles) ? user.roles : (typeof user.roles === 'string' ? [user.roles] : (typeof user.role === 'string' ? [user.role] : []));
+        const isTargetSuperAdmin = rolesArray.includes('ROLE_SUPER_ADMIN') || rolesArray.includes('SUPER_ADMIN');
+        const isTargetAdmin = rolesArray.includes('ROLE_ADMIN') || rolesArray.includes('ADMIN');
+        const rawRole = isTargetSuperAdmin ? 'ROLE_SUPER_ADMIN' : (isTargetAdmin ? 'ROLE_ADMIN' : 'ROLE_USER');
+        
         this.targetUserRole = rawRole;
+
+        // Si es admin normal, no puede editar a un super admin o a otro admin
+        if (this.isAdmin && !this.isSuperAdmin) {
+          if (isTargetSuperAdmin || isTargetAdmin) {
+            alert('No tienes permisos para editar a este usuario (Nivel superior o igual).');
+            this.router.navigate(['/user/users']);
+            return;
+          }
+        }
 
         this.userData = {
           nombre: user.name || user.nombre || '',
           apellido: user.surname || user.apellido || '',
           email: user.email || '',
-          role: rawRole === 'ROLE_SUPER_ADMIN' ? 'superadmin' : 
-                (rawRole === 'ROLE_ADMIN' ? 'admin' : 'regular'),
+          role: isTargetSuperAdmin ? 'superadmin' : (isTargetAdmin ? 'admin' : 'regular'),
           cargo: 'Usuario',
-          estado: user.isActive ? 'Activo' : 'Inactivo',
+          estado: (user.isActive === true || user.active === true || user.enabled === true || user.isActive === 1) ? 'Activo' : 'Inactivo',
           nuevaPassword: '',
           confirmarPassword: ''
         };
 
-        // Si es admin, no puede editar a un super admin o a otro admin (solo superadmin puede)
-        if (this.isAdmin && !this.isSuperAdmin) {
-          if (rawRole === 'ROLE_SUPER_ADMIN' || rawRole === 'ROLE_ADMIN') {
-            // Podrías mostrar un mensaje de error o deshabilitar campos
-            console.warn('No tienes permisos para editar este nivel de usuario');
-          }
-        }
+
       },
       (error) => {
         console.error('Error al cargar el usuario', error);

@@ -48,6 +48,13 @@ export class Users implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.isSuperAdmin = this.authService.isSuperAdmin();
     this.isAdminUser = this.authService.isAdmin();
+
+    // Si no es administrador, redirigir al tablero
+    if (!this.isAdminUser) {
+      console.warn('Acceso denegado: Se requieren permisos de administrador.');
+      this.router.navigate(['/board']);
+      return;
+    }
     
     // Configurar debounce para el buscador
     this.searchSubscription = this.searchSubject.pipe(
@@ -83,11 +90,14 @@ export class Users implements OnInit, OnDestroy {
           ...u,
           nombre: u.name || u.nombre,
           apellido: u.surname || u.apellido,
-          role: u.roles?.includes('ROLE_SUPER_ADMIN') ? 'superadmin' 
-              : u.roles?.includes('ROLE_ADMIN') ? 'admin' 
-              : 'regular',
+          role: (() => {
+            const roles = Array.isArray(u.roles) ? u.roles : (typeof u.roles === 'string' ? [u.roles] : (typeof u.role === 'string' ? [u.role] : []));
+            if (roles.includes('ROLE_SUPER_ADMIN') || roles.includes('SUPER_ADMIN')) return 'superadmin';
+            if (roles.includes('ROLE_ADMIN') || roles.includes('ADMIN')) return 'admin';
+            return 'regular';
+          })(),
           cargo: 'Usuario',
-          estado: u.isActive ? 'Activo' : 'Inactivo'
+          estado: (u.isActive === true || u.active === true || u.enabled === true || u.isActive === 1) ? 'Activo' : 'Inactivo'
         }));
       },
       (error) => {
@@ -129,12 +139,36 @@ export class Users implements OnInit, OnDestroy {
   }
 
   onToggleActive(id: number): void {
-    if (!this.isAdminUser) {
-      alert('Solo un administrador puede realizar esta acción.');
+    const targetUser = this.users.find(u => u.id === id);
+    
+    if (!targetUser || !this.canDelete(targetUser)) {
+      alert('No tienes permisos para cambiar el estado de este usuario.');
       return;
     }
-    this.userService.toggleActive(id).subscribe(() => {
-      this.cargarUsuarios();
+
+    const newStatus = targetUser.estado !== 'Activo';
+    this.userService.toggleActive(id, newStatus).subscribe({
+      next: () => {
+        this.cargarUsuarios();
+      },
+      error: (error) => {
+        console.error('Error al cambiar estado del usuario', error);
+        alert('No se pudo cambiar el estado del usuario (Error 403 Forbidden). Esto suele ser un problema de permisos en el servidor o que la sesión ha expirado.');
+      }
     });
+  }
+
+  // Ayudantes para la vista para controlar visibilidad de acciones
+  canEdit(targetUser: User | undefined): boolean {
+    if (!targetUser) return false;
+    if (this.isSuperAdmin) return true;
+    if (!this.isAdminUser) return false;
+    // Un Admin solo puede editar a usuarios Regulares
+    return targetUser.role === 'regular';
+  }
+
+  canDelete(targetUser: User | undefined): boolean {
+    // En este sistema toggleActive actúa como eliminar/activar
+    return this.canEdit(targetUser);
   }
 }

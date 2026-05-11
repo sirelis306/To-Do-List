@@ -34,7 +34,7 @@
           [options]="categoryOptions" 
           [selectedValue]="categoryFilter" 
           label="Todas las categorías"
-          (valueChange)="categoryFilter = $event; onBuscar()">
+          (valueChange)="onCategoryChange($event)">
         </app-custom-dropdown>
       </div>
     </div>

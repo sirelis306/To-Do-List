@@ -28,8 +28,7 @@
           <div class="input-with-icon">
             <i class="fa-solid fa-lock"></i>
             <input type="password" name="nuevaPassword" [(ngModel)]="userData.nuevaPassword" 
-                   [required]="!modoEdicion"
-                   [placeholder]="modoEdicion ? 'Dejar en blanco para no cambiar' : 'Contraseña inicial'">
+                   [placeholder]="modoEdicion ? 'Opcional (Dejar en blanco para no cambiar)' : 'Contraseña inicial'">
           </div>
           <span class="field-hint" *ngIf="modoEdicion">
             Al cambiar la contraseña, se le solicitará al usuario actualizarla al iniciar sesión.
@@ -41,7 +40,6 @@
           <div class="input-with-icon">
             <i class="fa-solid fa-shield-halved"></i>
             <input type="password" name="confirmarPassword" [(ngModel)]="userData.confirmarPassword" 
-                   [required]="!modoEdicion || (userData.nuevaPassword && userData.nuevaPassword.length > 0)"
                    placeholder="Repetir contraseña"
                    [class.invalid-field]="userData.nuevaPassword !== userData.confirmarPassword && userData.confirmarPassword.length > 0">
           </div>

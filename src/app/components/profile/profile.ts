@@ -37,7 +37,9 @@ export class Profile implements OnInit{
           ...userData,
           nombre: userData.name,
           apellido: userData.surname,
-          role: userData.roles?.includes('ROLE_SUPER_ADMIN') ? 'superadmin' : userData.roles?.includes('ROLE_ADMIN') ? 'admin' : 'regular'
+          role: (userData.roles?.includes('ROLE_SUPER_ADMIN') || userData.roles?.includes('SUPER_ADMIN')) ? 'superadmin' 
+                : (userData.roles?.includes('ROLE_ADMIN') || userData.roles?.includes('ADMIN')) ? 'admin' 
+                : 'regular'
         };
         this.tempUser = { ...this.user }; 
         this.previewImageUrl = this.user?.foto || null;

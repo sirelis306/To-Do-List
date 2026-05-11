@@ -221,7 +221,9 @@
   padding: 0.3rem 0.8rem;
   border-radius: 20px;
   font-size: 0.72rem;
-  font-weight: 600;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
 .condition-chip.nuevo {
@@ -232,6 +234,16 @@
 .condition-chip.usado {
   background: rgba(245, 158, 11, 0.1);
   color: #f59e0b;
+}
+
+.condition-chip.defectuoso {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.condition-chip.dañado {
+  background: rgba(153, 27, 27, 0.1);
+  color: #991b1b;
 }
 
 .actions-cell-wrapper {
