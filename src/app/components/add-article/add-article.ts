@@ -31,6 +31,7 @@ export class AddArticle implements OnInit {
     serial: null,
     condicion: '',
     locacion: '',
+    cantidad: 1,
   };
 
   public showSuccessModal: boolean = false;

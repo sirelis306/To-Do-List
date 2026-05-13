@@ -211,6 +211,11 @@
   color: #10b981;
 }
 
+.role-chip.logistics {
+  background: rgba(14, 165, 233, 0.1);
+  color: #0ea5e9;
+}
+
 .status-indicator {
   display: inline-flex;
   align-items: center;

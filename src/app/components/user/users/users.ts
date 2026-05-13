@@ -22,6 +22,7 @@ export class Users implements OnInit, OnDestroy {
   public roleOptions = [
     { label: 'Super Admin', value: 'superadmin' },
     { label: 'Administrador', value: 'admin' },
+    { label: 'Logística', value: 'logistics' },
     { label: 'Regular', value: 'regular' }
   ];
   users: User[] = [];
@@ -79,6 +80,7 @@ export class Users implements OnInit, OnDestroy {
     let apiRole = '';
     if (this.roleFilter === 'superadmin') apiRole = 'ROLE_SUPER_ADMIN';
     else if (this.roleFilter === 'admin') apiRole = 'ROLE_ADMIN';
+    else if (this.roleFilter === 'logistics') apiRole = 'ROLE_LOGISTICS';
     else if (this.roleFilter === 'regular') apiRole = 'ROLE_USER';
 
     this.userService.getUsers(this.pageIndex + 1, this.pageSize, this.searchTerm, apiRole).subscribe(
@@ -94,6 +96,7 @@ export class Users implements OnInit, OnDestroy {
             const roles = Array.isArray(u.roles) ? u.roles : (typeof u.roles === 'string' ? [u.roles] : (typeof u.role === 'string' ? [u.role] : []));
             if (roles.includes('ROLE_SUPER_ADMIN') || roles.includes('SUPER_ADMIN')) return 'superadmin';
             if (roles.includes('ROLE_ADMIN') || roles.includes('ADMIN')) return 'admin';
+            if (roles.includes('ROLE_LOGISTICS') || roles.includes('LOGISTICS')) return 'logistics';
             return 'regular';
           })(),
           cargo: 'Usuario',
@@ -163,8 +166,8 @@ export class Users implements OnInit, OnDestroy {
     if (!targetUser) return false;
     if (this.isSuperAdmin) return true;
     if (!this.isAdminUser) return false;
-    // Un Admin solo puede editar a usuarios Regulares
-    return targetUser.role === 'regular';
+    // Un Admin solo puede editar a usuarios Regulares o Logística
+    return targetUser.role === 'regular' || targetUser.role === 'logistics';
   }
 
   canDelete(targetUser: User | undefined): boolean {

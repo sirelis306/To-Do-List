@@ -50,9 +50,10 @@
                   <i class="fa-solid" [ngClass]="{
                     'fa-crown': user.role === 'superadmin',
                     'fa-shield-halved': user.role === 'admin',
+                    'fa-box': user.role === 'logistics',
                     'fa-user': user.role === 'regular'
                   }"></i>
-                  {{ user.role === 'superadmin' ? 'Super Admin' : user.role === 'admin' ? 'Administrador' : 'Regular' }}
+                  {{ user.role === 'superadmin' ? 'Super Admin' : user.role === 'admin' ? 'Administrador' : user.role === 'logistics' ? 'Logística' : 'Regular' }}
                 </span>
               </div>
             </td>

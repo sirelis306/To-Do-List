@@ -24,6 +24,7 @@
       </a>
     </li> -->
 
+    <span class="section-title">Modulos</span>
     <li>
       <a routerLink="/board" routerLinkActive="active" (click)="closeOnMobile()">
         <i class="fa-solid fa-table-columns"></i>
@@ -44,7 +45,7 @@
         @if (!isCollapsed) { <span>Inventario</span> }
       </a>
     </li>
-    
+
     <li>
       <a [routerLink]="['/articles']" [queryParams]="{ scan: 'true' }" (click)="closeOnMobile()">
         <i class="fa-solid fa-camera"></i>

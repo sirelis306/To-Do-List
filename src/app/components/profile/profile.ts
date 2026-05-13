@@ -17,6 +17,7 @@ export class Profile implements OnInit{
   public modoEdicion: boolean = false;
   public mensajeEstado: string = '';
 
+  public currentPassword = '';
   public newPassword = '';
   public confirmPassword = '';
   public passwordError = '';
@@ -39,6 +40,7 @@ export class Profile implements OnInit{
           apellido: userData.surname,
           role: (userData.roles?.includes('ROLE_SUPER_ADMIN') || userData.roles?.includes('SUPER_ADMIN')) ? 'superadmin' 
                 : (userData.roles?.includes('ROLE_ADMIN') || userData.roles?.includes('ADMIN')) ? 'admin' 
+                : (userData.roles?.includes('ROLE_LOGISTICS') || userData.roles?.includes('LOGISTICS')) ? 'logistics'
                 : 'regular'
         };
         this.tempUser = { ...this.user }; 
@@ -56,6 +58,7 @@ export class Profile implements OnInit{
     this.selectedFile = null;
     this.newPassword = '';
     this.confirmPassword = '';
+    this.currentPassword = '';
   }
 
   cancelarEdicion(): void {
@@ -66,6 +69,7 @@ export class Profile implements OnInit{
     this.selectedFile = null;
     this.newPassword = '';
     this.confirmPassword = '';
+    this.currentPassword = '';
     this.passwordError = '';
   }
 
@@ -121,6 +125,11 @@ export class Profile implements OnInit{
     this.passwordError = '';
     this.mensajeEstado = '';
 
+    if (!this.currentPassword) {
+      this.passwordError = 'Por favor ingrese su contraseña actual.';
+      return;
+    }
+
     if (this.newPassword) {
       if (this.newPassword.length < 6) {
         this.passwordError = 'La contraseña debe tener al menos 6 caracteres.';
@@ -132,21 +141,36 @@ export class Profile implements OnInit{
         return;
       }
 
-      this.authService.changePassword(this.newPassword).subscribe({
-        next: () => {
-          this.mensajeEstado = 'Contraseña actualizada con éxito.';
-          this.newPassword = '';
-          this.confirmPassword = '';
-          // Si estamos en un estado de "debe cambiar contraseña", esto lo limpiará
-          const user = this.authService.getUserProfile();
-          if (user) {
-            user.mustChangePassword = false;
-            this.authService.updateLocalProfile(user);
+      // 1. Primero validamos si la contraseña actual es correcta
+      this.authService.checkPassword(this.currentPassword).subscribe({
+        next: (res) => {
+          if (res.match) {
+            // 2. Si es correcta, procedemos al cambio
+            this.authService.changePassword(this.newPassword, this.currentPassword).subscribe({
+              next: () => {
+                this.mensajeEstado = 'Contraseña actualizada con éxito.';
+                this.newPassword = '';
+                this.confirmPassword = '';
+                this.currentPassword = '';
+                
+                const user = this.authService.getUserProfile();
+                if (user) {
+                  user.mustChangePassword = false;
+                  this.authService.updateLocalProfile(user);
+                }
+              },
+              error: (err) => {
+                console.error('Error al cambiar contraseña', err);
+                this.passwordError = 'Error al intentar actualizar la contraseña.';
+              }
+            });
+          } else {
+            this.passwordError = 'La contraseña actual es incorrecta.';
           }
         },
         error: (err) => {
-          console.error('Error al cambiar contraseña', err);
-          this.passwordError = 'Hubo un error al intentar cambiar la contraseña.';
+          console.error('Error al validar contraseña', err);
+          this.passwordError = 'Error al validar la contraseña actual.';
         }
       });
     } else {

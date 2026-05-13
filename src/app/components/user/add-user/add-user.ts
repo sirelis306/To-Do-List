@@ -69,7 +69,8 @@ export class AddUser implements OnInit {
         const rolesArray = Array.isArray(user.roles) ? user.roles : (typeof user.roles === 'string' ? [user.roles] : (typeof user.role === 'string' ? [user.role] : []));
         const isTargetSuperAdmin = rolesArray.includes('ROLE_SUPER_ADMIN') || rolesArray.includes('SUPER_ADMIN');
         const isTargetAdmin = rolesArray.includes('ROLE_ADMIN') || rolesArray.includes('ADMIN');
-        const rawRole = isTargetSuperAdmin ? 'ROLE_SUPER_ADMIN' : (isTargetAdmin ? 'ROLE_ADMIN' : 'ROLE_USER');
+        const isTargetLogistics = rolesArray.includes('ROLE_LOGISTICS') || rolesArray.includes('LOGISTICS');
+        const rawRole = isTargetSuperAdmin ? 'ROLE_SUPER_ADMIN' : (isTargetAdmin ? 'ROLE_ADMIN' : (isTargetLogistics ? 'ROLE_LOGISTICS' : 'ROLE_USER'));
         
         this.targetUserRole = rawRole;
 
@@ -86,7 +87,7 @@ export class AddUser implements OnInit {
           nombre: user.name || user.nombre || '',
           apellido: user.surname || user.apellido || '',
           email: user.email || '',
-          role: isTargetSuperAdmin ? 'superadmin' : (isTargetAdmin ? 'admin' : 'regular'),
+          role: isTargetSuperAdmin ? 'superadmin' : (isTargetAdmin ? 'admin' : (isTargetLogistics ? 'logistics' : 'regular')),
           cargo: 'Usuario',
           estado: (user.isActive === true || user.active === true || user.enabled === true || user.isActive === 1) ? 'Activo' : 'Inactivo',
           nuevaPassword: '',
@@ -109,7 +110,8 @@ export class AddUser implements OnInit {
       surname: this.userData.apellido,
       roles: [
         this.userData.role === 'superadmin' ? 'ROLE_SUPER_ADMIN' : 
-        (this.userData.role === 'admin' ? 'ROLE_ADMIN' : 'ROLE_USER')
+        (this.userData.role === 'admin' ? 'ROLE_ADMIN' : 
+        (this.userData.role === 'logistics' ? 'ROLE_LOGISTICS' : 'ROLE_USER'))
       ]
     };
 

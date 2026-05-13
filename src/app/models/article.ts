@@ -9,4 +9,5 @@ export interface Article {
   serial: string | null;
   condicion: string;
   locacion: string;
+  cantidad: number | null;
 }

@@ -86,12 +86,20 @@
           </div>
         </div>
 
-        <div class="form-group full-width">
+        <div class="form-group">
           <label>Características</label>
           <div class="input-wrapper">
             <i class="fa-solid fa-list-ul"></i>
             <input type="text" [(ngModel)]="nuevoProducto.caracteristicas" name="caracteristicas"
               placeholder="Ej: 16GB RAM, 512GB SSD" required [class.is-invalid]="submitted && !nuevoProducto.caracteristicas">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Cantidad</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-calculator"></i>
+            <input type="number" [(ngModel)]="nuevoProducto.cantidad" name="cantidad" placeholder="Ej: 1">
           </div>
         </div>
       </div>

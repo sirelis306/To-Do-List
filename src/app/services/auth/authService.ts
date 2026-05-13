@@ -91,6 +91,16 @@ export class AuthService {
   }
 
   logout(): void {
+    const refresh_token = localStorage.getItem(this.REFRESH_TOKEN_KEY);
+    
+    if (refresh_token) {
+      // Intentamos revocar el token en el servidor de forma "fire and forget"
+      this.http.post(`${this.apiUrl}/logout`, { refresh_token }).subscribe({
+        next: () => console.log('Token revocado exitosamente'),
+        error: (err) => console.error('Error al revocar token', err)
+      });
+    }
+
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.REFRESH_TOKEN_KEY);
     localStorage.removeItem(this.USER_KEY);
@@ -134,6 +144,19 @@ export class AuthService {
     return roles === 'superadmin' || roles === 'ROLE_SUPER_ADMIN' || roles === 'SUPER_ADMIN';
   }
 
+  isLogistics(): boolean {
+    const roles = this.getUserRole();
+    if (Array.isArray(roles)) {
+      return roles.includes('ROLE_LOGISTICS') || roles.includes('LOGISTICS');
+    }
+    return roles === 'logistics' || roles === 'ROLE_LOGISTICS' || roles === 'LOGISTICS';
+  }
+
+  /* Verifica si la contraseña actual es correcta */
+  checkPassword(current_password: string): Observable<{match: boolean}> {
+    return this.http.post<{match: boolean}>(`${this.apiUrl}/check-password`, { current_password });
+  }
+
   /* Actualiza el perfil del usuario actual en el servidor */
   updateProfile(data: any): Observable<User> {
     const user = this.getUserProfile();
@@ -147,13 +170,14 @@ export class AuthService {
   }
 
   /* Cambia la contraseña del usuario actual */
-  changePassword(newPassword: string): Observable<any> {
+  changePassword(newPassword: string, currentPassword: string): Observable<any> {
     const user = this.getUserProfile();
     if (!user || !user.id) throw new Error('No user logged in');
 
     // Usamos el mismo endpoint de actualización de usuario para cambiar la contraseña
     const body = {
       password: newPassword,
+      currentPassword: currentPassword, // Agregamos para validar en el backend
       mustChangePassword: false // Al cambiarla el mismo, lo marcamos como cumplido
     };
 
