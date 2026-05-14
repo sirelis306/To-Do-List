@@ -32,12 +32,41 @@
 }
 
 .profile-main-card {
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
   max-width: 1200px;
   margin: 0 auto;
   background: white;
   border-radius: 20px;
   box-shadow: 0 4px 25px rgba(0, 0, 0, 0.05);
   padding: 3rem;
+}
+
+.loading-state, .error-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: #64748b;
+  padding: 4rem 0;
+}
+
+.loading-state i {
+  font-size: 2.5rem;
+  color: #6366f1;
+}
+
+.error-state i {
+  font-size: 2.5rem;
+  color: #ef4444;
+}
+
+.loading-state p, .error-state p {
+  font-size: 1.1rem;
+  font-weight: 500;
 }
 
 .profile-layout {
@@ -204,19 +233,22 @@
 
 .input-wrapper {
   position: relative;
-  display: flex;
-  align-items: center;
+  display: block;
+  width: 100%;
 }
 
 .input-wrapper i {
   position: absolute;
   left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
   color: #94a3b8;
+  z-index: 5;
 }
 
 .input-wrapper input {
   width: 100%;
-  padding: 0.8rem 1rem 0.8rem 2.8rem;
+  padding: 0.8rem 2.8rem 0.8rem 2.8rem;
   border: 1.5px solid #e2e8f0;
   border-radius: 12px;
   font-size: 0.95rem;
@@ -229,6 +261,27 @@
   border-color: #6366f1;
   background: white;
   box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.08);
+}
+
+.toggle-password-btn {
+  position: absolute;
+  right: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+  z-index: 10;
+}
+
+.toggle-password-btn:hover {
+  color: #6366f1;
 }
 
 .form-actions {

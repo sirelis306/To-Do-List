@@ -148,18 +148,43 @@ input:focus {
 
 .input-with-icon {
   position: relative;
-  display: flex;
-  align-items: center;
+  display: block;
+  width: 100%;
 }
 
 .input-with-icon i {
   position: absolute;
   left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
   color: #94a3b8;
+  z-index: 5;
 }
 
 .input-with-icon input {
   padding-left: 2.8rem !important;
+  padding-right: 2.8rem !important;
+}
+
+.toggle-password-btn {
+  position: absolute;
+  right: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+  z-index: 10;
+}
+
+.toggle-password-btn:hover {
+  color: #6366f1;
 }
 
 .action-btn.back {

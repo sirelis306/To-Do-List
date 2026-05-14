@@ -14,7 +14,12 @@
       </div>
     }
 
-    @if (user) {
+    @if (loading) {
+      <div class="loading-state">
+        <i class="fa-solid fa-circle-notch fa-spin"></i>
+        <p>Cargando perfil...</p>
+      </div>
+    } @else if (user) {
       <div class="profile-layout">
         <div class="profile-sidebar">
           <div class="avatar-container">
@@ -90,7 +95,10 @@
                     <label>Contraseña Actual</label>
                     <div class="input-wrapper">
                       <i class="fa-solid fa-lock-open"></i>
-                      <input type="password" [(ngModel)]="currentPassword" name="currentPassword" placeholder="Ingresa tu contraseña para validar el cambio">
+                      <input [type]="showCurrentPassword ? 'text' : 'password'" [(ngModel)]="currentPassword" name="currentPassword" placeholder="Ingresa tu contraseña para validar el cambio">
+                      <button *ngIf="currentPassword" type="button" class="toggle-password-btn" (click)="togglePasswordVisibility('current')" title="Mostrar/Ocultar contraseña">
+                        <i class="fa-solid" [ngClass]="showCurrentPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                      </button>
                     </div>
                   </div>
 
@@ -98,7 +106,10 @@
                     <label>Nueva Contraseña</label>
                     <div class="input-wrapper">
                       <i class="fa-solid fa-key"></i>
-                      <input type="password" [(ngModel)]="newPassword" name="newPassword" placeholder="Mínimo 6 caracteres">
+                      <input [type]="showNewPassword ? 'text' : 'password'" [(ngModel)]="newPassword" name="newPassword" placeholder="Mínimo 6 caracteres">
+                      <button *ngIf="newPassword" type="button" class="toggle-password-btn" (click)="togglePasswordVisibility('new')" title="Mostrar/Ocultar contraseña">
+                        <i class="fa-solid" [ngClass]="showNewPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                      </button>
                     </div>
                   </div>
 
@@ -106,7 +117,10 @@
                     <label>Confirmar Contraseña</label>
                     <div class="input-wrapper">
                       <i class="fa-solid fa-shield-halved"></i>
-                      <input type="password" [(ngModel)]="confirmPassword" name="confirmPassword" placeholder="Repite la contraseña">
+                      <input [type]="showConfirmPassword ? 'text' : 'password'" [(ngModel)]="confirmPassword" name="confirmPassword" placeholder="Repite la contraseña">
+                      <button *ngIf="confirmPassword" type="button" class="toggle-password-btn" (click)="togglePasswordVisibility('confirm')" title="Mostrar/Ocultar contraseña">
+                        <i class="fa-solid" [ngClass]="showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -156,7 +170,7 @@
           }
         </div>
       </div>
-    } @else {
+    } @else if (errorCarga) {
       <div class="error-state">
         <i class="fa-solid fa-triangle-exclamation"></i>
         <p>No se pudieron cargar los datos del perfil.</p>

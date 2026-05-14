@@ -12,6 +12,8 @@ export interface User {
   cargo?: string;
   estado?: 'Activo' | 'Inactivo';
   foto?: string;
+  empresa?: string;
+  createdAt?: string;
   mustChangePassword?: boolean;
 }
 

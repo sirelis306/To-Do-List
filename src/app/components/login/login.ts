@@ -18,6 +18,13 @@ export class Login {
   public showPassword: boolean = false;
 
   constructor(private router: Router, private authService: AuthService) {}
+  
+  ngOnInit(): void {
+    // Si el usuario ya está autenticado, lo mandamos directo al board
+    if (this.authService.isAuthenticated()) {
+      this.router.navigate(['/board']);
+    }
+  }
 
   onLogin(): void {
     console.log('Botón de login presionado con:', this.email);

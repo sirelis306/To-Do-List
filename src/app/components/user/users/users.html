@@ -65,9 +65,10 @@
                 </span>
               </div>
             </td>
-            <td class="actions-cell">
+            <td>
               <div class="actions-cell-wrapper">
                 <div class="actions-cell">
+                  <button class="icon-btn view" title="Ver Detalles" (click)="onViewDetails(user)"><i class="fa-solid fa-file-lines"></i></button>
                   <button *ngIf="canEdit(user)" class="icon-btn edit" title="Editar" (click)="onEditUser(user.id)"><i class="fa-solid fa-pen-to-square"></i></button>
                   <button *ngIf="canDelete(user)" class="icon-btn delete" [title]="user.estado === 'Activo' ? 'Eliminar (Desactivar)' : 'Activar'" (click)="onToggleActive(user.id)">
                     <i class="fa-solid" [ngClass]="user.estado === 'Activo' ? 'fa-trash' : 'fa-rotate-left'"></i>
@@ -90,5 +91,59 @@
         aria-label="Seleccionar página">
       </mat-paginator>
     </div>
+  </div>
+</div>
+
+<!-- Modal de Detalles de Usuario -->
+<div *ngIf="showUserDetailsModal" class="confirm-modal-backdrop" (click)="onCloseDetails()"></div>
+<div *ngIf="showUserDetailsModal" class="details-modal-content">
+  <div class="details-header">
+    <div class="header-title-info">
+      <i class="fa-solid fa-user-gear primary-icon"></i>
+      <div class="title-with-id">
+        <h4>{{ selectedUser?.nombre }} {{ selectedUser?.apellido }}</h4>
+        <span class="id-badge-sub">#{{ selectedUser?.id }}</span>
+      </div>
+    </div>
+    <button class="close-btn" (click)="onCloseDetails()">&times;</button>
+  </div>
+  
+  <div class="details-body" *ngIf="selectedUser">
+    <div class="detail-grid">
+      <div class="detail-item">
+        <span class="detail-label">Correo Electrónico</span>
+        <span class="detail-value">{{ selectedUser.email }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Rol de Usuario</span>
+        <span class="detail-value" style="text-transform: capitalize;">{{ selectedUser.role }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Empresa</span>
+        <span class="detail-value">{{ selectedUser.empresa || 'No asignada' }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Fecha de Registro</span>
+        <span class="detail-value">{{ (selectedUser.createdAt) | date:'dd/MM/yyyy HH:mm' }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Cargo / Departamento</span>
+        <span class="detail-value">{{ selectedUser.cargo || 'N/A' }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Estado</span>
+        <span class="status-indicator">
+          <span class="dot" [style.background]="selectedUser.estado === 'Activo' ? '#10b981' : '#ef4444'"></span>
+          {{ selectedUser.estado }}
+        </span>
+      </div>
+    </div>
+  </div>
+  
+  <div class="modal-actions">
+    <button class="btn btn-cancel" (click)="onCloseDetails()">Cerrar</button>
+    <button *ngIf="canEdit(selectedUser)" class="btn btn-primary" (click)="onEditUser(selectedUser!.id); onCloseDetails()">
+      <i class="fa-solid fa-user-pen"></i> Editar Usuario
+    </button>
   </div>
 </div>

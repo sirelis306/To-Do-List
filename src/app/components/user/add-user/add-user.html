@@ -27,8 +27,11 @@
           <label>{{ modoEdicion ? 'Cambiar Contraseña' : 'Contraseña *' }}</label>
           <div class="input-with-icon">
             <i class="fa-solid fa-lock"></i>
-            <input type="password" name="nuevaPassword" [(ngModel)]="userData.nuevaPassword" 
-                   [placeholder]="modoEdicion ? 'Opcional (Dejar en blanco para no cambiar)' : 'Contraseña inicial'">
+            <input [type]="showPassword ? 'text' : 'password'" name="nuevaPassword" [(ngModel)]="userData.nuevaPassword"
+              [placeholder]="modoEdicion ? 'Opcional (Dejar en blanco para no cambiar)' : 'Contraseña inicial'">
+            <button *ngIf="userData.nuevaPassword" type="button" class="toggle-password-btn" (click)="togglePasswordVisibility('new')" title="Mostrar/Ocultar contraseña">
+              <i class="fa-solid" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+            </button>
           </div>
           <span class="field-hint" *ngIf="modoEdicion">
             Al cambiar la contraseña, se le solicitará al usuario actualizarla al iniciar sesión.
@@ -39,11 +42,14 @@
           <label>{{ modoEdicion ? 'Confirmar Nueva Contraseña' : 'Confirmar Contraseña *' }}</label>
           <div class="input-with-icon">
             <i class="fa-solid fa-shield-halved"></i>
-            <input type="password" name="confirmarPassword" [(ngModel)]="userData.confirmarPassword" 
-                   placeholder="Repetir contraseña"
-                   [class.invalid-field]="userData.nuevaPassword !== userData.confirmarPassword && userData.confirmarPassword.length > 0">
+            <input [type]="showConfirmPassword ? 'text' : 'password'" name="confirmarPassword" [(ngModel)]="userData.confirmarPassword"
+              [class.invalid-field]="userData.nuevaPassword !== userData.confirmarPassword && userData.confirmarPassword.length > 0">
+            <button *ngIf="userData.confirmarPassword" type="button" class="toggle-password-btn" (click)="togglePasswordVisibility('confirm')" title="Mostrar/Ocultar contraseña">
+              <i class="fa-solid" [ngClass]="showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+            </button>
           </div>
-          <span class="error-text" *ngIf="userData.nuevaPassword !== userData.confirmarPassword && userData.confirmarPassword.length > 0">
+          <span class="error-text"
+            *ngIf="userData.nuevaPassword !== userData.confirmarPassword && userData.confirmarPassword.length > 0">
             Las contraseñas no coinciden
           </span>
         </div>
@@ -69,10 +75,8 @@
             <span class="radio-custom"></span> Logística
           </label>
         </div>
+
       </div>
-
-
-
       <div class="form-actions">
         <button type="button" class="action-btn back" routerLink="/user/users">
           Regresar <i class="fa-solid fa-house"></i>
@@ -87,12 +91,13 @@
 
 <!-- Modal de Éxito -->
 @if (showSuccessModal) {
-  <div class="confirm-modal-backdrop" (click)="onCloseSuccess()"></div>
-  <div class="confirm-modal-content">
-    <h4>{{ modoEdicion ? '¡Usuario Actualizado!' : '¡Usuario Creado!' }}</h4>
-    <p>{{ modoEdicion ? 'El usuario ha sido actualizado exitosamente.' : 'El nuevo usuario ha sido registrado exitosamente en el sistema.' }}</p>
-    <div class="modal-actions">
-      <button class="btn btn-success" (click)="onCloseSuccess()">Aceptar</button>
-    </div>
+<div class="confirm-modal-backdrop" (click)="onCloseSuccess()"></div>
+<div class="confirm-modal-content">
+  <h4>{{ modoEdicion ? '¡Usuario Actualizado!' : '¡Usuario Creado!' }}</h4>
+  <p>{{ modoEdicion ? 'El usuario ha sido actualizado exitosamente.' : 'El nuevo usuario ha sido registrado exitosamente
+    en el sistema.' }}</p>
+  <div class="modal-actions">
+    <button class="btn btn-success" (click)="onCloseSuccess()">Aceptar</button>
   </div>
+</div>
 }

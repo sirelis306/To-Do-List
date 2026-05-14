@@ -16,6 +16,8 @@ export class Profile implements OnInit{
   public tempUser: Partial<User> = {};
   public modoEdicion: boolean = false;
   public mensajeEstado: string = '';
+  public loading: boolean = true;
+  public errorCarga: boolean = false;
 
   public currentPassword = '';
   public newPassword = '';
@@ -24,6 +26,11 @@ export class Profile implements OnInit{
 
   public previewImageUrl: string | ArrayBuffer | null = null; 
   public selectedFile: File | null = null;
+
+  // Visibilidad de contraseñas
+  public showCurrentPassword = false;
+  public showNewPassword = false;
+  public showConfirmPassword = false;
 
   constructor(private authService: AuthService) { }
 
@@ -45,9 +52,13 @@ export class Profile implements OnInit{
         };
         this.tempUser = { ...this.user }; 
         this.previewImageUrl = this.user?.foto || null;
+        this.loading = false;
+        this.errorCarga = false;
       },
       (error) => {
         console.error('Error al cargar el perfil', error);
+        this.loading = false;
+        this.errorCarga = true;
       }
     );
   }
@@ -182,5 +193,15 @@ export class Profile implements OnInit{
     this.tempUser.foto = undefined; 
     this.previewImageUrl = null; 
     this.selectedFile = null; 
+  }
+
+  togglePasswordVisibility(field: 'current' | 'new' | 'confirm') {
+    if (field === 'current') {
+      this.showCurrentPassword = !this.showCurrentPassword;
+    } else if (field === 'new') {
+      this.showNewPassword = !this.showNewPassword;
+    } else if (field === 'confirm') {
+      this.showConfirmPassword = !this.showConfirmPassword;
+    }
   }
 }

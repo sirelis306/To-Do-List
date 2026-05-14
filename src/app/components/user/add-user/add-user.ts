@@ -30,6 +30,8 @@ export class AddUser implements OnInit {
   userId: number | null = null;
   tituloPagina: string = 'Nuevo Usuario';
   targetUserRole: string = '';
+  showPassword: boolean = false;
+  showConfirmPassword: boolean = false;
 
   public showSuccessModal: boolean = false;
 
@@ -151,5 +153,13 @@ export class AddUser implements OnInit {
   onCloseSuccess() {
     this.showSuccessModal = false;
     this.router.navigate(['/user/users']);
+  }
+
+  togglePasswordVisibility(field: 'new' | 'confirm') {
+    if (field === 'new') {
+      this.showPassword = !this.showPassword;
+    } else {
+      this.showConfirmPassword = !this.showConfirmPassword;
+    }
   }
 }

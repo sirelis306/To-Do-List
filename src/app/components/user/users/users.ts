@@ -40,6 +40,9 @@ export class Users implements OnInit, OnDestroy {
   pageIndex: number = 0;
   pageSizeOptions = [10, 25, 50, 100];
 
+  public showUserDetailsModal: boolean = false;
+  public selectedUser: User | null = null;
+
   constructor(
     private userService: UserService,
     private authService: AuthService,
@@ -133,6 +136,16 @@ export class Users implements OnInit, OnDestroy {
     this.router.navigate(['/user/users/edit', id]);
   }
 
+  onViewDetails(user: User): void {
+    this.selectedUser = user;
+    this.showUserDetailsModal = true;
+  }
+
+  onCloseDetails(): void {
+    this.showUserDetailsModal = false;
+    this.selectedUser = null;
+  }
+
   onDeleteUser(id: number): void {
     if (confirm('¿Estás seguro de eliminar este usuario?')) {
       this.userService.deleteUser(id).subscribe(() => {
@@ -162,7 +175,7 @@ export class Users implements OnInit, OnDestroy {
   }
 
   // Ayudantes para la vista para controlar visibilidad de acciones
-  canEdit(targetUser: User | undefined): boolean {
+  canEdit(targetUser: User | null | undefined): boolean {
     if (!targetUser) return false;
     if (this.isSuperAdmin) return true;
     if (!this.isAdminUser) return false;
@@ -170,7 +183,7 @@ export class Users implements OnInit, OnDestroy {
     return targetUser.role === 'regular' || targetUser.role === 'logistics';
   }
 
-  canDelete(targetUser: User | undefined): boolean {
+  canDelete(targetUser: User | null | undefined): boolean {
     // En este sistema toggleActive actúa como eliminar/activar
     return this.canEdit(targetUser);
   }
