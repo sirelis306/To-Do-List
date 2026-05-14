@@ -191,3 +191,38 @@ body {
     max-height: 2cm !important;
   }
 }
+
+/* Estilos Globales de Scrollbar - Oculto por defecto, visible al pasar el mouse */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+/* Solo mostrar el scrollbar cuando el usuario interactúa con un contenedor que tiene scroll */
+*:hover::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.15); /* Indigo suave */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.4) !important;
+}
+
+/* Soporte para Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+*:hover {
+  scrollbar-color: rgba(99, 102, 241, 0.15) transparent;
+}

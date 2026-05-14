@@ -10,4 +10,8 @@ export interface Article {
   condicion: string;
   locacion: string;
   cantidad: number | null;
+  empresa?: string;
+  isActive: boolean;
+  registeredAt: string;
+  deletedAt: string | null;
 }

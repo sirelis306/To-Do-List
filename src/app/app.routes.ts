@@ -66,11 +66,11 @@ export const routes: Routes = [
 
   { 
     path: '', 
-    redirectTo: '/board', 
+    redirectTo: '/login', 
     pathMatch: 'full' 
   },
   { 
     path: '**', 
-    redirectTo: '/board' 
+    redirectTo: '/login' 
   }
 ];

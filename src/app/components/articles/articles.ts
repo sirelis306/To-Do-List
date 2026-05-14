@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Subject, Subscription } from 'rxjs';
+import { AuthService } from '../../services/auth/authService';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { Article } from '../../models/article';
 import { ArticleService } from '../../services/article/articleService';
@@ -33,11 +34,14 @@ export class MyPaginatorIntl extends MatPaginatorIntl {
 
 export class Articles implements OnInit, OnDestroy {
   public terminoBusqueda: string = "";
-  public categoryFilter: string = "";
-  public categoryOptions: string[] = ['Tecnología', 'Mobiliario', 'Crafty', 'Alimento', 'Limpieza', 'Herramientas', 'Almacenamiento', 'Comunicación', 'Video'];
+  public empresaFilter: string = "";
+  public opcionesEmpresa: string[] = ['JPL', 'PAFAR', '3D3'];
   public showConfirmModal: boolean = false;
   public articleToDeleteId: number | null = null;
+  public articleToRestoreId: number | null = null;
   public confirmMessage: string = "";
+  public confirmActionType: 'delete' | 'restore' = 'delete';
+  public isDeleting: boolean = false;
 
   public showBarcodeModal: boolean = false;
   public showScannerModal: boolean = false;
@@ -51,10 +55,13 @@ export class Articles implements OnInit, OnDestroy {
   public pageIndex: number = 0;
   public pageSizeOptions = [10, 25, 50, 100];
 
+  public isAdmin: boolean = false;
+  public mostrarEliminados: boolean = false;
+
   private searchSubject = new Subject<string>();
   private searchSubscription!: Subscription;
 
-  constructor(private router: Router, private articleService: ArticleService, private route: ActivatedRoute) { }
+  constructor(private router: Router, private articleService: ArticleService, private route: ActivatedRoute, private authService: AuthService) { }
 
   ngOnInit(): void {
     this.searchSubscription = this.searchSubject.pipe(
@@ -64,6 +71,8 @@ export class Articles implements OnInit, OnDestroy {
       this.pageIndex = 0;
       this.cargarArticulos();
     });
+    
+    this.isAdmin = this.authService.isAdmin();
 
     this.cargarArticulos();
 
@@ -87,20 +96,32 @@ export class Articles implements OnInit, OnDestroy {
   }
 
   cargarArticulos(): void {
-    this.articleService.getArticles(this.terminoBusqueda, this.categoryFilter, this.pageIndex + 1, this.pageSize).subscribe(response => {
+    this.articleService.getArticles(this.terminoBusqueda, '', this.pageIndex + 1, this.pageSize, this.mostrarEliminados, this.empresaFilter).subscribe(response => {
       let data = Array.isArray(response) ? response : (response.data || []);
 
-      this.articulosPaginados = data;
-      this.totalArticles = response.meta?.total_items !== undefined ? response.meta.total_items : (response.total !== undefined ? response.total : data.length);
+      // Filtro de seguridad por si la API no filtra correctamente
+      if (this.mostrarEliminados) {
+        this.articulosPaginados = data.filter((a: Article) => a.deletedAt !== null);
+      } else {
+        this.articulosPaginados = data.filter((a: Article) => a.deletedAt === null);
+      }
+      
+      this.totalArticles = response.meta?.total_items !== undefined ? response.meta.total_items : (response.total !== undefined ? response.total : this.articulosPaginados.length);
     });
+  }
+
+  toggleVerEliminados(): void {
+    this.mostrarEliminados = !this.mostrarEliminados;
+    this.pageIndex = 0;
+    this.cargarArticulos();
   }
 
   onBuscar(): void {
     this.searchSubject.next(this.terminoBusqueda);
   }
 
-  onCategoryChange(newCategory: string): void {
-    this.categoryFilter = newCategory;
+  onEmpresaChange(empresa: string): void {
+    this.empresaFilter = empresa;
     this.pageIndex = 0;
     this.cargarArticulos();
   }
@@ -121,23 +142,75 @@ export class Articles implements OnInit, OnDestroy {
   }
 
   onDelete(articulo: Article): void {
-    this.articleToDeleteId = articulo.id;
-    this.confirmMessage = `¿Estás seguro de que quieres eliminar "${articulo.nombre}"?`;
+    this.articleToDeleteId = articulo.id as number;
+    this.confirmMessage = `¿Estás seguro de que deseas desactivar el producto "${articulo.nombre}"?`;
+    this.confirmActionType = 'delete';
     this.showConfirmModal = true;
   }
 
+  verDetalles(articulo: Article): void {
+    this.scannedArticle = articulo;
+    this.showScannedDetailsModal = true;
+  }
+
+  onRestore(articulo: Article): void {
+    this.articleToRestoreId = articulo.id as number;
+    this.confirmMessage = `¿Estás seguro de que deseas restaurar el producto "${articulo.nombre}" al listado activo?`;
+    this.confirmActionType = 'restore';
+    this.showConfirmModal = true;
+  }
+
+  onConfirmAction(): void {
+    if (this.confirmActionType === 'delete') {
+      this.onConfirmDelete();
+    } else {
+      this.onConfirmRestore();
+    }
+  }
+
   onConfirmDelete(): void {
-    if (this.articleToDeleteId) {
-      this.articleService.deleteArticle(this.articleToDeleteId).subscribe(() => {
-        this.cargarArticulos();
+    if (this.articleToDeleteId && !this.isDeleting) {
+      this.isDeleting = true;
+      this.articleService.deleteArticle(this.articleToDeleteId).subscribe({
+        next: () => {
+          this.cargarArticulos();
+          this.isDeleting = false;
+          this.onCancelDelete();
+        },
+        error: (err) => {
+          console.error('Error al eliminar o producto ya eliminado:', err);
+          this.isDeleting = false;
+          this.onCancelDelete();
+          this.cargarArticulos(); // Recargar para limpiar la lista
+        }
+      });
+    } else {
+      this.onCancelDelete();
+    }
+  }
+
+  onConfirmRestore(): void {
+    if (this.articleToRestoreId && !this.isDeleting) {
+      this.isDeleting = true;
+      this.articleService.restoreArticle(this.articleToRestoreId).subscribe({
+        next: () => {
+          this.cargarArticulos();
+          this.isDeleting = false;
+          this.onCancelDelete();
+        },
+        error: (err) => {
+          console.error('Error al restaurar producto', err);
+          this.isDeleting = false;
+          this.onCancelDelete();
+        }
       });
     }
-    this.onCancelDelete();
   }
 
   onCancelDelete(): void {
     this.showConfirmModal = false;
     this.articleToDeleteId = null;
+    this.articleToRestoreId = null;
     this.confirmMessage = "";
   }
 

@@ -18,8 +18,9 @@ import { CustomDropdown } from '../custom-dropdown/custom-dropdown';
 export class AddArticle implements OnInit {
   public modoEdicion: boolean = false;
   public tituloPagina: string = "Nuevo Producto";
-  private idArticuloActual: number | null = null;
+  public idArticuloActual: number | null = null;
   public opcionesCondicion: string[] = ['Nuevo', 'Usado', 'Defectuoso', 'Dañado'];
+  public opcionesEmpresa: string[] = ['JPL', 'PAFAR', '3D3'];
 
   public nuevoProducto: Partial<Article> = {
     nombre: '',
@@ -29,9 +30,11 @@ export class AddArticle implements OnInit {
     caracteristicas: '',
     color: '',
     serial: null,
-    condicion: '',
+    condicion: 'Nuevo',
     locacion: '',
     cantidad: 1,
+    empresa: 'JPL',
+    registeredAt: new Date().toISOString().split('T')[0]
   };
 
   public showSuccessModal: boolean = false;
@@ -70,7 +73,7 @@ export class AddArticle implements OnInit {
 
     // Validación manual simple antes de proceder
     if (!this.nuevoProducto.nombre || !this.nuevoProducto.categoria || !this.nuevoProducto.marca ||
-      !this.nuevoProducto.modelo || !this.nuevoProducto.serial || !this.nuevoProducto.condicion ||
+      !this.nuevoProducto.modelo || !this.nuevoProducto.condicion ||
       !this.nuevoProducto.color || !this.nuevoProducto.locacion || !this.nuevoProducto.caracteristicas) {
 
       this.modalTitle = "Faltan datos";

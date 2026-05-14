@@ -14,18 +14,25 @@ export class ArticleService {
   constructor(private http: HttpClient) { }
 
   /* Obtiene la lista de productos desde la API con paginación y búsqueda */
-  getArticles(busqueda: string = '', category: string = '', page: number = 1, limit: number = 10): Observable<any> {
+  getArticles(busqueda: string = '', category: string = '', page: number = 1, limit: number = 10, deleted: boolean = false, empresa: string = ''): Observable<any> {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('limit', limit.toString())
       .set('per_page', limit.toString())
       .set('size', limit.toString());
 
+    if (deleted) {
+      params = params.set('only_deleted', '1');
+    }
+
     if (busqueda) {
       params = params.set('search', busqueda);
     }
     if (category) {
       params = params.set('category', category);
+    }
+    if (empresa) {
+      params = params.set('empresa', empresa);
     }
 
     return this.http.get<any>(this.apiUrl, { params });
@@ -45,5 +52,9 @@ export class ArticleService {
 
   deleteArticle(id: number | string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+
+  restoreArticle(id: number | string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${id}/toggle-active`, {});
   }
 }

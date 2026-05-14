@@ -15,7 +15,7 @@
           <div class="input-wrapper">
             <i class="fa-solid fa-box"></i>
             <input type="text" [(ngModel)]="nuevoProducto.nombre" name="nombre" placeholder="Ej: Laptop" required
-              [class.is-invalid]="submitted && !nuevoProducto.nombre">
+              maxlength="100" [class.is-invalid]="submitted && !nuevoProducto.nombre">
           </div>
         </div>
 
@@ -23,8 +23,21 @@
           <label>Categoría</label>
           <div class="input-wrapper">
             <i class="fa-solid fa-tags"></i>
-            <input type="text" [(ngModel)]="nuevoProducto.categoria" name="categoria" placeholder="Ej: Electrónica"
-              required [class.is-invalid]="submitted && !nuevoProducto.categoria">
+            <input type="text" [(ngModel)]="nuevoProducto.categoria" name="categoria" placeholder="Ej: Electrónica" required
+              maxlength="50" [class.is-invalid]="submitted && !nuevoProducto.categoria">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Empresa (Opcional)</label>
+          <div class="form-custom-select">
+            <app-custom-dropdown 
+              [options]="opcionesEmpresa" 
+              [selectedValue]="nuevoProducto.empresa || ''" 
+              label="Seleccionar..."
+              icon="fa-building"
+              (valueChange)="nuevoProducto.empresa = $event">
+            </app-custom-dropdown>
           </div>
         </div>
 
@@ -33,7 +46,7 @@
           <div class="input-wrapper">
             <i class="fa-solid fa-copyright"></i>
             <input type="text" [(ngModel)]="nuevoProducto.marca" name="marca" placeholder="Ej: Apple" required
-              [class.is-invalid]="submitted && !nuevoProducto.marca">
+              maxlength="50" [class.is-invalid]="submitted && !nuevoProducto.marca">
           </div>
         </div>
 
@@ -42,16 +55,15 @@
           <div class="input-wrapper">
             <i class="fa-solid fa-code-branch"></i>
             <input type="text" [(ngModel)]="nuevoProducto.modelo" name="modelo" placeholder="Ej: MacBook Air" required
-              [class.is-invalid]="submitted && !nuevoProducto.modelo">
+              maxlength="50" [class.is-invalid]="submitted && !nuevoProducto.modelo">
           </div>
         </div>
 
         <div class="form-group">
-          <label>Serial / Código</label>
+          <label>Serial / Código (Opcional)</label>
           <div class="input-wrapper">
             <i class="fa-solid fa-barcode"></i>
-            <input type="text" [(ngModel)]="nuevoProducto.serial" name="serial" placeholder="Número de serie" required
-              [class.is-invalid]="submitted && !nuevoProducto.serial">
+            <input type="text" [(ngModel)]="nuevoProducto.serial" name="serial" placeholder="Número de serie" maxlength="50">
           </div>
         </div>
 
@@ -73,7 +85,16 @@
           <div class="input-wrapper">
             <i class="fa-solid fa-palette"></i>
             <input type="text" [(ngModel)]="nuevoProducto.color" name="color" placeholder="Ej: Gris" required
-              [class.is-invalid]="submitted && !nuevoProducto.color">
+              maxlength="30" [class.is-invalid]="submitted && !nuevoProducto.color">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Fecha de Registro</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-calendar-days"></i>
+            <input type="date" [(ngModel)]="nuevoProducto.registeredAt" name="registeredAt" required
+              [class.is-invalid]="submitted && !nuevoProducto.registeredAt">
           </div>
         </div>
 
@@ -82,7 +103,7 @@
           <div class="input-wrapper">
             <i class="fa-solid fa-location-dot"></i>
             <input type="text" [(ngModel)]="nuevoProducto.locacion" name="locacion" placeholder="Ej: Logística"
-              required [class.is-invalid]="submitted && !nuevoProducto.locacion">
+              required maxlength="50" [class.is-invalid]="submitted && !nuevoProducto.locacion">
           </div>
         </div>
 
@@ -91,7 +112,7 @@
           <div class="input-wrapper">
             <i class="fa-solid fa-list-ul"></i>
             <input type="text" [(ngModel)]="nuevoProducto.caracteristicas" name="caracteristicas"
-              placeholder="Ej: 16GB RAM, 512GB SSD" required [class.is-invalid]="submitted && !nuevoProducto.caracteristicas">
+              placeholder="Ej: 16GB RAM, 512GB SSD" required maxlength="255" [class.is-invalid]="submitted && !nuevoProducto.caracteristicas">
           </div>
         </div>
 
