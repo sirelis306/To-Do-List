@@ -37,8 +37,9 @@ body {
   body { font-size: 12px; } /* ~75% de 16px para extra compactación */
   
   h1 { font-size: 1.5rem !important; }
-  .admin-page, .main-content { padding: 1rem !important; }
+  .admin-page, .main-content:not(.no-sidebar) { padding: 1rem !important; }
   .admin-page { padding-top: 4.5rem !important; }
+  .main-content.no-sidebar { padding: 0 !important; }
 }
 
 /* Reglas Globales de Impresión */

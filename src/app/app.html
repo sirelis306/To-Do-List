@@ -15,7 +15,7 @@
     <app-chatbot></app-chatbot>
   }
   
-  <main class="main-content">
+  <main class="main-content" [class.no-sidebar]="!showSidebar">
     <router-outlet></router-outlet>
   </main>
   
