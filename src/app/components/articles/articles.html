@@ -60,14 +60,30 @@
       <table class="modern-table">
         <thead>
           <tr>
-            <th>PRODUCTO</th>
-            <th>EMPRESA</th>
-            <th>CATEGORÍA</th>
-            <th>MARCA/MODELO</th>
-            <th>SERIAL</th>
-            <th>CONDICIÓN</th>
-            <th>UBICACIÓN</th>
-            <th>CANTIDAD</th>
+            <th (click)="onSort('nombre')" class="sortable">
+              PRODUCTO <i class="fa-solid" [ngClass]="getSortIcon('nombre')"></i>
+            </th>
+            <th (click)="onSort('empresa')" class="sortable">
+              EMPRESA <i class="fa-solid" [ngClass]="getSortIcon('empresa')"></i>
+            </th>
+            <th (click)="onSort('categoria')" class="sortable">
+              CATEGORÍA <i class="fa-solid" [ngClass]="getSortIcon('categoria')"></i>
+            </th>
+            <th (click)="onSort('marca')" class="sortable">
+              MARCA/MODELO <i class="fa-solid" [ngClass]="getSortIcon('marca')"></i>
+            </th>
+            <th (click)="onSort('serial')" class="sortable">
+              SERIAL <i class="fa-solid" [ngClass]="getSortIcon('serial')"></i>
+            </th>
+            <th (click)="onSort('condicion')" class="sortable">
+              CONDICIÓN <i class="fa-solid" [ngClass]="getSortIcon('condicion')"></i>
+            </th>
+            <th (click)="onSort('locacion')" class="sortable">
+              UBICACIÓN <i class="fa-solid" [ngClass]="getSortIcon('locacion')"></i>
+            </th>
+            <th (click)="onSort('cantidad')" class="sortable">
+              CANTIDAD <i class="fa-solid" [ngClass]="getSortIcon('cantidad')"></i>
+            </th>
             <th>ACCIONES</th>
           </tr>
         </thead>
@@ -231,12 +247,11 @@
       </div>
       <div class="detail-item">
         <span class="detail-label">{{ scannedArticle.deletedAt ? 'Fecha Desactivación' : 'Fecha Registro' }}</span>
-        <span class="detail-value">{{ (scannedArticle.deletedAt || scannedArticle.registeredAt) | date:'dd/MM/yyyy
-          HH:mm' }}</span>
+        <span class="detail-value">{{ (scannedArticle.deletedAt || scannedArticle.registeredAt) | date:'dd/MM/yyyy' }}</span>
       </div>
       <div class="detail-item full-width">
         <span class="detail-label">Características</span>
-        <span class="detail-value text-detail-block">{{ scannedArticle.caracteristicas }}</span>
+        <span class="detail-value text-detail-block">{{ scannedArticle.caracteristicas | uppercase }}</span>
       </div>
     </div>
   </div>

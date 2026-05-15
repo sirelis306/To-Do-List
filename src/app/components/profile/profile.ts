@@ -152,6 +152,11 @@ export class Profile implements OnInit{
         return;
       }
 
+      if (this.newPassword === this.currentPassword) {
+        this.passwordError = 'La nueva contraseña no puede ser igual a la actual.';
+        return;
+      }
+
       // 1. Primero validamos si la contraseña actual es correcta
       this.authService.checkPassword(this.currentPassword).subscribe({
         next: (res) => {

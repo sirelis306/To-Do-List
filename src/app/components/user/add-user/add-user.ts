@@ -106,19 +106,24 @@ export class AddUser implements OnInit {
   }
 
   onSubmit(): void {
+    const roleValue = this.userData.role === 'superadmin' ? 'ROLE_SUPER_ADMIN' : 
+                     (this.userData.role === 'admin' ? 'ROLE_ADMIN' : 
+                     (this.userData.role === 'logistics' ? 'ROLE_LOGISTICS' : 'ROLE_USER'));
+
     const apiData: any = {
       email: this.userData.email,
       name: this.userData.nombre,
       surname: this.userData.apellido,
-      roles: [
-        this.userData.role === 'superadmin' ? 'ROLE_SUPER_ADMIN' : 
-        (this.userData.role === 'admin' ? 'ROLE_ADMIN' : 
-        (this.userData.role === 'logistics' ? 'ROLE_LOGISTICS' : 'ROLE_USER'))
-      ]
+      roles: [roleValue],
+      role: roleValue // Enviamos ambos por compatibilidad con el endpoint de registro
     };
 
     // Validar contraseñas si se ingresó algo
     if (this.userData.nuevaPassword || !this.modoEdicion) {
+      if (this.userData.nuevaPassword.length < 6 && (this.userData.nuevaPassword || !this.modoEdicion)) {
+        alert('La contraseña debe tener al menos 6 caracteres');
+        return;
+      }
       if (this.userData.nuevaPassword !== this.userData.confirmarPassword) {
         alert('Las contraseñas no coinciden');
         return;

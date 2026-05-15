@@ -13,13 +13,15 @@ export class ArticleService {
 
   constructor(private http: HttpClient) { }
 
-  /* Obtiene la lista de productos desde la API con paginación y búsqueda */
-  getArticles(busqueda: string = '', category: string = '', page: number = 1, limit: number = 10, deleted: boolean = false, empresa: string = ''): Observable<any> {
+  /* Obtiene la lista de productos desde la API con paginación, búsqueda y ordenamiento */
+  getArticles(busqueda: string = '', category: string = '', page: number = 1, limit: number = 10, deleted: boolean = false, empresa: string = '', sort: string = 'id', order: string = 'DESC'): Observable<any> {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('limit', limit.toString())
       .set('per_page', limit.toString())
-      .set('size', limit.toString());
+      .set('size', limit.toString())
+      .set('sort', sort)
+      .set('order', order);
 
     if (deleted) {
       params = params.set('only_deleted', '1');

@@ -28,13 +28,14 @@
           <div class="input-with-icon">
             <i class="fa-solid fa-lock"></i>
             <input [type]="showPassword ? 'text' : 'password'" name="nuevaPassword" [(ngModel)]="userData.nuevaPassword"
-              [placeholder]="modoEdicion ? 'Opcional (Dejar en blanco para no cambiar)' : 'Contraseña inicial'">
+              [placeholder]="modoEdicion ? 'Opcional (Dejar en blanco para no cambiar)' : 'Contraseña inicial'"
+              minlength="6">
             <button *ngIf="userData.nuevaPassword" type="button" class="toggle-password-btn" (click)="togglePasswordVisibility('new')" title="Mostrar/Ocultar contraseña">
               <i class="fa-solid" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
             </button>
           </div>
-          <span class="field-hint" *ngIf="modoEdicion">
-            Al cambiar la contraseña, se le solicitará al usuario actualizarla al iniciar sesión.
+          <span class="field-hint">
+            Mínimo 6 caracteres. {{ modoEdicion ? 'Al cambiarla, se le solicitará al usuario actualizarla al iniciar sesión.' : '' }}
           </span>
         </div>
 
@@ -63,7 +64,7 @@
             <span class="radio-custom"></span> Super Admin
           </label>
           <label class="radio-label">
-            <input type="radio" name="role" value="admin" [(ngModel)]="userData.role" [disabled]="!isSuperAdmin">
+            <input type="radio" name="role" value="admin" [(ngModel)]="userData.role" [disabled]="!isAdmin">
             <span class="radio-custom"></span> Administrador
           </label>
           <label class="radio-label">

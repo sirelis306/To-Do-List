@@ -110,6 +110,7 @@
 }
 
 .content-card {
+  width: 100%;
   max-width: 1400px;
   margin: 0 auto;
   background: white;
@@ -203,8 +204,13 @@
 }
 
 .table-wrapper {
-  margin-bottom: 2rem;
-  overflow-x: auto;
+  width: 100%;
+  margin-bottom: 0.5rem;
+  overflow: auto;
+  max-height: calc(100vh - 250px); 
+  border-radius: 8px;
+  border: 1px solid #f1f5f9;
+  position: relative;
 }
 
 .modern-table {
@@ -213,18 +219,43 @@
 }
 
 .modern-table th {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: #f8fafc; /* Fondo para que no se vea el contenido debajo al scrollear */
   text-align: left;
   padding: 1rem;
   color: #94a3b8;
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.05em;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 2px solid #f1f5f9;
   height: 50px;
 }
 
 .modern-table th:last-child {
   text-align: center;
+}
+
+.modern-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s;
+}
+
+.modern-table th.sortable:hover {
+  background: #f1f5f9 !important;
+  color: #6366f1;
+}
+
+.modern-table th i {
+  margin-left: 0.5rem;
+  font-size: 0.7rem;
+  transition: all 0.2s;
+}
+
+.opacity-20 {
+  opacity: 0.2;
 }
 
 .modern-table td {

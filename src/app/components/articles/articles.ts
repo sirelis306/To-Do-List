@@ -58,6 +58,9 @@ export class Articles implements OnInit, OnDestroy {
   public isAdmin: boolean = false;
   public mostrarEliminados: boolean = false;
 
+  public sortField: string = 'id';
+  public sortOrder: 'ASC' | 'DESC' = 'DESC';
+
   private searchSubject = new Subject<string>();
   private searchSubscription!: Subscription;
 
@@ -96,7 +99,16 @@ export class Articles implements OnInit, OnDestroy {
   }
 
   cargarArticulos(): void {
-    this.articleService.getArticles(this.terminoBusqueda, '', this.pageIndex + 1, this.pageSize, this.mostrarEliminados, this.empresaFilter).subscribe(response => {
+    this.articleService.getArticles(
+      this.terminoBusqueda, 
+      '', 
+      this.pageIndex + 1, 
+      this.pageSize, 
+      this.mostrarEliminados, 
+      this.empresaFilter,
+      this.sortField,
+      this.sortOrder
+    ).subscribe(response => {
       let data = Array.isArray(response) ? response : (response.data || []);
 
       // Filtro de seguridad por si la API no filtra correctamente
@@ -274,5 +286,27 @@ export class Articles implements OnInit, OnDestroy {
   onCloseScannedDetails(): void {
     this.showScannedDetailsModal = false;
     this.scannedArticle = null;
+  }
+
+  onSort(field: string): void {
+    if (this.sortField === field) {
+      if (this.sortOrder === 'ASC') {
+        this.sortOrder = 'DESC';
+      } else {
+        // Tercer estado: Volver al orden por defecto (id, DESC)
+        this.sortField = 'id';
+        this.sortOrder = 'DESC';
+      }
+    } else {
+      this.sortField = field;
+      this.sortOrder = 'ASC';
+    }
+    this.pageIndex = 0;
+    this.cargarArticulos();
+  }
+
+  getSortIcon(field: string): string {
+    if (this.sortField !== field) return 'fa-sort opacity-20';
+    return this.sortOrder === 'ASC' ? 'fa-sort-up' : 'fa-sort-down';
   }
 }

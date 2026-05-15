@@ -26,8 +26,13 @@
       <div class="warning-icon">
         <i class="fa-solid fa-key"></i>
       </div>
-      <h4>Acción Requerida</h4>
-      <p>Un administrador ha restablecido tu contraseña. Por seguridad, debes cambiarla antes de continuar.</p>
+      <h4>{{ isNewUser ? '¡Bienvenido al Sistema!' : 'Acción Requerida' }}</h4>
+      <p>
+        {{ isNewUser 
+          ? 'Por ser tu primer ingreso, es necesario que personalices tu contraseña para asegurar tu cuenta.' 
+          : 'Un administrador ha restablecido tu contraseña. Por seguridad, debes cambiarla antes de continuar.' 
+        }}
+      </p>
       <button class="btn-change-now" (click)="goToProfile()">
         Cambiar ahora <i class="fa-solid fa-arrow-right"></i>
       </button>

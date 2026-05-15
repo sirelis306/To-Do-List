@@ -17,12 +17,14 @@ export class App {
   public showSidebar: boolean = false; 
   public isSidebarCollapsed: boolean = false;
   public showPasswordWarning: boolean = false;
+  public isNewUser: boolean = false;
 
   constructor(private router: Router, private authService: AuthService) {
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
-      this.showSidebar = (event.url !== '/login');
+      const url = event.urlAfterRedirects || event.url;
+      this.showSidebar = !url.includes('/login');
       
       this.verificarCambioContrasena();
 
@@ -43,6 +45,16 @@ export class App {
 
     if (user && user.mustChangePassword && !isProfilePage && !isLoginPage) {
       this.showPasswordWarning = true;
+      
+      // Si fue creado hace menos de 2 días, consideramos que es bienvenida
+      if (user.createdAt) {
+        const createdDate = new Date(user.createdAt);
+        const now = new Date();
+        const diffDays = Math.ceil(Math.abs(now.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24));
+        this.isNewUser = diffDays <= 2;
+      } else {
+        this.isNewUser = true; // Por defecto si no hay fecha, asumimos bienvenida
+      }
     } else {
       this.showPasswordWarning = false;
     }
