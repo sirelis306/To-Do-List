@@ -34,7 +34,7 @@
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
   padding: 40px 45px;
   width: 100%;
-  max-width: 550px;
+  max-width: 420px; /* Reducido de 550px a 420px para un aspecto más compacto y premium */
   box-sizing: border-box; 
 }
 

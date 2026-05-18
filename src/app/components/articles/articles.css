@@ -471,6 +471,10 @@
   padding: 2.5rem;
   text-align: center;
   background: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .barcode-info {
@@ -491,13 +495,139 @@
   color: #64748b;
 }
 
+.barcode-container-inner {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: stretch;
+  margin: 0 auto;
+  min-width: 140px; /* Ancho mínimo en pantalla para evitar amontonamientos */
+}
+
+#barcode {
+  width: 100%;
+  height: auto;
+  max-height: 150px;
+}
+
 .barcode-image-container {
   display: flex;
   justify-content: center;
-  padding: 1rem;
-  background: white;
-  border: 1px dashed #e2e8f0;
-  border-radius: 12px;
+  padding: 1rem 0;
+  background: transparent;
+  border: none;
+}
+
+.barcode-footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Centrados juntos */
+  gap: 2.5rem; /* ID y Logo más separados en pantalla */
+  margin-top: 1.2rem;
+  padding: 0.8rem 0.5rem 0 0.5rem;
+  border-top: 1px dashed #e2e8f0;
+}
+
+.barcode-id-display {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #475569;
+  font-family: 'JetBrains Mono', 'Courier New', Courier, monospace;
+  background: #f8fafc;
+  padding: 0.3rem 0.7rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.barcode-logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0;
+}
+
+.company-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 0.8rem;
+  border-radius: 10px;
+  background: #ffffff;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.logo-image {
+  width: auto;
+  object-fit: contain;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+/* JPL styles */
+.jpl-logo {
+  background: rgba(29, 78, 216, 0.04);
+  border: 1px solid rgba(29, 78, 216, 0.08);
+}
+.jpl-logo .logo-image {
+  height: 18px; /* JPL un poco más pequeño para balancearse con códigos estrechos */
+  animation: jplPulse 3s infinite ease-in-out;
+}
+
+/* PAFAR styles */
+.pafar-logo {
+  background: rgba(21, 128, 61, 0.04);
+  border: 1px solid rgba(21, 128, 61, 0.08);
+}
+.pafar-logo .logo-image {
+  height: 48px; /* PAFAR scaled up to be more visible */
+  animation: pafarPulse 2.5s infinite ease-in-out;
+}
+
+/* 3D3 styles */
+.logo-3d3 {
+  background: rgba(194, 65, 12, 0.04);
+  border: 1px solid rgba(194, 65, 12, 0.08);
+}
+.logo-3d3 .logo-image {
+  height: 56px; /* 3D3 scaled up to be more visible */
+  animation: logo3d3Bounce 2.5s infinite ease-in-out;
+}
+
+/* Default Logo (Fallback to PAFAR) styles */
+.default-logo {
+  background: rgba(21, 128, 61, 0.04);
+  border: 1px solid rgba(21, 128, 61, 0.08);
+}
+.default-logo .logo-image {
+  height: 48px; /* Fallback to PAFAR scaled up */
+  animation: emeriaPulse 2s infinite ease-in-out;
+}
+
+/* Hover effects */
+.company-logo:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  background: #ffffff;
+}
+
+/* Animations */
+@keyframes jplPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes pafarPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+
+@keyframes logo3d3Bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes emeriaPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
 }
 
 .barcode-footer-hint {
@@ -558,7 +688,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: none;
 }
 
 .header-title-info {
@@ -607,7 +737,7 @@
 .details-modal-content .modal-actions {
   padding: 1.2rem 2rem;
   background: #f8fafc;
-  border-top: 1px solid #f1f5f9;
+  border-top: none;
   display: flex;
   gap: 1rem;
   justify-content: flex-end;
@@ -747,7 +877,6 @@
 }
 
 @media (max-width: 1024px) {
-
   .modern-table th:nth-child(4),
   .modern-table td:nth-child(4) {
     display: none;
@@ -755,14 +884,29 @@
 }
 
 @media (max-width: 768px) {
-  .admin-page {
-    padding: 1.5rem 1rem;
-  }
-
   .page-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 1.5rem;
+    gap: 1rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+
+
+  .header-actions {
+    display: flex;
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+    width: 100% !important;
+  }
+
+  .history-btn,
+  .new-item-btn {
+    width: 100% !important;
+    justify-content: center !important;
+    padding: 0.6rem 1rem !important;
+    font-size: 0.85rem !important;
   }
 
   .filters-bar {
@@ -797,7 +941,7 @@
   }
 
   .detail-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 1rem;
   }
 
@@ -813,4 +957,110 @@
   .details-modal-content .modal-actions .btn {
     width: 100%;
   }
+
+  .details-modal-content .title-with-id h4 {
+    font-size: 1.05rem !important;
+  }
+
+  .details-modal-content .id-badge-sub {
+    font-size: 0.8rem !important;
+  }
+
+  .details-modal-content .detail-label {
+    font-size: 0.68rem !important;
+  }
+
+  .details-modal-content .detail-value {
+    font-size: 0.88rem !important;
+  }
 }
+
+@media (max-width: 576px) {
+  .page-header {
+    margin-bottom: 1rem !important;
+    padding: 0 0.2rem !important;
+  }
+
+  .breadcrumb {
+    font-size: 0.9rem !important;
+  }
+
+  .history-btn,
+  .new-item-btn {
+    padding: 0.5rem 0.8rem !important;
+    font-size: 0.8rem !important;
+  }
+
+  .filters-bar {
+    gap: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  .modern-table th {
+    padding: 0.5rem 0.15rem !important;
+    font-size: 0.56rem !important;
+    height: auto !important;
+    white-space: nowrap !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.02em !important;
+  }
+
+  .modern-table th i {
+    margin-left: 0.15rem !important;
+    font-size: 0.52rem !important;
+  }
+
+  .modern-table td {
+    padding: 0.45rem 0.25rem !important;
+    font-size: 0.7rem !important;
+  }
+
+  .item-name {
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+  }
+
+  .item-id {
+    font-size: 0.6rem !important;
+    color: #94a3b8 !important;
+  }
+
+  .actions-cell {
+    gap: 0.45rem !important;
+  }
+
+  .icon-btn {
+    font-size: 0.82rem !important;
+    padding: 0.15rem !important;
+  }
+
+  .details-modal-content .title-with-id h4 {
+    font-size: 0.92rem !important;
+  }
+
+  .details-modal-content .id-badge-sub {
+    font-size: 0.72rem !important;
+  }
+
+  .details-modal-content .detail-label {
+    font-size: 0.58rem !important;
+  }
+
+  .details-modal-content .detail-value {
+    font-size: 0.76rem !important;
+  }
+
+  .details-modal-content .text-detail-block {
+    font-size: 0.72rem !important;
+    padding: 0.7rem !important;
+  }
+
+  .modern-table th:nth-child(2),
+  .modern-table td:nth-child(2),
+  .modern-table th:nth-child(6),
+  .modern-table td:nth-child(6),
+  .modern-table th:nth-child(7),
+  .modern-table td:nth-child(7) {
+    display: none;
+  }
+}

@@ -62,37 +62,7 @@ app-sidebar {
   display: none; /* Oculto por defecto en desktop */
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .sidebar-overlay {
-    display: block; /* Solo visible en móvil */
-  }
-  .mobile-menu-toggle {
-    display: flex;
-  }
 
-  .app-layout {
-    flex-direction: column;
-  }
-
-  .main-content {
-    width: 100% !important;
-    margin-left: 0 !important;
-  }
-
-  /* Force sidebar host to be an overlay on mobile if it exists */
-  app-sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 0;
-    height: 100%;
-  }
-  
-  .app-layout:not(.sidebar-collapsed) app-sidebar {
-    width: 260px;
-  }
-}
 
 /* Password Warning Modal */
 .password-warning-backdrop {
@@ -170,8 +140,40 @@ app-sidebar {
   background: #2c389c;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(50, 64, 165, 0.3);
+}/* Responsive adjustments */
+@media (max-width: 768px) {
+  .sidebar-overlay {
+    display: block; /* Solo visible en móvil */
+  }
+  .mobile-menu-toggle {
+    display: flex;
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 14px !important;
+    border-radius: 6px !important;
+    top: 12px !important;
+    left: 12px !important;
+  }
+
+  .app-layout {
+    flex-direction: column;
+  }
+
+  .main-content {
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+
+  /* Force sidebar host to be an overlay on mobile if it exists */
+  app-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+  }
+  
+  .app-layout:not(.sidebar-collapsed) app-sidebar {
+    width: 260px;
+  }
 }
-
-
-
-

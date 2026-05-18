@@ -173,10 +173,38 @@
       <span class="product-name">{{ selectedArticle?.nombre }}</span>
       <span class="product-meta">{{ selectedArticle?.marca }} - {{ selectedArticle?.modelo }}</span>
     </div>
-    <div class="barcode-image-container">
-      <svg id="barcode"></svg>
+    <div class="barcode-container-inner">
+      <div class="barcode-image-container">
+        <svg id="barcode"></svg>
+      </div>
+      <div class="barcode-footer-row">
+        <div class="barcode-id-display">
+          {{ selectedArticle?.id }}
+        </div>
+        <div class="barcode-logo-container" [ngSwitch]="selectedArticle?.empresa?.toUpperCase()">
+          <!-- JPL Logo -->
+          <div *ngSwitchCase="'JPL'" class="company-logo jpl-logo">
+            <img src="img/Logo_JPL.png" alt="JPL Logo" class="logo-image">
+          </div>
+          
+          <!-- PAFAR Logo -->
+          <div *ngSwitchCase="'PAFAR'" class="company-logo pafar-logo">
+            <img src="img/Logo_PAFAR.png" alt="PAFAR Logo" class="logo-image">
+          </div>
+          
+          <!-- 3D3 Logo -->
+          <div *ngSwitchCase="'3D3'" class="company-logo logo-3d3">
+            <img src="img/Logo_3D3.png" alt="3D3 Logo" class="logo-image">
+          </div>
+          
+          <!-- Default Logo (Fallback to PAFAR) -->
+          <div *ngSwitchDefault class="company-logo default-logo">
+            <img src="img/Logo_PAFAR.png" alt="Logo" class="logo-image">
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="barcode-footer-hint">
+    <div class="barcode-footer-hint no-print">
       Presione el botón de escanear para leer el código
     </div>
   </div>
@@ -238,6 +266,7 @@
         <span class="detail-label">Color</span>
         <span class="detail-value">{{ scannedArticle.color }}</span>
       </div>
+
       <div class="detail-item">
         <span class="detail-label">Empresa</span>
         <span class="empresa-chip"

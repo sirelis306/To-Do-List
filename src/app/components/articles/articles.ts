@@ -238,7 +238,8 @@ export class Articles implements OnInit, OnDestroy {
           lineColor: "#000",
           width: 2,
           height: 80,
-          displayValue: true
+          displayValue: false,
+          margin: 0
         });
       }
     }, 50);
@@ -250,7 +251,17 @@ export class Articles implements OnInit, OnDestroy {
   }
 
   onPrintBarcode(): void {
+    const originalTitle = document.title;
+    if (this.selectedArticle && this.selectedArticle.id) {
+      document.title = this.selectedArticle.id.toString();
+    }
+    
     window.print();
+    
+    // Restaurar el título original de la página para que la pestaña no sufra cambios permanentes
+    setTimeout(() => {
+      document.title = originalTitle;
+    }, 150);
   }
 
   onOpenScanner(): void {
@@ -260,19 +271,50 @@ export class Articles implements OnInit, OnDestroy {
   onScanResult(result: string): void {
     this.showScannerModal = false;
 
-    // Hacemos la búsqueda rápida del producto escaneado
-    this.articleService.getArticles(result, '', 1, 50).subscribe(response => {
-      let data = Array.isArray(response) ? response : (response.data || []);
+    const cleanResult = result.trim();
+    const isNumericId = !isNaN(Number(cleanResult)) && Number(cleanResult) > 0 && !cleanResult.includes('.');
 
-      const exactMatch = data.find((a: Article) => a.serial === result || a.id.toString() === result);
+    if (isNumericId) {
+      // Intentamos obtener el producto directamente por su ID primario (es 100% exacto y rápido)
+      this.articleService.getArticleById(cleanResult).subscribe({
+        next: (response: any) => {
+          // Robustez por si la API lo devuelve envuelto en "data" o directamente
+          const product = (response && response.data) ? response.data : response;
+          if (product && (product.id || product.nombre)) {
+            this.scannedArticle = product;
+            this.showScannedDetailsModal = true;
+          } else {
+            this.buscarPorSerialOTexto(cleanResult);
+          }
+        },
+        error: () => {
+          // Si da error (como un 404 porque no existe ese ID), buscamos por texto/serial
+          this.buscarPorSerialOTexto(cleanResult);
+        }
+      });
+    } else {
+      this.buscarPorSerialOTexto(cleanResult);
+    }
+  }
 
-      if (exactMatch) {
-        // Mostramos el modal de detalles
-        this.scannedArticle = exactMatch;
-        this.showScannedDetailsModal = true;
-      } else {
-        // Si no hay match exacto, usamos el buscador normal
-        this.terminoBusqueda = result;
+  private buscarPorSerialOTexto(termino: string): void {
+    this.articleService.getArticles(termino, '', 1, 50).subscribe({
+      next: (response) => {
+        let data = Array.isArray(response) ? response : (response.data || []);
+        const exactMatch = data.find((a: Article) => a.serial === termino || a.id.toString() === termino);
+
+        if (exactMatch) {
+          this.scannedArticle = exactMatch;
+          this.showScannedDetailsModal = true;
+        } else {
+          // Si no hay match exacto, usamos el buscador normal
+          this.terminoBusqueda = termino;
+          this.pageIndex = 0;
+          this.cargarArticulos();
+        }
+      },
+      error: () => {
+        this.terminoBusqueda = termino;
         this.pageIndex = 0;
         this.cargarArticulos();
       }
