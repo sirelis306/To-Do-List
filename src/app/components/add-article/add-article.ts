@@ -33,8 +33,7 @@ export class AddArticle implements OnInit {
     condicion: 'Nuevo',
     locacion: '',
     cantidad: 1,
-    empresa: 'JPL',
-    registeredAt: new Date().toISOString().split('T')[0]
+    empresa: 'JPL'
   };
 
   public showSuccessModal: boolean = false;
@@ -82,8 +81,28 @@ export class AddArticle implements OnInit {
       return;
     }
 
+    // Validación: El campo de color no debe contener números
+    if (this.nuevoProducto.color && /\d/.test(this.nuevoProducto.color)) {
+      this.modalTitle = "Color Inválido";
+      this.modalMessage = "El campo 'Color' no puede contener números. Por favor, ingresa un nombre de color válido.";
+      this.showErrorModal = true;
+      return;
+    }
+
     if (this.isSaving) return;
     this.isSaving = true;
+
+    // Asegurar que el serial se envíe como null si no está lleno
+    if (!this.nuevoProducto.serial || !this.nuevoProducto.serial.trim()) {
+      this.nuevoProducto.serial = null;
+    } else {
+      this.nuevoProducto.serial = this.nuevoProducto.serial.trim();
+    }
+
+    // Asegurar que la fecha de registro se envíe como null si no está llena
+    if (!this.nuevoProducto.registeredAt || !this.nuevoProducto.registeredAt.trim()) {
+      this.nuevoProducto.registeredAt = null as any;
+    }
 
     if (this.modoEdicion && this.idArticuloActual) {
       this.articleService.updateArticle(this.idArticuloActual, this.nuevoProducto).subscribe({

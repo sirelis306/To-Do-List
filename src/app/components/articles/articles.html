@@ -41,14 +41,33 @@
 
   <div class="content-card">
     <div class="filters-bar">
+      <!-- Buscador General -->
       <div class="search-box">
         <i class="fa-solid fa-magnifying-glass"></i>
         <input type="text" placeholder="Buscar por nombre, marca, serial..." [(ngModel)]="terminoBusqueda"
-          (ngModelChange)="onBuscar()">
+          (ngModelChange)="onBuscar()" (focus)="showRecentSearches = true" (blur)="onSearchBlur()">
         <button class="clear-input-btn" (click)="clearSearch()" *ngIf="terminoBusqueda" title="Limpiar búsqueda">
           <i class="fa-solid fa-xmark"></i>
         </button>
+
+        <!-- Dropdown de búsquedas recientes -->
+        <div class="recent-searches-dropdown" *ngIf="showRecentSearches && recentSearches.length > 0">
+          <div class="recent-search-item" *ngFor="let term of recentSearches" (mousedown)="onSelectRecentSearch(term)">
+            <i class="fa-solid fa-clock-rotate-left"></i> {{ term }}
+          </div>
+        </div>
       </div>
+
+      <!-- Buscador por ID (Derecha del general) -->
+      <div class="search-box id-search">
+        <i class="fa-solid fa-hashtag"></i>
+        <input type="text" placeholder="Buscar por ID.." [(ngModel)]="terminoBusquedaId"
+          (ngModelChange)="onBuscarPorId()" title="Búsqueda rápida por ID exacto">
+        <button class="clear-input-btn" (click)="clearSearchId()" *ngIf="terminoBusquedaId" title="Limpiar ID">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
       <div class="filter-dropdown">
         <app-custom-dropdown [options]="opcionesEmpresa" [selectedValue]="empresaFilter" label="Todas las empresas"
           (valueChange)="onEmpresaChange($event)">
@@ -88,7 +107,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let articulo of articulosPaginados">
+          <tr *ngFor="let articulo of articulosPaginados" [class.highlighted-row]="highlightedArticleId === articulo.id"
+            (click)="toggleHighlight(articulo.id, $event)">
             <td>
               <div class="item-info">
                 <span class="item-name">{{ articulo.nombre }}</span>
@@ -110,7 +130,7 @@
                 <span class="item-id">{{ articulo.modelo }}</span>
               </div>
             </td>
-            <td>{{ articulo.serial }}</td>
+            <td>{{ articulo.serial || 'N/A' }}</td>
             <td>
               <span class="condition-chip" [ngClass]="articulo.condicion.toLowerCase() || ''">
                 {{ articulo.condicion }}
@@ -186,17 +206,17 @@
           <div *ngSwitchCase="'JPL'" class="company-logo jpl-logo">
             <img src="img/Logo_JPL.png" alt="JPL Logo" class="logo-image">
           </div>
-          
+
           <!-- PAFAR Logo -->
           <div *ngSwitchCase="'PAFAR'" class="company-logo pafar-logo">
             <img src="img/Logo_PAFAR.png" alt="PAFAR Logo" class="logo-image">
           </div>
-          
+
           <!-- 3D3 Logo -->
           <div *ngSwitchCase="'3D3'" class="company-logo logo-3d3">
             <img src="img/Logo_3D3.png" alt="3D3 Logo" class="logo-image">
           </div>
-          
+
           <!-- Default Logo (Fallback to PAFAR) -->
           <div *ngSwitchDefault class="company-logo default-logo">
             <img src="img/Logo_PAFAR.png" alt="Logo" class="logo-image">
@@ -252,7 +272,7 @@
       </div>
       <div class="detail-item">
         <span class="detail-label">Serial</span>
-        <span class="detail-value highlight-value">{{ scannedArticle.serial }}</span>
+        <span class="detail-value highlight-value">{{ scannedArticle.serial || 'N/A' }}</span>
       </div>
       <div class="detail-item">
         <span class="detail-label">Ubicación</span>
@@ -276,7 +296,8 @@
       </div>
       <div class="detail-item">
         <span class="detail-label">{{ scannedArticle.deletedAt ? 'Fecha Desactivación' : 'Fecha Registro' }}</span>
-        <span class="detail-value">{{ (scannedArticle.deletedAt || scannedArticle.registeredAt) | date:'dd/MM/yyyy' }}</span>
+        <span class="detail-value">{{ (scannedArticle.deletedAt || scannedArticle.registeredAt) | date:'dd/MM/yyyy'
+          }}</span>
       </div>
       <div class="detail-item full-width">
         <span class="detail-label">Características</span>

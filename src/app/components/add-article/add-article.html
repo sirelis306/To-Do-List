@@ -90,11 +90,10 @@
         </div>
 
         <div class="form-group">
-          <label>Fecha de Registro</label>
+          <label>Fecha de Registro (Opcional)</label>
           <div class="input-wrapper">
             <i class="fa-solid fa-calendar-days"></i>
-            <input type="date" [(ngModel)]="nuevoProducto.registeredAt" name="registeredAt" required
-              [class.is-invalid]="submitted && !nuevoProducto.registeredAt">
+            <input type="date" [(ngModel)]="nuevoProducto.registeredAt" name="registeredAt">
           </div>
         </div>
 

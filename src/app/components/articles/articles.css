@@ -133,6 +133,10 @@
   flex-shrink: 0;
 }
 
+.id-search {
+  width: 220px;
+}
+
 .filter-dropdown {
   width: 240px;
   flex-shrink: 0;
@@ -172,6 +176,48 @@
   border-color: #6366f1;
   background: white;
   box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.08);
+}
+
+.recent-searches-dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  width: 100%;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  z-index: 100;
+  overflow: hidden;
+  animation: dropdownAppear 0.2s ease-out;
+}
+
+@keyframes dropdownAppear {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.recent-search-item {
+  padding: 0.8rem 1.2rem;
+  color: #475569;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  transition: background 0.2s;
+}
+
+.recent-search-item:hover {
+  background: #f8fafc;
+  color: #6366f1;
+}
+
+.recent-search-item i {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  position: static;
+  transform: none;
 }
 
 .clear-input-btn {
@@ -264,6 +310,26 @@
   color: #1e293b;
   font-size: 0.82rem;
   vertical-align: middle;
+}
+
+.modern-table tr {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer; /* Indicar que es seleccionable */
+}
+
+.modern-table tbody tr:hover {
+  background-color: #f8fafc;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.modern-table tr.highlighted-row {
+  background-color: #eef2ff !important;
+  border-left: 4px solid #6366f1;
+}
+
+.modern-table tr.highlighted-row td {
+  border-bottom-color: #e0e7ff;
 }
 
 .modern-table tr:last-child td {

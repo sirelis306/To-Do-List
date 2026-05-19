@@ -61,18 +61,39 @@ export class Articles implements OnInit, OnDestroy {
   public sortField: string = 'id';
   public sortOrder: 'ASC' | 'DESC' = 'DESC';
 
+  public recentSearches: string[] = [];
+  public showRecentSearches: boolean = false;
+  public highlightedArticleId: number | null = null;
+
   private searchSubject = new Subject<string>();
   private searchSubscription!: Subscription;
 
   constructor(private router: Router, private articleService: ArticleService, private route: ActivatedRoute, private authService: AuthService) { }
 
   ngOnInit(): void {
+    const savedSearches = localStorage.getItem('recentSearches');
+    if (savedSearches) {
+      try {
+        this.recentSearches = JSON.parse(savedSearches);
+      } catch (e) {}
+    }
+
     this.searchSubscription = this.searchSubject.pipe(
       debounceTime(500),
       distinctUntilChanged()
-    ).subscribe(() => {
+    ).subscribe((term) => {
       this.pageIndex = 0;
       this.cargarArticulos();
+      
+      if (term && term.trim()) {
+        const cleanTerm = term.trim();
+        this.recentSearches = this.recentSearches.filter(s => s !== cleanTerm);
+        this.recentSearches.unshift(cleanTerm);
+        if (this.recentSearches.length > 3) {
+          this.recentSearches.pop();
+        }
+        localStorage.setItem('recentSearches', JSON.stringify(this.recentSearches));
+      }
     });
     
     this.isAdmin = this.authService.isAdmin();
@@ -111,25 +132,109 @@ export class Articles implements OnInit, OnDestroy {
     ).subscribe(response => {
       let data = Array.isArray(response) ? response : (response.data || []);
 
-      // Filtro de seguridad por si la API no filtra correctamente
+      // Filtro local robusto: el backend a veces ignora el parámetro 'only_deleted' o envía formatos mixtos.
       if (this.mostrarEliminados) {
-        this.articulosPaginados = data.filter((a: Article) => a.deletedAt !== null);
+        this.articulosPaginados = data.filter((a: any) => 
+          (a.deletedAt != null && a.deletedAt !== '') || a.isActive === false
+        );
       } else {
-        this.articulosPaginados = data.filter((a: Article) => a.deletedAt === null);
+        this.articulosPaginados = data.filter((a: any) => 
+          (a.deletedAt == null || a.deletedAt === '') && a.isActive !== false
+        );
       }
       
       this.totalArticles = response.meta?.total_items !== undefined ? response.meta.total_items : (response.total !== undefined ? response.total : this.articulosPaginados.length);
     });
   }
 
+  public terminoBusquedaId: string = '';
+
   toggleVerEliminados(): void {
     this.mostrarEliminados = !this.mostrarEliminados;
+    this.pageIndex = 0;
+    if (this.terminoBusquedaId) {
+      this.onBuscarPorId();
+    } else {
+      this.cargarArticulos();
+    }
+  }
+
+  onBuscar(): void {
+    if (this.terminoBusquedaId) {
+      this.terminoBusquedaId = ''; // Limpiar ID si usan la búsqueda general
+    }
+    this.searchSubject.next(this.terminoBusqueda);
+  }
+
+  onBuscarPorId(): void {
+    const term = this.terminoBusquedaId.trim();
+    if (!term) {
+      this.cargarArticulos();
+      return;
+    }
+    
+    // Limpiamos el texto general para evitar confusión
+    this.terminoBusqueda = '';
+
+    this.articleService.getArticleById(term).subscribe({
+      next: (response: any) => {
+        const product = (response && response.data) ? response.data : response;
+        if (product && (product.id || product.nombre)) {
+          // Respetar el tab actual de eliminados/activos
+          const isDeleted = (product.deletedAt != null && product.deletedAt !== '') || product.isActive === false;
+          
+          if (this.mostrarEliminados && isDeleted) {
+            this.articulosPaginados = [product];
+          } else if (!this.mostrarEliminados && !isDeleted) {
+            this.articulosPaginados = [product];
+          } else {
+            this.articulosPaginados = []; // Está en el estado opuesto
+          }
+          this.totalArticles = this.articulosPaginados.length;
+        } else {
+          this.articulosPaginados = [];
+          this.totalArticles = 0;
+        }
+      },
+      error: () => {
+        this.articulosPaginados = [];
+        this.totalArticles = 0;
+      }
+    });
+  }
+
+  clearSearchId(): void {
+    this.terminoBusquedaId = '';
     this.pageIndex = 0;
     this.cargarArticulos();
   }
 
-  onBuscar(): void {
-    this.searchSubject.next(this.terminoBusqueda);
+  toggleHighlight(id: number, event?: Event): void {
+    if (event) {
+      const target = event.target as HTMLElement;
+      // Evitar resaltar si se hizo clic en un botón de acción
+      if (target.closest('.actions-cell') || target.closest('button')) {
+        return;
+      }
+    }
+
+    if (this.highlightedArticleId === id) {
+      this.highlightedArticleId = null;
+    } else {
+      this.highlightedArticleId = id;
+    }
+  }
+
+  onSelectRecentSearch(term: string): void {
+    this.terminoBusqueda = term;
+    this.showRecentSearches = false;
+    this.onBuscar();
+  }
+
+  onSearchBlur(): void {
+    setTimeout(() => {
+      this.showRecentSearches = false;
+    }, 200);
   }
 
   onEmpresaChange(empresa: string): void {
