@@ -20,7 +20,7 @@ export class AddArticle implements OnInit {
   public tituloPagina: string = "Nuevo Producto";
   public idArticuloActual: number | null = null;
   public opcionesCondicion: string[] = ['Nuevo', 'Usado', 'Defectuoso', 'Dañado'];
-  public opcionesEmpresa: string[] = ['JPL', 'PAFAR', '3D3'];
+  public opcionesEmpresa: string[] = ['JPL', 'PAFAR', '3D3', 'TecnoLab Kids'];
 
   public nuevoProducto: Partial<Article> = {
     nombre: '',

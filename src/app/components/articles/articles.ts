@@ -35,7 +35,7 @@ export class MyPaginatorIntl extends MatPaginatorIntl {
 export class Articles implements OnInit, OnDestroy {
   public terminoBusqueda: string = "";
   public empresaFilter: string = "";
-  public opcionesEmpresa: string[] = ['JPL', 'PAFAR', '3D3'];
+  public opcionesEmpresa: string[] = ['JPL', 'PAFAR', '3D3', 'TecnoLab Kids'];
   public showConfirmModal: boolean = false;
   public articleToDeleteId: number | null = null;
   public articleToRestoreId: number | null = null;
@@ -130,19 +130,7 @@ export class Articles implements OnInit, OnDestroy {
       this.sortField,
       this.sortOrder
     ).subscribe(response => {
-      let data = Array.isArray(response) ? response : (response.data || []);
-
-      // Filtro local robusto: el backend a veces ignora el parámetro 'only_deleted' o envía formatos mixtos.
-      if (this.mostrarEliminados) {
-        this.articulosPaginados = data.filter((a: any) => 
-          (a.deletedAt != null && a.deletedAt !== '') || a.isActive === false
-        );
-      } else {
-        this.articulosPaginados = data.filter((a: any) => 
-          (a.deletedAt == null || a.deletedAt === '') && a.isActive !== false
-        );
-      }
-      
+      this.articulosPaginados = Array.isArray(response) ? response : (response.data || []);
       this.totalArticles = response.meta?.total_items !== undefined ? response.meta.total_items : (response.total !== undefined ? response.total : this.articulosPaginados.length);
     });
   }
@@ -181,7 +169,11 @@ export class Articles implements OnInit, OnDestroy {
         const product = (response && response.data) ? response.data : response;
         if (product && (product.id || product.nombre)) {
           // Respetar el tab actual de eliminados/activos
-          const isDeleted = (product.deletedAt != null && product.deletedAt !== '') || product.isActive === false;
+          const isDeleted = (product.deletedAt != null && product.deletedAt !== '') || 
+                            product.isActive === false || 
+                            product.isActive === 0 || 
+                            product.isActive === '0' || 
+                            product.isActive === 'false';
           
           if (this.mostrarEliminados && isDeleted) {
             this.articulosPaginados = [product];

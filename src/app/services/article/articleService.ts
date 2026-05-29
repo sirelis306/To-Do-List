@@ -23,9 +23,7 @@ export class ArticleService {
       .set('sort', sort)
       .set('order', order);
 
-    if (deleted) {
-      params = params.set('only_deleted', '1');
-    }
+    params = params.set('isActive', !deleted ? '1' : '0');
 
     if (busqueda) {
       params = params.set('search', busqueda);

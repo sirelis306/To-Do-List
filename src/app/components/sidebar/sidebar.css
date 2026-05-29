@@ -18,8 +18,15 @@
 }
 
 .sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 30px;
   flex-shrink: 0;
+}
+
+.sidebar-header.collapsed-header {
+  justify-content: center;
 }
 
 .logo {
@@ -49,12 +56,16 @@
 }
 
 .sidebar.collapsed .section-title {
-  opacity: 0;
+  opacity: 1;
   pointer-events: none;
-  margin: 1rem 0;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.1);
+  margin: 1.5rem auto;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #64748b;
+  color: transparent;
   overflow: hidden;
+  padding: 0;
 }
 
 .nav-links {
@@ -212,10 +223,6 @@
     padding-top: 10px;
   }
 
-  .sidebar-toggle-section {
-    padding-top: 10px;
-  }
-
   .sidebar.collapsed {
     width: 0;
     padding: 0;
@@ -255,13 +262,6 @@
   width: auto;
 }
 
-.sidebar-toggle-section {
-  padding-top: 15px;
-  margin-bottom: 10px;
-  text-align: right;
-  flex-shrink: 0;
-}
-
 .toggle-btn {
   background: none;
   border: none;
@@ -270,12 +270,11 @@
   padding: 5px;
   font-size: 1.1em;
   transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .toggle-btn:hover {
   color: #ffffff;
-}
-
-.sidebar.collapsed .sidebar-toggle-section {
-  text-align: center;
 }
