@@ -3,7 +3,7 @@
   <div class="sidebar-header" [ngClass]="{'collapsed-header': isCollapsed}">
     @if (!isCollapsed) {
     <a routerLink="/board" class="logo">
-      <i class="fa-solid fa-bolt"> </i> <span>Emeria</span>
+      <i class="fa-solid fa-bolt"> </i> <span>Nuv-I</span>
     </a>
     }
     <button class="toggle-btn" (click)="onToggleSidebar()" [title]="isCollapsed ? 'Expandir' : 'Colapsar'">
@@ -37,13 +37,14 @@
       </a>
     </li>
 
-    <!-- <li>
-      <a routerLink="/chat" routerLinkActive="active">
+    <li>
+      <a routerLink="/chat" routerLinkActive="active" (click)="closeOnMobile()">
         <i class="fa-solid fa-comments"></i>
         @if (!isCollapsed) { <span>Chat</span> }
       </a>
-    </li> -->
+    </li>
 
+    @if (canViewInventory) {
     <li>
       <a routerLink="/articles" routerLinkActive="active" (click)="closeOnMobile()">
         <i class="fa-solid fa-box"></i>
@@ -57,6 +58,7 @@
         @if (!isCollapsed) { <span>Escanear</span> }
       </a>
     </li>
+    }
 
     <!-- <li>
       <a routerLink="/transcriptor" routerLinkActive="active">
@@ -74,8 +76,12 @@
     </li>
 
     <li>
-      <a href="https://www.pafar.com.ve:2096/" target="_blank">
+      <a (click)="onOpenWebmail()" style="cursor: pointer;">
+        @if (isWebmailLoading) {
+        <i class="fa-solid fa-circle-notch fa-spin"></i>
+        } @else {
         <i class="fa-solid fa-envelope"></i>
+        }
         @if (!isCollapsed) { <span>WebMail</span> }
       </a>
     </li>

@@ -1,13 +1,18 @@
-<div *ngIf="showConfirmModal" class="confirm-modal-backdrop" (click)="onCancelDelete()"></div>
-<div *ngIf="showConfirmModal" class="confirm-modal-content">
-  <h4>Confirmación</h4>
-  <p>{{ confirmMessage }}</p>
-  <div class="modal-actions">
-    <button class="btn btn-cancel" (click)="onCancelDelete()">Cancelar</button>
-    <button class="btn" [ngClass]="confirmActionType === 'delete' ? 'btn-confirm' : 'btn-restore'"
-      (click)="onConfirmAction()">
-      {{ confirmActionType === 'delete' ? 'Desactivar' : 'Restaurar' }}
-    </button>
+<div class="modern-modal-backdrop" *ngIf="showConfirmModal" (click)="onCancelDelete()">
+  <div class="modern-modal" (click)="$event.stopPropagation()">
+    <div class="modal-icon-container" [ngClass]="confirmActionType === 'delete' ? 'danger' : 'info'">
+      <i class="fa-solid" [ngClass]="confirmActionType === 'delete' ? 'fa-exclamation' : 'fa-rotate-left'"></i>
+    </div>
+    
+    <h3>Confirmación</h3>
+    <p>{{ confirmMessage }}</p>
+    
+    <div class="modern-modal-actions">
+      <button class="modern-modal-btn cancel" (click)="onCancelDelete()">Cancelar</button>
+      <button class="modern-modal-btn" [ngClass]="confirmActionType === 'delete' ? 'danger' : 'primary'" (click)="onConfirmAction()">
+        {{ confirmActionType === 'delete' ? 'Desactivar' : 'Restaurar' }}
+      </button>
+    </div>
   </div>
 </div>
 

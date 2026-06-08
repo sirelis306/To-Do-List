@@ -1,9 +1,13 @@
 <main class="chat-container">
   <div class="chat-layout">
     
-    <app-chat-list class="chat-list-pane"></app-chat-list>
+    <app-chat-list class="chat-list-pane" (conversationSelected)="onConversationSelected($event)"></app-chat-list>
     
-    <app-chat-window class="chat-window-pane"></app-chat-window>
+    <app-chat-window class="chat-window-pane" *ngIf="selectedConversationId" [conversationId]="selectedConversationId"></app-chat-window>
     
+    <div class="no-chat-selected" *ngIf="!selectedConversationId">
+      <p>Selecciona una conversación para empezar a chatear</p>
+    </div>
+
   </div>
 </main>

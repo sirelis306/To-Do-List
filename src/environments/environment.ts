@@ -6,8 +6,8 @@ export const environment = {
       return '/api';
     }
     // Si estamos en producción, usamos la URL absoluta
-    return 'https://intranet.pafar.com.ve/ambiente_prueba_intranet/public/api';
-    //return 'https://intranet.pafar.com.ve/public/api';
+    //return 'https://intranet.pafar.com.ve/ambiente_prueba_intranet/public/api';
+    return 'https://intranet.pafar.com.ve/public/api';
 
   }
 };

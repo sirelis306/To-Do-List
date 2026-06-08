@@ -1,33 +1,108 @@
 <div class="chat-window-header">
   <div class="user-info">
     <i class="fa-solid fa-user user-avatar"></i>
-    <span class="user-name">Sara</span>
+    <span class="user-name">{{ conversationTitle }}</span>
   </div>
   <div class="chat-actions">
-    <i class="fa-solid fa-ellipsis-vertical"></i>
+    <i class="fa-solid fa-video action-trigger video-icon" title="Iniciar Videollamada" (click)="openMeet()"></i>
+    <div class="dropdown-container">
+      <i class="fa-solid fa-ellipsis-vertical action-trigger" (click)="toggleChatDropdown($event)"></i>
+      <div class="dropdown-menu" *ngIf="isChatDropdownOpen">
+        <div class="dropdown-item danger" (click)="openDeleteChatModal()">
+          <i class="fa-solid fa-trash"></i> Eliminar Chat
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
-<div class="message-area">
-  @for (message of messages; track message.id) {
-    <div class="message-row" [class.sent]="message.senderId === currentUserId">
-      <div class="message-content">
-        <p>{{ message.message }}</p>
-        <span class="message-time">
-          {{ message.timestamp | date:'shortTime' }}
-          <span *ngIf="message.senderId === currentUserId" class="msg-actions">
-            <i class="fa-solid fa-pen action-icon" (click)="onEditMessage(message)" title="Editar"></i>
-            <i class="fa-solid fa-trash action-icon" (click)="onDeleteMessage(message.id)" title="Eliminar"></i>
-          </span>
-        </span>
-      </div>
+<div class="message-area" (click)="closeAllDropdowns()">
+  <div class="spacer" style="flex: 1 1 auto;"></div>
+  @for (message of messages; track message.id; let i = $index) {
+  
+  @if (showDateDivider(i)) {
+    <div class="date-divider">
+      <span>{{ getDateLabel(message.timestamp) }}</span>
     </div>
+  }
+
+  <div class="message-row" [class.sent]="message.senderId === currentUserId">
+    <div class="message-content">
+      <p>{{ message.message }}</p>
+      <span class="message-time">
+        {{ message.timestamp | date:'shortTime' }}
+        <span *ngIf="message.senderId === currentUserId && canDeleteMessage(message)" class="msg-actions dropdown-container">
+          <i class="fa-solid fa-chevron-down action-icon action-trigger"
+            (click)="toggleMessageDropdown(message.id, $event)"></i>
+          <div class="dropdown-menu msg-dropdown" *ngIf="activeDropdownMessageId === message.id">
+            <div class="dropdown-item" (click)="onEditMessage(message)">
+              <i class="fa-solid fa-pen"></i> Editar
+            </div>
+            <div class="dropdown-item danger" (click)="openDeleteMessageModal(message.id)">
+              <i class="fa-solid fa-trash"></i> Eliminar
+            </div>
+          </div>
+        </span>
+      </span>
+    </div>
+  </div>
   }
 </div>
 
-<div class="chat-input-area">
-  <input type="text" placeholder="Message..." [(ngModel)]="newMessage" (keyup.enter)="onSendMessage()" />
+<div class="chat-input-area" (click)="closeAllDropdowns()">
+  <input type="text" placeholder="Escribe un mensaje..." [(ngModel)]="newMessage" (keyup.enter)="onSendMessage()" />
   <button class="send-btn" (click)="onSendMessage()">
     <i class="fa-solid fa-paper-plane"></i>
   </button>
+</div>
+
+<!-- Modales Minimalistas Unificados -->
+<div class="modern-modal-backdrop" *ngIf="isDeleteChatModalOpen || messageToDeleteId">
+  <!-- MODAL DE ELIMINAR -->
+  <div class="modern-modal" *ngIf="isDeleteChatModalOpen || messageToDeleteId">
+    <div class="modal-icon-container danger">
+      <i class="fa-solid fa-exclamation"></i>
+    </div>
+
+    <h3>{{ isDeleteChatModalOpen ? 'Eliminar Chat' : 'Eliminar Mensaje' }}</h3>
+
+    <p>
+      {{ isDeleteChatModalOpen
+      ? '¿Estás seguro de que deseas eliminar este chat?'
+      : '¿Estás seguro de que deseas eliminar este mensaje?' }}
+    </p>
+
+    <div class="modern-modal-actions">
+      <button class="modern-modal-btn cancel" (click)="closeModals()">Cancelar</button>
+      <button class="modern-modal-btn danger"
+        (click)="isDeleteChatModalOpen ? confirmDeleteChat() : confirmDeleteMessage()">Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Edición (Estilo WhatsApp) -->
+<div class="edit-modal-backdrop" *ngIf="isEditModalOpen">
+  <div class="edit-modal">
+    <div class="edit-header">
+      <i class="fa-solid fa-xmark close-icon" (click)="closeEditModal()"></i>
+      <h4>Edita el mensaje</h4>
+    </div>
+    
+    <div class="edit-body">
+      <div class="message-preview-container">
+        <div class="message-content">
+          <p>{{ messageToEditObj?.message }}</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="edit-footer">
+      <div class="edit-input-wrapper">
+        <input type="text" [(ngModel)]="messageToEditContent" (keyup.enter)="confirmEditMessage()" autofocus />
+        <button class="save-edit-btn" (click)="confirmEditMessage()" [disabled]="!messageToEditContent.trim() || messageToEditContent === messageToEditObj?.message">
+          <i class="fa-solid fa-check"></i>
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
