@@ -4,66 +4,91 @@ body {
   -webkit-backdrop-filter: blur(12px);
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
-html, body { 
-  height: 100%; 
+html,
+body {
+  height: 100%;
   margin: 0;
   padding: 0;
   overflow: hidden;
 }
 
-body { 
+body {
   font-family: Roboto, "Helvetica Neue", sans-serif;
   font-size: 16px;
 }
 
-/* Typography scaling for different screen sizes */
 @media (max-width: 1200px) {
-  body { font-size: 15px; }
+  body {
+    font-size: 15px;
+  }
 }
 
 @media (max-width: 768px) {
-  body { font-size: 13px; } /* ~80% de 16px */
-  
-  h1 { font-size: 1.7rem !important; }
-  h2 { font-size: 1.4rem !important; }
-  h3 { font-size: 1.2rem !important; }
+  body {
+    font-size: 13px;
+  }
+
+  h1 {
+    font-size: 1.7rem !important;
+  }
+
+  h2 {
+    font-size: 1.4rem !important;
+  }
+
+  h3 {
+    font-size: 1.2rem !important;
+  }
 
   /* Estilos responsivos de contenedores generales (Tableta) */
   .admin-page {
-    padding: 1rem 0.5rem !important; /* Reduce espacio exterior gris */
-    overflow-x: hidden !important;   /* Evita desbordes horizontales que encogen la pantalla */
-    max-width: 100vw !important;
-    box-sizing: border-box !important;
-  }
-
-  .content-card {
-    padding: 0.8rem !important; /* Reduce el marco blanco para expandir el contenido */
-    border-radius: 14px !important;
-    box-sizing: border-box !important;
-  }
-}
-
-@media (max-width: 480px) {
-  body { font-size: 12px; } /* ~75% de 16px para extra compactación */
-  
-  h1 { font-size: 1.5rem !important; }
-  .main-content:not(.no-sidebar) { padding: 0 !important; }
-  .main-content.no-sidebar { padding: 0 !important; }
-
-  /* Estilos responsivos de contenedores generales (Celular) */
-  .admin-page {
-    padding: 4.5rem 0.3rem 1rem 0.3rem !important; /* Margen superior amplio y márgenes laterales mínimos */
+    padding: 1rem 0.5rem !important;
     overflow-x: hidden !important;
     max-width: 100vw !important;
     box-sizing: border-box !important;
   }
 
   .content-card {
-    padding: 0.5rem !important; /* El marco blanco en celular es súper minimalista de solo 8px */
+    padding: 0.8rem !important;
+    border-radius: 14px !important;
+    box-sizing: border-box !important;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    font-size: 12px;
+  }
+
+
+  h1 {
+    font-size: 1.5rem !important;
+  }
+
+  .main-content:not(.no-sidebar) {
+    padding: 0 !important;
+  }
+
+  .main-content.no-sidebar {
+    padding: 0 !important;
+  }
+
+  /* Estilos responsivos de contenedores generales (Celular) */
+  .admin-page {
+    padding: 4.5rem 0.3rem 1rem 0.3rem !important;
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+    box-sizing: border-box !important;
+  }
+
+  .content-card {
+    padding: 0.5rem !important;
     border-radius: 12px !important;
     box-sizing: border-box !important;
   }
@@ -72,18 +97,19 @@ body {
 /* Reglas Globales de Impresión */
 @media print {
   @page {
-    size: 58mm auto; /* Típico de impresora térmica */
+    size: 58mm auto;
     margin: 0;
   }
-  
+
   body * {
     visibility: hidden;
   }
-  
-  #print-section, #print-section * {
+
+  #print-section,
+  #print-section * {
     visibility: visible;
   }
-  
+
   #print-section {
     position: absolute;
     left: 0;
@@ -92,7 +118,7 @@ body {
     padding: 2mm;
     background: white !important;
   }
-  
+
   .no-print {
     display: none !important;
   }
@@ -127,8 +153,15 @@ body {
 }
 
 @keyframes modalAppear {
-  from { opacity: 0; transform: translate(-50%, -45%) scale(0.95); }
-  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  from {
+    opacity: 0;
+    transform: translate(-50%, -45%) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
 }
 
 .confirm-modal-content h4 {
@@ -184,7 +217,7 @@ body {
     position: absolute !important;
     top: 0 !important;
     left: 0 !important;
-    width: 58mm !important; /* Estándar impresora térmica */
+    width: 58mm !important;
     height: auto !important;
     border: none !important;
     box-shadow: none !important;
@@ -195,7 +228,7 @@ body {
   }
 
   .barcode-display-area {
-    padding: 4mm 0 0 0 !important; /* Separa el código de barras del borde superior de la hoja */
+    padding: 4mm 0 0 0 !important;
     text-align: center !important;
     width: 100% !important;
     display: flex !important;
@@ -211,11 +244,11 @@ body {
     justify-content: center !important;
     margin: 0 auto !important;
     max-width: 100% !important;
-    min-width: 3.2cm !important; /* Garantiza suficiente espacio horizontal para ID y Logo */
+    min-width: 3.2cm !important;
   }
 
   .barcode-info {
-    display: none !important; /* Solo el código de barras y el logo */
+    display: none !important;
   }
 
   .barcode-image-container {
@@ -230,9 +263,9 @@ body {
   }
 
   #barcode {
-    width: 100% !important; /* Se ajusta perfectamente al ancho del contenedor */
+    width: 100% !important;
     height: auto !important;
-    max-height: 2cm !important; /* Restaura la altura original alta que le gusta al usuario */
+    max-height: 2cm !important;
     display: block !important;
     margin: 0 auto !important;
   }
@@ -241,11 +274,11 @@ body {
     display: flex !important;
     flex-direction: row !important;
     align-items: center !important;
-    justify-content: center !important; /* Centrados juntos bajo el código de barras */
-    gap: 4mm !important; /* ID y Logo más cerca entre sí */
-    margin-top: 0.5mm !important; /* Acerca los logotipos e ID al código de barras */
-    padding: 0 !important; /* Alineación perfecta con el borde exterior de las barras */
-    border-top: none !important; /* Quita el borde punteado en impresión */
+    justify-content: center !important;
+    gap: 4mm !important;
+    margin-top: 0.5mm !important;
+    padding: 0 !important;
+    border-top: none !important;
     width: 100% !important;
   }
 
@@ -286,16 +319,16 @@ body {
   }
 
   .jpl-logo .logo-image {
-    height: 3.5mm !important; /* JPL más compacto para balancearse con códigos estrechos */
+    height: 3.5mm !important;
   }
 
   .pafar-logo .logo-image,
   .default-logo .logo-image {
-    height: 8.5mm !important; /* PAFAR un poco más pequeño para impresión balanceada */
+    height: 8.5mm !important;
   }
 
   .logo-3d3 .logo-image {
-    height: 10mm !important; /* 3D3 un poco más pequeño para impresión balanceada */
+    height: 10mm !important;
   }
 
   .barcode-footer-hint {
@@ -303,7 +336,7 @@ body {
   }
 }
 
-/* Estilos Globales de Scrollbar - Oculto por defecto, visible al pasar el mouse */
+/* Estilos Globales de Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -321,7 +354,7 @@ body {
 
 /* Solo mostrar el scrollbar cuando el usuario interactúa con un contenedor que tiene scroll */
 *:hover::-webkit-scrollbar-thumb {
-  background: rgba(99, 102, 241, 0.15); /* Indigo suave */
+  background: rgba(99, 102, 241, 0.15);
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -336,4 +369,174 @@ body {
 
 *:hover {
   scrollbar-color: rgba(99, 102, 241, 0.15) transparent;
+}
+
+/* Popups Acciones */
+.modern-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modern-modal {
+  background: #ffffff;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 400px;
+  padding: 30px 25px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.modal-icon-container {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.modal-icon-container.danger {
+  background-color: #fee2e2;
+  color: #ef4444;
+}
+
+.modal-icon-container.info {
+  background-color: #e0e7ff;
+  color: #3b82f6;
+}
+
+.modal-icon-container.success {
+  background-color: #dcfce7;
+  color: #22c55e;
+}
+
+.modern-modal h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.modern-modal p {
+  margin: 0 0 25px 0;
+  font-size: 0.95rem;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.modern-modal-actions {
+  display: flex;
+  width: 100%;
+  gap: 15px;
+}
+
+.modern-modal-btn {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.modern-modal-btn.cancel {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.modern-modal-btn.cancel:hover {
+  background-color: #e2e8f0;
+}
+
+.modern-modal-btn.danger {
+  background-color: #ef4444;
+  color: white;
+}
+
+.modern-modal-btn.danger:hover {
+  background-color: #dc2626;
+}
+
+.modern-modal-btn.primary {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.modern-modal-btn.primary:hover {
+  background-color: #2563eb;
+}
+
+.modern-modal-btn[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* For Edit input */
+.modern-edit-input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+  color: #1e293b;
+  outline: none;
+  box-sizing: border-box;
+  background-color: #f8fafc;
+}
+
+.modern-edit-input:focus {
+  border-color: #3b82f6;
+  background-color: #ffffff;
+}
+
+/* Optional preview container */
+.modern-message-preview {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-left: 3px solid #3b82f6;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 15px;
+  width: 100%;
+  color: #475569;
+  font-style: italic;
+  font-size: 0.9rem;
+  text-align: left;
+  box-sizing: border-box;
+}
+
+/* Modales más anchos para vistas de detalles/formularios */
+.details-modern-modal {
+  max-width: 550px !important;
 }
