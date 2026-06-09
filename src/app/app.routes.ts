@@ -1,12 +1,13 @@
 import { Routes } from '@angular/router';
-import { Login } from './components/login/login';
+import { Login } from './components/auth/login/login';
 import { Board } from './components/board/board'; 
 import { authGuard } from './authGuard/auth-guard'; 
-import { Articles } from './components/articles/articles';
-import { AddArticle } from './components/add-article/add-article';
+import { Articles } from './components/inventory/articles/articles';
+import { AddArticle } from './components/inventory/add-article/add-article';
 import { Profile } from './components/profile/profile';
 import { Chat } from './components/chat/chat';
 import { Transcriptor } from './components/transcriptor/transcriptor';
+import { Calendar } from './components/calendar/calendar';
 
 export const routes: Routes = [
   { 
@@ -41,6 +42,11 @@ export const routes: Routes = [
   { 
     path: 'transcriptor', 
     component: Transcriptor,
+    canActivate: [authGuard] 
+  },
+  { 
+    path: 'calendar', 
+    component: Calendar,
     canActivate: [authGuard] 
   },
   { 

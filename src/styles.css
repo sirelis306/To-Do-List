@@ -429,8 +429,8 @@ body {
 }
 
 .modal-icon-container.info {
-  background-color: #e0e7ff;
-  color: #3b82f6;
+  background-color: rgba(50, 64, 165, 0.1);
+  color: #3240A5;
 }
 
 .modal-icon-container.success {
@@ -488,12 +488,12 @@ body {
 }
 
 .modern-modal-btn.primary {
-  background-color: #3b82f6;
+  background-color: #3240A5;
   color: white;
 }
 
 .modern-modal-btn.primary:hover {
-  background-color: #2563eb;
+  background-color: #2a3486;
 }
 
 .modern-modal-btn[disabled] {

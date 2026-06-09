@@ -33,6 +33,34 @@ export class ChatService {
     return this.http.delete(`${this.apiUrl}/conversations/${id}`);
   }
 
+  renameConversation(id: number, name: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/conversations/${id}`, { name });
+  }
+
+  getGlobalUnreadCount(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/conversations/unread-count`);
+  }
+
+  markAsRead(id: number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/conversations/${id}/read`, {});
+  }
+
+  leaveGroup(conversationId: number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/conversations/${conversationId}/leave`, {});
+  }
+
+  removeParticipant(conversationId: number, userId: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/conversations/${conversationId}/participants/${userId}`);
+  }
+
+  updateParticipantRole(conversationId: number, userId: number, role: 'admin' | 'member'): Observable<any> {
+    return this.http.put(`${this.apiUrl}/conversations/${conversationId}/participants/${userId}/role`, { role });
+  }
+
+  addParticipants(conversationId: number, userIds: number | number[]): Observable<any> {
+    return this.http.post(`${this.apiUrl}/conversations/${conversationId}/participants`, { userId: userIds });
+  }
+
   getMessages(conversationId: number, limit?: number, beforeId?: number, search?: string): Observable<ChatMessage[]> {
     let params = new HttpParams();
     if (limit) params = params.set('limit', limit.toString());

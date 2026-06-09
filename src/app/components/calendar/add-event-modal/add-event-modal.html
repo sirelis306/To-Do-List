@@ -1,0 +1,95 @@
+<div class="modal-backdrop" (click)="closeModal.emit()"></div>
+<div class="modal-content">
+  <div class="modal-header">
+    <h3>Create New Event</h3>
+    <button class="close-btn" (click)="closeModal.emit()"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+
+  <div class="modal-body">
+    <div class="form-group">
+      <label>Event Name</label>
+      <input type="text" [(ngModel)]="title" placeholder="Reunión de Tecnología" class="form-control" />
+    </div>
+
+    <div class="form-row">
+      <div class="form-group half-width">
+        <label>Date</label>
+        <input type="date" [(ngModel)]="date" class="form-control" />
+      </div>
+      <div class="form-group half-width">
+        <label>Category</label>
+        <select [(ngModel)]="category" class="form-control">
+          <option value="">Select Category...</option>
+          <option value="Product Design">Product Design</option>
+          <option value="Software Engineering">Software Engineering</option>
+          <option value="User Research">User Research</option>
+          <option value="Marketing">Marketing</option>
+          <option value="Tecnología">Tecnología</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group half-width">
+        <label>Start Time</label>
+        <input type="time" [(ngModel)]="startAt" class="form-control" />
+      </div>
+      <div class="form-group half-width">
+        <label>End Time</label>
+        <input type="time" [(ngModel)]="endAt" class="form-control" />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group half-width">
+        <label>Room (Sala)</label>
+        <select [(ngModel)]="place" class="form-control">
+          <option value="">Select Room...</option>
+          <option *ngFor="let sala of salas" [value]="sala">{{ sala | titlecase }}</option>
+        </select>
+      </div>
+      <div class="form-group half-width">
+        <label>Visibility</label>
+        <select [(ngModel)]="isCompanyWide" class="form-control">
+          <option [ngValue]="true">Public (Intranet)</option>
+          <option [ngValue]="false">Private</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Participants</label>
+      <div class="participants-container">
+        <div class="selected-participants" *ngIf="selectedParticipantsList.length > 0">
+          <span class="participant-chip" *ngFor="let user of selectedParticipantsList">
+            {{ user.nombre }} {{ user.apellido }}
+            <button class="remove-chip" (click)="removeParticipant(user.id)">&times;</button>
+          </span>
+        </div>
+        
+        <div class="dropdown-wrapper">
+          <div class="dropdown-header">Select participants... <i class="fa-solid fa-chevron-down"></i></div>
+          <div class="dropdown-list">
+            <div class="dropdown-item" *ngFor="let user of availableUsers" (click)="toggleParticipant(user)">
+              <input type="checkbox" [checked]="isParticipantSelected(user.id)" />
+              <span>{{ user.nombre }} {{ user.apellido }} ({{ user.email }})</span>
+            </div>
+            <div class="dropdown-item empty" *ngIf="availableUsers.length === 0">
+              No users found.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Comment / Description</label>
+      <textarea [(ngModel)]="description" rows="3" placeholder="Add some details..." class="form-control"></textarea>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button class="btn-cancel" (click)="closeModal.emit()">Cancel</button>
+    <button class="btn-save" (click)="saveEvent()" [disabled]="!title || !date">Save Event</button>
+  </div>
+</div>

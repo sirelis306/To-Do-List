@@ -1,0 +1,119 @@
+<nav class="sidebar" [class.collapsed]="isCollapsed">
+
+  <div class="sidebar-header" [ngClass]="{'collapsed-header': isCollapsed}">
+    @if (!isCollapsed) {
+    <a routerLink="/board" class="logo">
+      <i class="fa-solid fa-bolt"> </i> <span>Nuv-I</span>
+    </a>
+    }
+    <button class="toggle-btn" (click)="onToggleSidebar()" [title]="isCollapsed ? 'Expandir' : 'Colapsar'">
+      <i class="fa-solid" [ngClass]="{'fa-chevron-left': !isCollapsed, 'fa-chevron-right': isCollapsed}"></i>
+    </button>
+  </div>
+
+  <ul class="nav-links">
+    @if (isAdmin) {
+    <span class="section-title">Admin</span>
+    <li>
+      <a routerLink="/user/users" routerLinkActive="active" (click)="closeOnMobile()">
+        <i class="fa-solid fa-users-gear"></i>
+        @if (!isCollapsed) { <span>Usuarios</span> }
+      </a>
+    </li>
+    }
+
+    <!-- <li>
+      <a routerLink="/p" routerLinkActive="active">
+        <i class="fa-solid fa-home"></i>
+        @if (!isCollapsed) { <span>inicio</span> }
+      </a>
+    </li> -->
+
+    <span class="section-title">Modulos</span>
+    <li>
+      <a routerLink="/board" routerLinkActive="active" (click)="closeOnMobile()">
+        <i class="fa-solid fa-table-columns"></i>
+        @if (!isCollapsed) { <span>Tablero</span> }
+      </a>
+    </li>
+
+    <li>
+      <a routerLink="/calendar" routerLinkActive="active" (click)="closeOnMobile()">
+        <i class="fa-regular fa-calendar"></i>
+        @if (!isCollapsed) { <span>Calendario</span> }
+      </a>
+    </li>
+
+    <li>
+      <a routerLink="/chat" routerLinkActive="active" (click)="closeOnMobile()" style="position: relative;">
+        <i class="fa-solid fa-comments"></i>
+        @if (!isCollapsed) { 
+          <span style="flex-grow: 1;">Chat</span> 
+          <div class="sidebar-badge" *ngIf="unreadChatCount > 0">{{ unreadChatCount }}</div>
+        } @else {
+          <div class="sidebar-badge-collapsed" *ngIf="unreadChatCount > 0">{{ unreadChatCount > 99 ? '99+' : unreadChatCount }}</div>
+        }
+      </a>
+    </li>
+
+    @if (canViewInventory) {
+    <li>
+      <a routerLink="/articles" routerLinkActive="active" (click)="closeOnMobile()">
+        <i class="fa-solid fa-box"></i>
+        @if (!isCollapsed) { <span>Inventario</span> }
+      </a>
+    </li>
+
+    <li>
+      <a [routerLink]="['/articles']" [queryParams]="{ scan: 'true' }" (click)="closeOnMobile()">
+        <i class="fa-solid fa-camera"></i>
+        @if (!isCollapsed) { <span>Escanear</span> }
+      </a>
+    </li>
+    }
+
+    <!-- <li>
+      <a routerLink="/transcriptor" routerLinkActive="active">
+        <i class="fa-solid fa-microphone-lines"></i>
+        <span>Transcriptor</span>
+      </a>
+    </li> -->
+
+    <span class="section-title">Utilitarios</span>
+    <li>
+      <a href="https://ug.link/pafarcloud" target="_blank">
+        <i class="fa-solid fa-server"></i>
+        @if (!isCollapsed) { <span>Nas</span> }
+      </a>
+    </li>
+
+    <li>
+      <a (click)="onOpenWebmail()" style="cursor: pointer;">
+        @if (isWebmailLoading) {
+        <i class="fa-solid fa-circle-notch fa-spin"></i>
+        } @else {
+        <i class="fa-solid fa-envelope"></i>
+        }
+        @if (!isCollapsed) { <span>WebMail</span> }
+      </a>
+    </li>
+
+    <li>
+      <a href="https://enlacesmultiples.pafar.com.ve/universodesoluciones/" target="_blank">
+        <i class="fa-solid fa-link"></i>
+        @if (!isCollapsed) { <span>Universo de Soluciones</span> }
+      </a>
+    </li>
+  </ul>
+
+  <div class="sidebar-footer">
+    <a routerLink="/profile" routerLinkActive="active" class="profile-btn" (click)="closeOnMobile()">
+      <i class="fa-solid fa-user"></i>
+      @if (!isCollapsed) { <span>Perfil</span>}
+    </a>
+    <button class="logout-btn" (click)="onLogout()">
+      <i class="fa-solid fa-right-from-bracket"></i>
+      @if (!isCollapsed) { <span>Cerrar Sesión</span> }
+    </button>
+  </div>
+</nav>

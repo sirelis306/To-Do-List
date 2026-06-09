@@ -1,0 +1,142 @@
+<div class="sidebar-container" (click)="closeDropdown()">
+
+  <!-- CHATS -->
+  <div *ngIf="sidebarView === 'chats'" class="view-content">
+    <div class="chat-list-header">
+      <div class="header-top">
+        <h3>Chats</h3>
+        <div class="header-actions">
+          <button class="icon-btn" (click)="toggleSearch()">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </button>
+
+          <div class="dropdown-container">
+            <button class="icon-btn" (click)="toggleDropdown($event)">
+              <i class="fa-solid fa-ellipsis-vertical"></i>
+            </button>
+            <div class="dropdown-menu" *ngIf="isDropdownOpen">
+              <div class="dropdown-item" (click)="openNewChatView()">
+                <i class="fa-solid fa-comment-dots"></i> Nuevo Chat
+              </div>
+              <div class="dropdown-item" (click)="openNewGroupView()">
+                <i class="fa-solid fa-users"></i> Nuevo Grupo
+              </div>
+              <div class="dropdown-item" (click)="openNewMeetView()">
+                <i class="fa-solid fa-video"></i> Nueva Reunión
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="search-bar" *ngIf="isSearchVisible">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" placeholder="Buscar chats" [(ngModel)]="searchTerm">
+      </div>
+    </div>
+
+    <div class="users-list">
+      @for (conv of conversations; track conv.id) {
+      <div class="user-item" [class.selected]="conv.id === selectedConversationId" (click)="selectConversation(conv)" (contextmenu)="onContextMenu($event, conv)">
+        <div class="avatar-container">
+          <i class="fa-solid fa-user user-avatar"></i>
+        </div>
+
+        <div class="user-details">
+          <div class="user-name">{{ getConversationName(conv) }}</div>
+          <div class="last-message-preview">
+            {{ getLastMessage(conv) }}
+          </div>
+        </div>
+
+        <div class="chat-meta">
+          <div class="time-stamp" *ngIf="getConversationTime(conv)">{{ getConversationTime(conv) }}</div>
+          <div class="unread-badge" *ngIf="conv.unreadCount && conv.unreadCount > 0">{{ conv.unreadCount }}</div>
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+
+  <!-- NUEVO CHAT / GRUPO / REUNIÓN -->
+  <div *ngIf="sidebarView === 'new_private' || sidebarView === 'new_group' || sidebarView === 'new_meet'" class="view-content slide-in">
+    <div class="chat-list-header secondary-header">
+      <div class="header-top">
+        <button class="back-btn" (click)="goBack()">
+          <i class="fa-solid fa-arrow-left"></i>
+        </button>
+        <h3>{{ sidebarView === 'new_private' ? 'Nuevo Chat' : (sidebarView === 'new_group' ? 'Nuevo Grupo' : 'Nueva Reunión') }}</h3>
+      </div>
+    </div>
+
+    <!-- Buscador de usuarios -->
+    <div class="contact-search-area">
+      <div class="search-bar" style="padding: 10px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
+        <i class="fa-solid fa-magnifying-glass" style="left: 20px;"></i>
+        <input type="text" placeholder="Buscar contacto..." [(ngModel)]="contactSearchTerm" style="background: white;">
+      </div>
+    </div>
+
+    <div class="users-list">
+      @for (user of filteredSystemUsers; track user.id) {
+      <div class="user-item" (click)="onUserClick(user)">
+        <div class="avatar-container">
+          <i class="fa-solid fa-user user-avatar"></i>
+        </div>
+        <div class="user-details" style="justify-content: center;">
+          <div class="user-name" style="margin: 0;">{{ user.name }} {{ user.surname }}</div>
+        </div>
+
+        <div class="selection-indicator" *ngIf="sidebarView === 'new_group' || sidebarView === 'new_meet'">
+          <div class="modern-checkbox" [class.checked]="isSelected(user.id)"
+            (click)="toggleUserSelection(user.id); $event.stopPropagation()">
+            <i class="fa-solid fa-check" *ngIf="isSelected(user.id)"></i>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+
+    <!-- Floating action button -->
+    <button class="floating-btn-create" *ngIf="(sidebarView === 'new_group' || sidebarView === 'new_meet') && selectedUserIds.length > 0"
+      (click)="sidebarView === 'new_group' ? openGroupNameModal() : createInstantMeet()">
+      <i class="fa-solid" [ngClass]="sidebarView === 'new_meet' ? 'fa-video' : 'fa-check'"></i>
+    </button>
+  </div>
+
+  <!-- Modal para nombre de grupo (Estilo Minimalista) -->
+  <div class="modern-modal-backdrop" *ngIf="isGroupNameModalOpen">
+    <div class="modern-modal">
+      <div class="modal-icon-container info">
+        <i class="fa-solid fa-users"></i>
+      </div>
+
+      <h3>Nombre del Grupo</h3>
+
+      <p style="margin-bottom: 20px;">
+        Asigna un nombre para identificar este nuevo grupo de chat.
+      </p>
+
+      <input class="modern-edit-input" type="text" [(ngModel)]="newGroupName" (keyup.enter)="createGroupChat()"
+        autofocus placeholder="Ej. Equipo de Ventas..." />
+
+      <div class="modern-modal-actions">
+        <button class="modern-modal-btn cancel" (click)="closeGroupNameModal()">Cancelar</button>
+        <button class="modern-modal-btn primary" (click)="createGroupChat()">Crear Grupo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Context Menu -->
+  <div class="context-menu" 
+       *ngIf="isContextMenuOpen" 
+       [style.top.px]="contextMenuPosition.y" 
+       [style.left.px]="contextMenuPosition.x"
+       (click)="$event.stopPropagation()">
+    <div class="dropdown-item" (click)="markAsRead()">
+      <i class="fa-solid fa-check-double"></i> Marcar como leído
+    </div>
+  </div>
+
+</div>

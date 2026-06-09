@@ -9,7 +9,7 @@ import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { CustomDropdown } from '../../custom-dropdown/custom-dropdown';
+import { CustomDropdown } from '../../shared/custom-dropdown/custom-dropdown';
 
 @Component({
   selector: 'app-users',

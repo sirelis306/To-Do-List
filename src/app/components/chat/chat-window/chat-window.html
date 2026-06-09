@@ -1,0 +1,258 @@
+<div class="chat-window-header">
+  <div class="user-info">
+    <i class="fa-solid fa-user user-avatar"></i>
+    <span class="user-name">{{ conversationTitle }}</span>
+  </div>
+  <div class="chat-actions">
+    <i class="fa-solid fa-video action-trigger video-icon" title="Iniciar Videollamada" (click)="openMeet()"></i>
+    <div class="dropdown-container">
+      <i class="fa-solid fa-ellipsis-vertical action-trigger" (click)="toggleChatDropdown($event)"></i>
+        <div class="dropdown-menu chat-dropdown" *ngIf="isChatDropdownOpen">
+          <div class="dropdown-item" *ngIf="conversationDetails?.type === 'group'" (click)="openRenameGroupModal()">
+            <i class="fa-solid fa-pen"></i> Renombrar Grupo
+          </div>
+          <div class="dropdown-item" *ngIf="conversationDetails?.type === 'group' && isCurrentUserAdmin" (click)="openManageParticipantsModal()">
+            <i class="fa-solid fa-users-gear"></i> Gestionar Grupo
+          </div>
+          <div class="dropdown-item danger" *ngIf="conversationDetails?.type === 'group'" (click)="openLeaveGroupModal()">
+            <i class="fa-solid fa-right-from-bracket"></i> Salir del Grupo
+          </div>
+          <div class="dropdown-item danger" (click)="openDeleteChatModal()">
+            <i class="fa-solid fa-trash"></i> Eliminar Chat
+          </div>
+        </div>
+    </div>
+  </div>
+</div>
+
+<div class="message-area" (click)="closeAllDropdowns()">
+  <div class="spacer" style="flex: 1 1 auto;"></div>
+  @for (message of messages; track message.id; let i = $index) {
+  
+  @if (showDateDivider(i)) {
+    <div class="date-divider">
+      <span>{{ getDateLabel(message.timestamp) }}</span>
+    </div>
+  }
+
+  <div class="message-row" [class.sent]="message.senderId === currentUserId">
+    <div class="message-content">
+      <div class="message-sender" *ngIf="conversationDetails?.type === 'group' && message.senderId !== currentUserId">
+        {{ getSenderName(message.senderId) }}
+      </div>
+      <p>{{ message.message }}</p>
+      <span class="message-time">
+        {{ message.timestamp | date:'shortTime' }}
+        <span *ngIf="message.senderId === currentUserId && canDeleteMessage(message)" class="msg-actions dropdown-container">
+          <i class="fa-solid fa-chevron-down action-icon action-trigger"
+            (click)="toggleMessageDropdown(message.id, $event)"></i>
+          <div class="dropdown-menu msg-dropdown" *ngIf="activeDropdownMessageId === message.id">
+            <div class="dropdown-item" (click)="onEditMessage(message)">
+              <i class="fa-solid fa-pen"></i> Editar
+            </div>
+            <div class="dropdown-item danger" (click)="openDeleteMessageModal(message.id)">
+              <i class="fa-solid fa-trash"></i> Eliminar
+            </div>
+          </div>
+        </span>
+      </span>
+    </div>
+  </div>
+  }
+</div>
+
+<div class="chat-input-area" (click)="closeAllDropdowns()">
+  <input type="text" placeholder="Escribe un mensaje..." [(ngModel)]="newMessage" (keyup.enter)="onSendMessage()" />
+  <button class="send-btn" (click)="onSendMessage()">
+    <i class="fa-solid fa-paper-plane"></i>
+  </button>
+</div>
+
+<!-- Modales Minimalistas Unificados -->
+<div class="modern-modal-backdrop" *ngIf="isDeleteChatModalOpen || messageToDeleteId || isRenameGroupModalOpen || isLeaveGroupModalOpen || isManageParticipantsModalOpen || isRemoveParticipantModalOpen || isChangeRoleModalOpen">
+  <!-- MODAL DE ELIMINAR -->
+  <div class="modern-modal" *ngIf="isDeleteChatModalOpen || messageToDeleteId">
+    <div class="modal-icon-container danger">
+      <i class="fa-solid fa-exclamation"></i>
+    </div>
+
+    <h3>{{ isDeleteChatModalOpen ? 'Eliminar Chat' : 'Eliminar Mensaje' }}</h3>
+
+    <p>
+      {{ isDeleteChatModalOpen
+      ? '¿Estás seguro de que deseas eliminar este chat?'
+      : '¿Estás seguro de que deseas eliminar este mensaje?' }}
+    </p>
+
+    <div class="modern-modal-actions">
+      <button class="modern-modal-btn cancel" (click)="closeModals()">Cancelar</button>
+      <button class="modern-modal-btn danger"
+        (click)="isDeleteChatModalOpen ? confirmDeleteChat() : confirmDeleteMessage()">Eliminar</button>
+    </div>
+  </div>
+
+  <!-- MODAL DE RENOMBRAR GRUPO -->
+  <div class="modern-modal" *ngIf="isRenameGroupModalOpen">
+    <div class="modal-icon-container info">
+      <i class="fa-solid fa-users"></i>
+    </div>
+
+    <h3>Renombrar Grupo</h3>
+    <p style="margin-bottom: 20px;">
+      Ingresa el nuevo nombre para este grupo.
+    </p>
+
+    <input class="modern-edit-input" type="text" [(ngModel)]="newGroupName" (keyup.enter)="renameGroup()"
+      autofocus placeholder="Ej. Equipo de Ventas..." />
+
+    <div class="modern-modal-actions">
+      <button class="modern-modal-btn cancel" (click)="closeRenameGroupModal()">Cancelar</button>
+      <button class="modern-modal-btn primary" (click)="renameGroup()">Guardar</button>
+    </div>
+  </div>
+
+  <!-- MODAL SALIR DEL GRUPO -->
+  <div class="modern-modal" *ngIf="isLeaveGroupModalOpen">
+    <div class="modal-icon-container danger">
+      <i class="fa-solid fa-right-from-bracket"></i>
+    </div>
+    <h3>Salir del Grupo</h3>
+    <p>¿Estás seguro de que deseas salir de este grupo? No podrás volver a enviar o recibir mensajes a menos que te vuelvan a agregar.</p>
+    <div class="modern-modal-actions">
+      <button class="modern-modal-btn cancel" (click)="closeModals()">Cancelar</button>
+      <button class="modern-modal-btn danger" (click)="confirmLeaveGroup()">Salir</button>
+    </div>
+  </div>
+
+  <!-- MODAL GESTIONAR PARTICIPANTES -->
+  <div class="modern-modal" *ngIf="isManageParticipantsModalOpen && !isRemoveParticipantModalOpen && !isChangeRoleModalOpen" style="max-width: 400px;">
+    <div class="modal-icon-container info">
+      <i class="fa-solid fa-users-gear"></i>
+    </div>
+    <h3 style="margin-bottom: 5px;">Gestionar Participantes</h3>
+    
+    <div *ngIf="!isAddParticipantsViewOpen" style="margin-bottom: 15px;">
+      <button (click)="toggleAddParticipantsView()" style="background: none; border: none; color: #3240A5; font-weight: bold; cursor: pointer; font-size: 0.9em; padding: 0;">
+        <i class="fa-solid fa-user-plus"></i> Añadir Participante
+      </button>
+    </div>
+
+    <!-- VISTA PRINCIPAL: LISTA DE PARTICIPANTES -->
+    <div *ngIf="!isAddParticipantsViewOpen">
+      <div class="participants-list" style="max-height: 300px; overflow-y: auto; text-align: left; margin-bottom: 20px;">
+        @for (participant of conversationDetails?.participants; track participant.id) {
+          <div class="participant-item" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid #e2e8f0;">
+            <div class="participant-info" style="display: flex; align-items: center; gap: 10px;">
+              <i class="fa-solid fa-user" style="color: #64748b; background: #f1f5f9; padding: 8px; border-radius: 50%;"></i>
+              <div>
+                <div style="font-weight: 500; color: #1e293b;">{{ participant.name }} {{ participant.surname }} <span *ngIf="participant.id === currentUserId" style="color: #64748b; font-size: 0.8em;">(Tú)</span></div>
+                <div style="font-size: 0.75em; color: #3b82f6; font-weight: bold;" *ngIf="(participant.role || participant.pivot?.role) === 'admin'">Administrador</div>
+              </div>
+            </div>
+            <div class="participant-actions" *ngIf="participant.id !== currentUserId">
+              <button title="Cambiar Rol" (click)="openChangeRoleModal(participant)" style="background: none; border: none; cursor: pointer; color: #64748b; margin-right: 10px;">
+                <i class="fa-solid" [ngClass]="(participant.role || participant.pivot?.role) === 'admin' ? 'fa-user-minus' : 'fa-user-shield'"></i>
+              </button>
+              <button title="Eliminar del Grupo" (click)="openRemoveParticipantModal(participant.id)" style="background: none; border: none; cursor: pointer; color: #ef4444;">
+                <i class="fa-solid fa-user-xmark"></i>
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+      <div class="modern-modal-actions">
+        <button class="modern-modal-btn primary" (click)="closeManageParticipantsModal()">Cerrar</button>
+      </div>
+    </div>
+
+    <!-- VISTA SECUNDARIA: AÑADIR PARTICIPANTES -->
+    <div *ngIf="isAddParticipantsViewOpen">
+      <div style="margin-bottom: 15px; position: relative;">
+        <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 10px; top: 10px; color: #94a3b8;"></i>
+        <input class="modern-edit-input" type="text" placeholder="Buscar contacto..." [(ngModel)]="contactSearchTerm" style="padding-left: 35px; margin-bottom: 0;" />
+      </div>
+      
+      <div class="participants-list" style="max-height: 250px; overflow-y: auto; text-align: left; margin-bottom: 20px;">
+        @if (filteredSystemUsersForAdding.length === 0) {
+          <div style="text-align: center; color: #64748b; padding: 20px 0;">No se encontraron usuarios disponibles.</div>
+        }
+        @for (user of filteredSystemUsersForAdding; track user.id) {
+          <div class="participant-item" (click)="toggleUserSelectionToAdd(user.id)" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid #e2e8f0; cursor: pointer;">
+            <div class="participant-info" style="display: flex; align-items: center; gap: 10px;">
+              <i class="fa-solid fa-user" style="color: #64748b; background: #f1f5f9; padding: 8px; border-radius: 50%;"></i>
+              <div style="font-weight: 500; color: #1e293b;">{{ user.name }} {{ user.surname }}</div>
+            </div>
+            
+            <!-- Checkbox estilo chat-list -->
+            <div style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid #cbd5e1; display: flex; align-items: center; justify-content: center; transition: all 0.2s;"
+                 [style.background-color]="isSelectedToAdd(user.id) ? '#3240A5' : 'transparent'"
+                 [style.border-color]="isSelectedToAdd(user.id) ? '#3240A5' : '#cbd5e1'">
+              <i class="fa-solid fa-check" *ngIf="isSelectedToAdd(user.id)" style="color: white; font-size: 12px;"></i>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="modern-modal-actions">
+        <button class="modern-modal-btn cancel" (click)="toggleAddParticipantsView()">Volver</button>
+        <button class="modern-modal-btn primary" [disabled]="selectedUserIdsToAdd.length === 0" (click)="confirmAddParticipants()">
+          Añadir ({{ selectedUserIdsToAdd.length }})
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL CONFIRMAR ELIMINAR PARTICIPANTE -->
+  <div class="modern-modal" *ngIf="isRemoveParticipantModalOpen">
+    <div class="modal-icon-container danger">
+      <i class="fa-solid fa-user-xmark"></i>
+    </div>
+    <h3>Eliminar Participante</h3>
+    <p>¿Estás seguro de que deseas eliminar a este usuario del grupo?</p>
+    <div class="modern-modal-actions">
+      <button class="modern-modal-btn cancel" (click)="closeModals()">Cancelar</button>
+      <button class="modern-modal-btn danger" (click)="confirmRemoveParticipant()">Eliminar</button>
+    </div>
+  </div>
+
+  <!-- MODAL CONFIRMAR CAMBIO DE ROL -->
+  <div class="modern-modal" *ngIf="isChangeRoleModalOpen">
+    <div class="modal-icon-container info">
+      <i class="fa-solid fa-user-shield"></i>
+    </div>
+    <h3>Cambiar Rol</h3>
+    <p>¿Estás seguro de que deseas cambiar el rol de este participante a <b>{{ ((participantToChangeRole?.role || participantToChangeRole?.pivot?.role) === 'admin') ? 'Miembro' : 'Administrador' }}</b>?</p>
+    <div class="modern-modal-actions">
+      <button class="modern-modal-btn cancel" (click)="closeModals()">Cancelar</button>
+      <button class="modern-modal-btn primary" (click)="confirmChangeRole()">Confirmar</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Modal de Edición (Estilo WhatsApp) -->
+<div class="edit-modal-backdrop" *ngIf="isEditModalOpen">
+  <div class="edit-modal">
+    <div class="edit-header">
+      <i class="fa-solid fa-xmark close-icon" (click)="closeEditModal()"></i>
+      <h4>Edita el mensaje</h4>
+    </div>
+    
+    <div class="edit-body">
+      <div class="message-preview-container">
+        <div class="message-content">
+          <p>{{ messageToEditObj?.message }}</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="edit-footer">
+      <div class="edit-input-wrapper">
+        <input type="text" [(ngModel)]="messageToEditContent" (keyup.enter)="confirmEditMessage()" autofocus />
+        <button class="save-edit-btn" (click)="confirmEditMessage()" [disabled]="!messageToEditContent.trim() || messageToEditContent === messageToEditObj?.message">
+          <i class="fa-solid fa-check"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

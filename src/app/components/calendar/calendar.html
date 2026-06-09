@@ -1,0 +1,106 @@
+<main class="calendar-container">
+  <!-- Header Menu (Similar to other pages) -->
+  <div class="calendar-header">
+    <div class="header-left">
+      <div class="breadcrumb">
+        <span class="root">Plan</span>
+        <span class="separator">/</span>
+        <span class="current">Calendar</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="week-navigation">
+        <button (click)="previousWeek()" class="nav-btn"><i class="fa-solid fa-chevron-left"></i></button>
+        <button (click)="nextWeek()" class="nav-btn"><i class="fa-solid fa-chevron-right"></i></button>
+        <span class="week-title">{{ currentWeek[0] | date:'MMMM d' }} - {{ currentWeek[6] | date:'MMMM d, yyyy' }}</span>
+      </div>
+      <button class="add-event-btn" (click)="showAddEventModal = true">
+        <i class="fa-solid fa-plus"></i>
+        <span>Create</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="calendar-layout">
+    <!-- Sidebar -->
+    <aside class="calendar-sidebar">
+      <!-- Mini Calendar Mockup -->
+      <div class="mini-calendar">
+        <h4>{{ currentDate | date:'MMMM yyyy' }}</h4>
+        <div class="mini-days-header">
+          <span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span><span>Su</span>
+        </div>
+        <div class="mini-days-grid">
+          <!-- Mocking a few days for the visual -->
+          <span class="day">1</span><span class="day">2</span><span class="day">3</span><span class="day">4</span>
+          <span class="day">5</span><span class="day">6</span><span class="day">7</span><span class="day">8</span>
+          <span class="day">9</span><span class="day">10</span><span class="day">11</span><span class="day">12</span>
+          <span class="day">13</span><span class="day active">14</span><span class="day">15</span><span class="day">16</span>
+          <span class="day">17</span><span class="day">18</span><span class="day">19</span><span class="day">20</span>
+          <span class="day">21</span><span class="day">22</span><span class="day">23</span><span class="day">24</span>
+          <span class="day">25</span><span class="day">26</span><span class="day">27</span><span class="day">28</span>
+        </div>
+      </div>
+
+      <!-- Categories -->
+      <div class="categories-section">
+        <h4>Categories</h4>
+        <ul class="category-list">
+          <li *ngFor="let cat of categories">
+            <label class="checkbox-container">
+              <input type="checkbox" [(ngModel)]="cat.selected" (change)="loadEvents()">
+              <span class="checkmark" [style.backgroundColor]="cat.selected ? cat.color : '#fff'" [style.borderColor]="cat.color"></span>
+              {{ cat.name }}
+            </label>
+          </li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Main Calendar Grid -->
+    <section class="calendar-main">
+      <div class="calendar-grid">
+        <!-- Top header with days -->
+        <div class="headers-row">
+          <div class="time-column-header"></div>
+          <div class="day-column-header" *ngFor="let day of currentWeek" [class.today]="(day | date:'shortDate') === (currentDate | date:'shortDate')">
+            <span class="day-name">{{ day | date:'EEE' }}</span>
+            <span class="day-number">{{ day | date:'d' }}</span>
+          </div>
+        </div>
+
+        <!-- Time rows -->
+        <div class="grid-body">
+          <div class="time-column">
+            <div class="time-slot" *ngFor="let hour of hours">
+              <span>{{ hour }}</span>
+            </div>
+          </div>
+          
+          <div class="days-container">
+            <!-- Background grid lines -->
+            <div class="grid-lines">
+              <div class="grid-row" *ngFor="let hour of hours"></div>
+            </div>
+
+            <!-- Day columns for events -->
+            <div class="day-columns">
+              <div class="day-column" *ngFor="let day of currentWeek">
+                <ng-container *ngFor="let event of getEventsForDay(day)">
+                  <div class="event-card" [ngStyle]="getEventStyle(event)" *ngIf="isEventVisible(event)">
+                    <div class="event-title">{{ event.title }}</div>
+                    <div class="event-time">{{ event.startAt | date:'HH:mm' }} - {{ event.endAt | date:'HH:mm' }}</div>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  @if (showAddEventModal) {
+    <app-add-event-modal (eventAdded)="onEventAdded()" (closeModal)="showAddEventModal = false"></app-add-event-modal>
+  }
+</main>

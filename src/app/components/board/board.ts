@@ -6,11 +6,11 @@ import { FormsModule } from '@angular/forms';
 
 import { Tarea, EstadoTarea, Importancia } from '../../models/tarea';
 import { TaskService } from '../../services/task/taskService';
-import { KanbanColumn } from '../kanban-column/kanban-column';
+import { KanbanColumn } from './kanban-column/kanban-column';
 import { DragDropModule, CdkDragDrop } from '@angular/cdk/drag-drop';
-import { AddTaskModal } from '../add-task-modal/add-task-modal';
-import { CustomDropdown } from '../custom-dropdown/custom-dropdown';
-import { TaskDetailModal } from '../task-detail-modal/task-detail-modal';
+import { AddTaskModal } from './add-task-modal/add-task-modal';
+import { CustomDropdown } from '../shared/custom-dropdown/custom-dropdown';
+import { TaskDetailModal } from './task-detail-modal/task-detail-modal';
 import { AuthService } from '../../services/auth/authService';
 
 @Component({
