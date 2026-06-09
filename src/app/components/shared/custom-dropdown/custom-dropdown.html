@@ -1,4 +1,4 @@
-<div class="custom-select-container">
+<div class="custom-select-container" [class.dropup]="dropup">
   
   <button type="button" class="custom-btn" (click)="menuAbierto = !menuAbierto">
     <div class="btn-content">
@@ -11,10 +11,13 @@
   @if (menuAbierto) {
     <div class="custom-menu">
       
-      <button type="button" (click)="seleccionarOpcion('')">{{ label }}</button>
+      <button type="button" *ngIf="showClearOption" (click)="seleccionarOpcion('')">{{ label }}</button>
       
       @for (op of options; track op) {
-        <button type="button" (click)="seleccionarOpcion(op)">{{ getLabel(op) }}</button>
+        <button type="button" (click)="seleccionarOpcion(op, $event)" [class.multi-select-item]="multiSelect">
+          <input type="checkbox" *ngIf="multiSelect" [checked]="isOptionSelected(op)" style="pointer-events: none;" />
+          <span>{{ getLabel(op) }}</span>
+        </button>
       }
     </div>
   }

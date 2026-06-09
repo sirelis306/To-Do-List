@@ -93,24 +93,23 @@ h1 {
 }
 
 .add-task-btn {
-  background: #4338ca;
+  background-color: #4f46e5;
   color: white;
   border: none;
-  padding: 0.7rem 1.5rem;
-  height: 48px;
-  border-radius: 12px;
-  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
   display: flex;
   align-items: center;
-  gap: 0.8rem;
+  gap: 0.5rem;
+  transition: background-color 0.2s, transform 0.1s;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
 }
 
 .add-task-btn:hover {
-  background: #3730a3;
+  background-color: #4338ca;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .kanban-board {

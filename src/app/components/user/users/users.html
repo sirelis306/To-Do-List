@@ -136,8 +136,8 @@
     </div>
     
     <div class="modern-modal-actions" style="margin-top: 20px;">
-      <button class="modern-modal-btn cancel" (click)="onCloseDetails()">Cerrar</button>
-      <button *ngIf="canEdit(selectedUser)" class="modern-modal-btn primary" (click)="onEditUser(selectedUser!.id); onCloseDetails()">
+      <button class="btn btn-cancel" (click)="onCloseDetails()">Cerrar</button>
+      <button *ngIf="canEdit(selectedUser)" class="btn btn-primary" (click)="onEditUser(selectedUser!.id); onCloseDetails()">
         <i class="fa-solid fa-user-pen"></i> Editar
       </button>
     </div>
