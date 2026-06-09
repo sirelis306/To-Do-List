@@ -5,11 +5,12 @@ import { CalendarService } from '../../../services/calendar/calendar.service';
 import { UserService } from '../../../services/user/userService';
 import { Evento } from '../../../models/evento';
 import { User } from '../../../models/user';
+import { CustomDropdown } from '../../shared/custom-dropdown/custom-dropdown';
 
 @Component({
   selector: 'app-add-event-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, CustomDropdown],
   templateUrl: './add-event-modal.html',
   styleUrl: './add-event-modal.css'
 })
@@ -20,8 +21,27 @@ export class AddEventModal implements OnInit {
   public title: string = '';
   public place: string = '';
   public category: string = '';
-  public participants: number[] = []; // User IDs
+  public participants: number[] = [];
   public isCompanyWide: boolean = false;
+  public tipoEvento: string = '';
+  public cliente: string = '';
+  public clienteOtro: string = '';
+  public participantName: string = '';
+  public participantCount: number = 1;
+
+  get selectedParticipantIds(): number[] {
+    return this.selectedParticipantsList.map(u => u.id);
+  }
+
+  get participantOptions(): any[] {
+    return this.availableUsers.map(u => ({
+      label: `${u.nombre} ${u.apellido}`,
+      value: u.id,
+      original: u
+    }));
+  }
+
+  // Eventos disponibles
   public description: string = '';
   public date: string = '';
   public startAt: string = '';
@@ -31,23 +51,59 @@ export class AddEventModal implements OnInit {
   public availableUsers: User[] = [];
   public selectedParticipantsList: User[] = [];
 
+  public colorCategories = [
+    { name: 'Product Design', color: '#4caf50' },
+    { name: 'Software Engineering', color: '#2196f3' },
+    { name: 'User Research', color: '#9c27b0' },
+    { name: 'Marketing', color: '#f44336' },
+    { name: 'Tecnología', color: '#ff9800' }
+  ];
+
+  public categoryOptions = [
+    { label: 'Reunión', value: 'reunion' },
+    { label: 'Evento', value: 'evento' },
+    { label: 'Recordatorio', value: 'recordatorio' }
+  ];
+
+  public visibilityOptions = [
+    { label: 'Público (Intranet)', value: true },
+    { label: 'Privado', value: false }
+  ];
+
+  public clientOptions = [
+    { label: 'Movilnet', value: 'movilnet' },
+    { label: 'Otro', value: 'otro' }
+  ];
+
+  get salaOptions(): any[] {
+    return this.salas.map(s => ({
+      label: s.charAt(0).toUpperCase() + s.slice(1),
+      value: s
+    }));
+  }
+
   constructor(
     private calendarService: CalendarService,
     private userService: UserService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
-    // Set default date to today
+    // Establecer la fecha predeterminada a hoy
     const today = new Date();
     this.date = today.toISOString().split('T')[0];
-    
-    // Load users for participants dropdown
+
+    // Cargar usuarios para el dropdown de participantes
     this.userService.getUsers(1, 100).subscribe({
       next: (response) => {
-        // Handle response.data or response directly depending on backend
-        this.availableUsers = response.data || response;
+        // Manejar response.data o response directamente dependiendo del backend
+        const data = response.data || response;
+        this.availableUsers = data.map((u: any) => ({
+          ...u,
+          nombre: u.name || u.nombre,
+          apellido: u.surname || u.apellido
+        }));
       },
-      error: (err) => console.error('Error fetching users', err)
+      error: (err) => console.error('Error al obtener usuarios', err)
     });
   }
 
@@ -74,7 +130,7 @@ export class AddEventModal implements OnInit {
   saveEvent() {
     if (!this.title || !this.date) return;
 
-    // Build datetime strings
+    // Construir strings de fecha y hora
     const startDateTime = this.startAt ? `${this.date}T${this.startAt}:00` : undefined;
     const endDateTime = this.endAt ? `${this.date}T${this.endAt}:00` : undefined;
 
@@ -87,7 +143,11 @@ export class AddEventModal implements OnInit {
       endAt: endDateTime,
       tags: this.category ? [this.category] : [],
       isCompanyWide: this.isCompanyWide,
-      participants: this.participants
+      participants: this.participants,
+      tipoEvento: this.tipoEvento,
+      cliente: this.cliente === 'otro' ? this.clienteOtro : this.cliente,
+      participantName: this.participantName,
+      participantCount: this.participantCount
     };
 
     this.calendarService.createEvent(newEvent).subscribe({
@@ -95,8 +155,8 @@ export class AddEventModal implements OnInit {
         this.eventAdded.emit(newEvent);
       },
       error: (err) => {
-        console.error('Error creating event', err);
-        // Fallback for demo if API fails
+        console.error('Error al crear evento', err);
+        // Fallback para demo si la API falla
         this.eventAdded.emit(newEvent);
       }
     });

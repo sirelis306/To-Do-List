@@ -1,64 +1,100 @@
 <div class="modal-backdrop" (click)="closeModal.emit()"></div>
 <div class="modal-content">
   <div class="modal-header">
-    <h3>Create New Event</h3>
+    <h3>Crear Nuevo Evento</h3>
     <button class="close-btn" (click)="closeModal.emit()"><i class="fa-solid fa-xmark"></i></button>
   </div>
 
   <div class="modal-body">
-    <div class="form-group">
-      <label>Event Name</label>
-      <input type="text" [(ngModel)]="title" placeholder="Reunión de Tecnología" class="form-control" />
+    <div class="form-row">
+      <div class="form-group" style="flex: 2;">
+        <label>Nombre del Evento</label>
+        <input type="text" [(ngModel)]="title" placeholder="Reunión de Tecnología" class="form-control" />
+      </div>
+      <div class="form-group" style="flex: 1;">
+        <label>Categoría</label>
+        <app-custom-dropdown
+          [options]="categoryOptions"
+          [selectedValue]="tipoEvento"
+          icon="fa-tag"
+          label="Seleccionar Categoría..."
+          (valueChange)="tipoEvento = $event">
+        </app-custom-dropdown>
+      </div>
     </div>
 
     <div class="form-row">
       <div class="form-group half-width">
-        <label>Date</label>
+        <label>Fecha</label>
         <input type="date" [(ngModel)]="date" class="form-control" />
       </div>
       <div class="form-group half-width">
-        <label>Category</label>
-        <select [(ngModel)]="category" class="form-control">
-          <option value="">Select Category...</option>
-          <option value="Product Design">Product Design</option>
-          <option value="Software Engineering">Software Engineering</option>
-          <option value="User Research">User Research</option>
-          <option value="Marketing">Marketing</option>
-          <option value="Tecnología">Tecnología</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="form-row">
-      <div class="form-group half-width">
-        <label>Start Time</label>
+        <label>Hora de Inicio</label>
         <input type="time" [(ngModel)]="startAt" class="form-control" />
       </div>
       <div class="form-group half-width">
-        <label>End Time</label>
+        <label>Hora de Fin</label>
         <input type="time" [(ngModel)]="endAt" class="form-control" />
       </div>
     </div>
 
-    <div class="form-row">
-      <div class="form-group half-width">
-        <label>Room (Sala)</label>
-        <select [(ngModel)]="place" class="form-control">
-          <option value="">Select Room...</option>
-          <option *ngFor="let sala of salas" [value]="sala">{{ sala | titlecase }}</option>
-        </select>
-      </div>
-      <div class="form-group half-width">
-        <label>Visibility</label>
-        <select [(ngModel)]="isCompanyWide" class="form-control">
-          <option [ngValue]="true">Public (Intranet)</option>
-          <option [ngValue]="false">Private</option>
-        </select>
-      </div>
+    <div class="form-group">
+      <label>Visibilidad</label>
+      <app-custom-dropdown
+        [options]="visibilityOptions"
+        [selectedValue]="isCompanyWide"
+        icon="fa-eye"
+        label="Seleccionar Visibilidad..."
+        (valueChange)="isCompanyWide = $event">
+      </app-custom-dropdown>
     </div>
 
+    <!-- Solo mostrar si es reunión o evento -->
+    <ng-container *ngIf="tipoEvento === 'reunion' || tipoEvento === 'evento'">
+      <div class="form-row">
+        <div class="form-group half-width">
+          <label>Sala</label>
+          <app-custom-dropdown
+            [options]="salaOptions"
+            [selectedValue]="place"
+            icon="fa-door-open"
+            label="Seleccionar Sala..."
+            (valueChange)="place = $event">
+          </app-custom-dropdown>
+        </div>
+        <div class="form-group half-width">
+          <label>Cliente</label>
+          <app-custom-dropdown
+            [options]="clientOptions"
+            [selectedValue]="cliente"
+            icon="fa-building"
+            label="Seleccionar Cliente..."
+            (valueChange)="cliente = $event">
+          </app-custom-dropdown>
+        </div>
+      </div>
+
+      <div class="form-row" *ngIf="cliente === 'otro'">
+        <div class="form-group" style="width: 100%;">
+          <label>Especificar Cliente</label>
+          <input type="text" [(ngModel)]="clienteOtro" class="form-control" placeholder="Nombre del cliente" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group half-width">
+          <label>Nombre del participante externo</label>
+          <input type="text" [(ngModel)]="participantName" class="form-control" placeholder="Ej. Juan Pérez" />
+        </div>
+        <div class="form-group half-width">
+          <label>Cantidad de personas</label>
+          <input type="number" [(ngModel)]="participantCount" class="form-control" min="1" />
+        </div>
+      </div>
+    </ng-container>
+
     <div class="form-group">
-      <label>Participants</label>
+      <label>Participantes</label>
       <div class="participants-container">
         <div class="selected-participants" *ngIf="selectedParticipantsList.length > 0">
           <span class="participant-chip" *ngFor="let user of selectedParticipantsList">
@@ -67,29 +103,43 @@
           </span>
         </div>
         
-        <div class="dropdown-wrapper">
-          <div class="dropdown-header">Select participants... <i class="fa-solid fa-chevron-down"></i></div>
-          <div class="dropdown-list">
-            <div class="dropdown-item" *ngFor="let user of availableUsers" (click)="toggleParticipant(user)">
-              <input type="checkbox" [checked]="isParticipantSelected(user.id)" />
-              <span>{{ user.nombre }} {{ user.apellido }} ({{ user.email }})</span>
-            </div>
-            <div class="dropdown-item empty" *ngIf="availableUsers.length === 0">
-              No users found.
-            </div>
-          </div>
-        </div>
+        <app-custom-dropdown
+          label="Seleccionar participantes..."
+          icon="fa-users"
+          [options]="participantOptions"
+          [multiSelect]="true"
+          [dropup]="true"
+          [selectedValues]="selectedParticipantIds"
+          (toggleValue)="toggleParticipant($event.original)">
+        </app-custom-dropdown>
       </div>
     </div>
 
+
+
     <div class="form-group">
-      <label>Comment / Description</label>
-      <textarea [(ngModel)]="description" rows="3" placeholder="Add some details..." class="form-control"></textarea>
+      <label>Comentario / Descripción</label>
+      <textarea [(ngModel)]="description" rows="3" placeholder="Agregar detalles..." class="form-control"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Etiqueta (Color)</label>
+      <div class="color-picker-row">
+        <div class="color-circle" 
+             *ngFor="let cat of colorCategories" 
+             [style.backgroundColor]="cat.color"
+             [style.color]="cat.color"
+             [class.selected]="category === cat.name"
+             (click)="category = cat.name"
+             [title]="cat.name">
+          <i class="fa-solid fa-check" style="color: white;" *ngIf="category === cat.name"></i>
+        </div>
+      </div>
     </div>
   </div>
 
   <div class="modal-footer">
-    <button class="btn-cancel" (click)="closeModal.emit()">Cancel</button>
-    <button class="btn-save" (click)="saveEvent()" [disabled]="!title || !date">Save Event</button>
+    <button class="btn btn-cancel" (click)="closeModal.emit()">Cancelar</button>
+    <button class="btn btn-primary" (click)="saveEvent()" [disabled]="!title || !date">Guardar Evento</button>
   </div>
 </div>

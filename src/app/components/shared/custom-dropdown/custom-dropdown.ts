@@ -11,20 +11,39 @@ import { CommonModule, TitleCasePipe } from '@angular/common';
 })
 export class CustomDropdown {
   @Input() label: string = "Filtrar";
-  @Input() options: any[] = []; // Puede ser string[] o {label: string, value: string}[]
-  @Input() selectedValue: string = "";
-  @Input() icon: string = "fa-filter"; 
+  @Input() options: any[] = [];
+  @Input() selectedValue: any = "";
+  @Input() icon: string = "fa-filter";
+  @Input() multiSelect: boolean = false;
+  @Input() selectedValues: any[] = [];
+  @Input() showClearOption: boolean = false;
+  @Input() dropup: boolean = false;
 
-  @Output() valueChange = new EventEmitter<string>();
+  @Output() valueChange = new EventEmitter<any>();
+  @Output() toggleValue = new EventEmitter<any>();
 
   public menuAbierto: boolean = false;
 
   constructor() { }
 
-  seleccionarOpcion(opcion: any): void {
+  seleccionarOpcion(opcion: any, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+
+    if (this.multiSelect) {
+      this.toggleValue.emit(opcion);
+    } else {
+      const value = typeof opcion === 'string' ? opcion : opcion.value;
+      this.valueChange.emit(value);
+      this.menuAbierto = false;
+    }
+  }
+
+  isOptionSelected(opcion: any): boolean {
+    if (!this.multiSelect) return false;
     const value = typeof opcion === 'string' ? opcion : opcion.value;
-    this.valueChange.emit(value); 
-    this.menuAbierto = false;  
+    return this.selectedValues.includes(value);
   }
 
   getNombreSeleccion(): string {
