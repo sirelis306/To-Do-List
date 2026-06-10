@@ -14,11 +14,22 @@ import { CustomDropdown } from '../shared/custom-dropdown/custom-dropdown';
   styleUrl: './calendar.css'
 })
 export class Calendar implements OnInit {
-  public currentDate = new Date();
+  public currentDate: Date = new Date();
+  public selectedView: string = 'week';
+  public showAddEventModal: boolean = false;
+  
+  public selectedEventDetails: Evento | null = null;
+  public selectedEventForEdit: Evento | null = null;
+  
+  // Control del modal de confirmación de eliminación
+  public showDeleteConfirmModal: boolean = false;
+  public eventToDeleteId: number | undefined = undefined;
+
   public currentWeek: Date[] = [];
-  public currentMonthDays: { date: Date, isCurrentMonth: boolean, isActive: boolean }[] = [];
+  public currentMonthDays: { date: Date, isCurrentMonth: boolean, isActive: boolean, hasEvents?: boolean }[] = [];
   public hours: string[] = [];
   public events: Evento[] = [];
+  public allEvents: Evento[] = [];
   public categories: { name: string, color: string, selected: boolean }[] = [
     { name: 'Reunión', color: '#4caf50', selected: true },
     { name: 'Evento', color: '#2196f3', selected: true },
@@ -28,9 +39,8 @@ export class Calendar implements OnInit {
   public currentMonthGrid: { date: Date, isCurrentMonth: boolean, events: Evento[] }[][] = [];
   public currentYearGrid: { monthName: string, days: {date: Date, isCurrentMonth: boolean, events?: Evento[]}[] }[] = [];
   public currentAgendaEvents: Evento[] = [];
+  public agendaDays: { date: Date, events: Evento[] }[] = [];
   
-  public showAddEventModal = false;
-
   public viewOptions = [
     { label: 'Día', value: 'day' },
     { label: 'Semana', value: 'week' },
@@ -38,7 +48,6 @@ export class Calendar implements OnInit {
     { label: 'Año', value: 'year' },
     { label: 'Agenda', value: 'agenda' }
   ];
-  public selectedView = 'week';
 
   constructor(private calendarService: CalendarService) {
     this.generateHours();
@@ -99,7 +108,7 @@ export class Calendar implements OnInit {
   updateWeek() {
     this.currentWeek = [];
     const currentDay = this.currentDate.getDay();
-    const distanceToMonday = currentDay === 0 ? 6 : currentDay - 1; // 0 is Sunday, we want Monday as first day
+    const distanceToMonday = currentDay === 0 ? 6 : currentDay - 1;
     
     const monday = new Date(this.currentDate);
     monday.setDate(this.currentDate.getDate() - distanceToMonday);
@@ -127,7 +136,8 @@ export class Calendar implements OnInit {
       this.currentMonthDays.push({
         date: new Date(year, month - 1, prevMonthLastDay - i),
         isCurrentMonth: false,
-        isActive: false
+        isActive: false,
+        hasEvents: this.getEventsForDay(new Date(year, month - 1, prevMonthLastDay - i)).some(e => this.isEventVisible(e))
       });
     }
     
@@ -136,17 +146,20 @@ export class Calendar implements OnInit {
       this.currentMonthDays.push({
         date: d,
         isCurrentMonth: true,
-        isActive: this.isSameDate(d, this.currentDate)
+        isActive: this.isSameDate(d, this.currentDate),
+        hasEvents: this.getEventsForDay(d).some(e => this.isEventVisible(e))
       });
     }
     
     let nextMonthDay = 1;
     while (this.currentMonthDays.length < 42) {
       this.currentMonthDays.push({
-        date: new Date(year, month + 1, nextMonthDay++),
+        date: new Date(year, month + 1, nextMonthDay),
         isCurrentMonth: false,
-        isActive: false
+        isActive: false,
+        hasEvents: this.getEventsForDay(new Date(year, month + 1, nextMonthDay)).some(e => this.isEventVisible(e))
       });
+      nextMonthDay++;
     }
   }
 
@@ -164,6 +177,12 @@ export class Calendar implements OnInit {
   selectDate(date: Date) {
     this.currentDate = new Date(date);
     this.updateViewData();
+  }
+
+  selectDateAndOpenModal(date: Date) {
+    this.currentDate = new Date(date);
+    this.updateViewData();
+    this.showAddEventModal = true;
   }
 
   previous() {
@@ -282,13 +301,13 @@ export class Calendar implements OnInit {
     
     this.calendarService.getEvents(startStr, endStr).subscribe({
       next: (events) => {
+        this.allEvents = events;
         this.events = events;
         this.distributeEvents();
       },
       error: (err) => {
-        console.error('Error fetching events, using mock data for demo', err);
-        // Datos simulados (mock) por si la API no está lista
-        this.events = [
+        console.error('Error al cargar los eventos, usando datos de demostración', err);
+        this.allEvents = [
           {
             id: 1,
             title: 'Product Design Course',
@@ -300,26 +319,17 @@ export class Calendar implements OnInit {
             tipoEvento: 'Reunión',
             tags: [],
             isCompanyWide: false
-          },
-          {
-            id: 2,
-            title: 'Frontend development',
-            description: 'Angular stuff',
-            place: 'evolucion',
-            date: '2026-06-12',
-            startAt: '2026-06-12T11:00:00',
-            endAt: '2026-06-12T13:00:00',
-            tipoEvento: 'Evento',
-            tags: [],
-            isCompanyWide: true
           }
         ];
+        this.events = this.allEvents;
         this.distributeEvents();
       }
     });
   }
 
   distributeEvents() {
+    this.generateMiniCalendar(); // Actualiza los indicadores del mini calendario cuando cambian eventos o categorías
+
     if (this.selectedView === 'month') {
       for (const week of this.currentMonthGrid) {
         for (const day of week) {
@@ -336,24 +346,95 @@ export class Calendar implements OnInit {
       const year = this.currentDate.getFullYear();
       const month = this.currentDate.getMonth();
       
-      this.currentAgendaEvents = this.events.filter(e => {
-        const d = new Date(e.date);
-        // Arreglar problema de zona horaria al comparar fechas
+      this.currentAgendaEvents = this.allEvents.filter(e => {
         const [eYear, eMonth, eDay] = e.date.split('-');
         return parseInt(eYear) === year && parseInt(eMonth) - 1 === month;
       });
-      this.currentAgendaEvents.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      
+      // Agrupar eventos por día para la vista de agenda
+      const groups: { [key: string]: Evento[] } = {};
+      for (const event of this.currentAgendaEvents) {
+        if (this.isEventVisible(event)) {
+          if (!groups[event.date]) {
+            groups[event.date] = [];
+          }
+          groups[event.date].push(event);
+        }
+      }
+      
+      this.agendaDays = Object.keys(groups).map(dateStr => {
+        const [y, m, d] = dateStr.split('-');
+        return {
+          date: new Date(parseInt(y), parseInt(m) - 1, parseInt(d)),
+          events: groups[dateStr]
+        };
+      }).sort((a, b) => a.date.getTime() - b.date.getTime());
     }
   }
 
-  onEventAdded(event?: Evento) {
+  onEventAdded(event: Evento) {
+    if (!event.id) event.id = Math.floor(Math.random() * 10000);
+    this.allEvents.push(event);
+    this.updateViewData();
     this.showAddEventModal = false;
-    if (event) {
-      this.events = [...this.events, event];
-      this.distributeEvents();
-    } else {
-      this.loadEvents();
+  }
+
+  onEventUpdated(event: Evento) {
+    const index = this.allEvents.findIndex(e => e.id === event.id);
+    if (index !== -1) {
+      this.allEvents[index] = event;
     }
+    this.updateViewData();
+    this.showAddEventModal = false;
+    this.selectedEventForEdit = null;
+  }
+
+  openEventDetails(event: Evento, clickEvent: MouseEvent) {
+    clickEvent.stopPropagation();
+    this.selectedEventDetails = event;
+  }
+
+  closeEventDetails() {
+    this.selectedEventDetails = null;
+  }
+
+  deleteEvent(id: number | undefined) {
+    if (!id) return;
+    // Guardamos el id y abrimos el modal de confirmación propio
+    this.eventToDeleteId = id;
+    this.showDeleteConfirmModal = true;
+  }
+
+  confirmDelete() {
+    const id = this.eventToDeleteId;
+    if (!id) return;
+    this.calendarService.deleteEvent(id).subscribe({
+      next: () => {
+        this.allEvents = this.allEvents.filter(e => e.id !== id);
+        this.updateViewData();
+        this.closeEventDetails();
+      },
+      error: (err) => {
+        console.error('Error al eliminar el evento:', err);
+        // Eliminamos localmente aunque falle el servidor para evitar que el usuario vea el evento eliminado
+        this.allEvents = this.allEvents.filter(e => e.id !== id);
+        this.updateViewData();
+        this.closeEventDetails();
+      }
+    });
+    this.showDeleteConfirmModal = false;
+    this.eventToDeleteId = undefined;
+  }
+
+  cancelDelete() {
+    this.showDeleteConfirmModal = false;
+    this.eventToDeleteId = undefined;
+  }
+
+  editEvent(event: Evento) {
+    this.selectedEventForEdit = event;
+    this.closeEventDetails();
+    this.showAddEventModal = true;
   }
 
   getEventsForDay(date: Date): Evento[] {
@@ -363,7 +444,7 @@ export class Calendar implements OnInit {
     const dateStr = `${year}-${month}-${day}`;
     
     return this.events.filter(e => {
-      // Check if event startAt falls in this day, or if it's an all day event check date
+      // Verificar si el startAt del evento corresponde a este día, o si es un evento de todo el día verificar la fecha
       if (e.startAt) {
         return e.startAt.startsWith(dateStr);
       }
@@ -381,17 +462,13 @@ export class Calendar implements OnInit {
     
     const duration = endHour - startHour;
     
-    // Using 60px per hour
+    // Usando 60px por hora
     const top = startHour * 60;
     const height = duration * 60;
     
-    // Find color based on tag
-    let bgColor = '#e0e0e0';
-    let borderColor = '#9e9e9e';
-    if (event.tipoEvento) {
-      borderColor = this.getCategoryColor(event.tipoEvento);
-      bgColor = this.hexToRgba(borderColor, 0.2);
-    }
+    // Determinar el color según la categoría o el color personalizado del evento
+    let borderColor = event.color || (event.tipoEvento ? this.getCategoryColor(event.tipoEvento) : '#9e9e9e');
+    let bgColor = this.hexToRgba(borderColor, 0.18);
 
     return {
       top: `${top}px`,
@@ -405,14 +482,29 @@ export class Calendar implements OnInit {
       padding: '4px 8px',
       fontSize: '0.85rem',
       overflow: 'hidden',
-      boxSizing: 'border-box'
+      boxSizing: 'border-box',
+      color: borderColor
     };
+  }
+
+  private normalizeString(str: string): string {
+    return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   }
 
   getCategoryColor(tipoEvento?: string): string {
     if (!tipoEvento) return '#94a3b8'; // por defecto
-    const cat = this.categories.find(c => c.name.toLowerCase() === tipoEvento.toLowerCase());
+    const normTipo = this.normalizeString(tipoEvento);
+    const cat = this.categories.find(c => this.normalizeString(c.name) === normTipo);
     return cat ? cat.color : '#94a3b8';
+  }
+
+  getEventIcon(tipoEvento?: string): string {
+    if (!tipoEvento) return '';
+    const normTipo = this.normalizeString(tipoEvento);
+    if (normTipo === 'reunion') return 'fa-users';
+    if (normTipo === 'evento') return 'fa-calendar-check';
+    if (normTipo === 'recordatorio') return 'fa-bell';
+    return '';
   }
 
   getEventDayNumber(dateStr: string): string {
@@ -431,10 +523,21 @@ export class Calendar implements OnInit {
     return `${months[date.getMonth()]}, ${days[date.getDay()]}`;
   }
 
+  getEventDayNameStrShort(date: Date): string {
+    const days = ['dom.', 'lun.', 'mar.', 'mié.', 'jue.', 'vie.', 'sáb.'];
+    return days[date.getDay()];
+  }
+
   isEventVisible(event: Evento) {
     if (!event.tipoEvento) return true; // Si no tiene tipo, lo mostramos por defecto
-    const selectedCategories = this.categories.filter(c => c.selected).map(c => c.name.toLowerCase());
-    return selectedCategories.includes(event.tipoEvento.toLowerCase());
+    const normTipo = this.normalizeString(event.tipoEvento);
+    const selectedCategories = this.categories.filter(c => c.selected).map(c => this.normalizeString(c.name));
+    return selectedCategories.includes(normTipo);
+  }
+
+  hasVisibleEvents(events?: Evento[]): boolean {
+    if (!events || events.length === 0) return false;
+    return events.some(e => this.isEventVisible(e));
   }
 
   hexToRgba(hex: string, alpha: number) {

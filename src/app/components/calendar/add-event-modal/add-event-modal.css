@@ -1,88 +1,307 @@
+/* Estilos específicos para la Modal estilo Google Calendar */
 
-.participants-container {
-  border: 1px solid #e2e8f0;
+.gcal-modal-content {
+  background: white;
   border-radius: 8px;
-  padding: 0.5rem;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 24px 38px 3px rgba(0, 0, 0, 0.14), 0 9px 46px 8px rgba(0, 0, 0, 0.12), 0 11px 15px -7px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  overflow: hidden;
+  animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.selected-participants {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.participant-chip {
-  background: #f1f5f9;
-  color: #334155;
-  padding: 0.25rem 0.5rem;
-  border-radius: 16px;
-  font-size: 0.85rem;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.remove-chip {
-  background: none;
-  border: none;
-  color: #94a3b8;
-  cursor: pointer;
-  font-size: 1rem;
-  line-height: 1;
-  padding: 0 2px;
-}
-
-.remove-chip:hover {
-  color: #ef4444;
-}
-
-
-
-.modal-footer {
-  padding: 1.5rem 2rem;
-  border-top: 1px solid #f1f5f9;
+.gcal-header {
   display: flex;
   justify-content: flex-end;
-  gap: 1rem;
-  background: #f8fafc;
-  border-bottom-left-radius: 20px;
-  border-bottom-right-radius: 20px;
+  padding: 12px 16px;
+  background: #f1f3f4;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
 }
 
+.gcal-close-btn {
+  background: none;
+  border: none;
+  color: #5f6368;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
 
+.gcal-close-btn:hover {
+  background-color: rgba(95, 99, 104, 0.1);
+}
 
-.color-picker-row {
+.gcal-body {
+  padding: 0 24px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 75vh;
+  overflow-y: auto;
+}
+
+/* Título */
+.gcal-title-container {
+  padding-left: 48px;
+  /* Espacio para alinear con los campos con icono */
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+.gcal-title-input {
+  width: 100%;
+  font-size: 22px;
+  color: #3c4043;
+  border: none;
+  border-bottom: 2px solid #e0e0e0;
+  padding: 4px 0;
+  outline: none;
+  transition: border-bottom-color 0.2s;
+}
+
+.gcal-title-input:focus {
+  border-bottom-color: var(--primary-color);
+}
+
+.gcal-title-input::placeholder {
+  color: #80868b;
+}
+
+/* Píldoras de tipo de evento */
+.gcal-type-pills {
+  display: flex;
+  gap: 8px;
+  padding-left: 48px;
+  margin-bottom: 16px;
+}
+
+.gcal-pill {
+  background: none;
+  border: none;
+  color: #3c4043;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.gcal-pill:hover {
+  background-color: rgba(95, 99, 104, 0.04);
+}
+
+.gcal-pill.active {
+  background-color: var(--primary-light);
+  color: var(--primary-color);
+}
+
+/* Filas de formulario con iconos */
+.gcal-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  min-height: 40px;
+}
+
+.gcal-icon-col {
+  width: 32px;
+  display: flex;
+  justify-content: center;
+  padding-top: 10px;
+  /* Alineación con inputs */
+  color: #5f6368;
+  font-size: 1.1rem;
+}
+
+.gcal-content-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 40px;
+}
+
+.gcal-inline-inputs {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.gcal-date-input,
+.gcal-time-input {
+  border: 1px solid transparent;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #3c4043;
+  background: transparent;
+  outline: none;
+  cursor: pointer;
+}
+
+.gcal-date-input:hover,
+.gcal-time-input:hover {
+  background: rgba(95, 99, 104, 0.04);
+}
+
+.gcal-date-input:focus,
+.gcal-time-input:focus {
+  background: #f1f3f4;
+  border-bottom: 2px solid var(--primary-color);
+}
+
+.gcal-textarea {
+  width: 100%;
+  border: 1px solid transparent;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #3c4043;
+  background: #f1f3f4;
+  resize: vertical;
+  min-height: 80px;
+  outline: none;
+}
+
+.gcal-textarea:focus {
+  border-bottom: 2px solid var(--primary-color);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+/* Chips de participantes */
+.gcal-chips-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.gcal-chip {
+  background: #f1f3f4;
+  color: #3c4043;
+  padding: 4px 8px;
+  border-radius: 16px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #dadce0;
+}
+
+.gcal-chip-remove {
+  background: none;
+  border: none;
+  color: #5f6368;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+}
+
+.gcal-chip-remove:hover {
+  color: #202124;
+}
+
+/* Colores */
+.gcal-colors-container {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
   align-items: center;
-  margin-top: 0.5rem;
+  min-height: 40px;
 }
 
-.color-circle {
-  width: 32px;
-  height: 32px;
+.gcal-color-circle {
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s, box-shadow 0.2s;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: transform 0.1s;
 }
 
-.color-circle:hover {
+.gcal-color-circle:hover {
   transform: scale(1.1);
 }
 
-.color-circle.selected {
-  box-shadow: 0 0 0 3px white, 0 0 0 4px currentColor;
-  transform: scale(1.1);
+.gcal-color-circle.selected {
+  position: relative;
 }
 
-.color-circle i {
+.gcal-color-circle.selected::after {
+  content: '\f00c';
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  color: white;
+  font-size: 12px;
+}
+
+/* Footer */
+.gcal-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px 24px;
+  border-top: 1px solid transparent;
+}
+
+.gcal-btn-save {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 8px 24px;
+  border-radius: 8px;
   font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.gcal-btn-save:hover {
+  background: var(--primary-hover);
+  box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
+}
+
+/* Reset dropdowns inside GCal UI to blend in */
+.gcal-content-col .custom-dropdown-container {
+  width: 100%;
+}
+
+.gcal-content-col .dropdown-header {
+  border: none !important;
+  border-bottom: 1px solid #dadce0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  padding: 8px 0 !important;
+  height: auto !important;
+}
+
+.gcal-content-col .dropdown-header:hover {
+  background: rgba(95, 99, 104, 0.04) !important;
+}
+
+/* Layout for side-by-side dropdowns in Location row */
+.gcal-split-row {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+}
+
+.gcal-split-item {
+  flex: 1;
 }

@@ -1,13 +1,10 @@
-<div class="modern-modal-backdrop" (click)="onCerrar()">
-  <div class="modern-modal details-modern-modal" (click)="$event.stopPropagation()" style="text-align: left;">
-    <div class="modal-icon-container info" style="margin: 0 auto 20px auto;">
-      <i class="fa-solid fa-list-check"></i>
-    </div>
-    
+<div class="modal-backdrop" (click)="onCerrar()">
+  <div class="modal-content" (click)="$event.stopPropagation()" style="text-align: left; padding: 2rem;">
+
     <h3 style="text-align: center; margin-bottom: 20px;">Nueva Tarea</h3>
 
-    <div class="nueva-tarea-form" style="width: 100%;">
-      <input class="modern-edit-input" type="text" placeholder="¿Qué necesitas hacer?" [(ngModel)]="nuevaTareaTitulo"/>
+    <div class="form-group" style="width: 100%; margin-bottom: 15px;">
+      <input class="form-control" type="text" placeholder="¿Qué necesitas hacer?" [(ngModel)]="nuevaTareaTitulo"/>
     </div>
 
     <div class="nueva-tarea-form" style="width: 100%;">
@@ -28,9 +25,9 @@
     <div class="subtasks-section" style="width: 100%;">
       <h3 style="font-size: 1rem; color: #475569;">Sub-tareas ({{ subtareasCompletadas }}/{{ totalSubtareas }})</h3>
       
-      <div class="add-subtask-form" style="display: flex; gap: 10px; margin-bottom: 15px;">
-        <input class="modern-edit-input" style="margin-bottom: 0;" type="text" placeholder="Añadir sub-tarea..." [(ngModel)]="nuevoSubtareaDescripcion" (keyup.enter)="agregarSubtarea()"/>
-        <button class="modern-modal-btn primary" style="flex: 0 0 50px;" (click)="agregarSubtarea()">
+      <div class="form-row" style="display: flex; gap: 10px; margin-bottom: 15px;">
+        <input class="form-control" type="text" placeholder="Añadir sub-tarea..." [(ngModel)]="nuevoSubtareaDescripcion" (keyup.enter)="agregarSubtarea()"/>
+        <button class="btn btn-primary" style="flex: 0 0 50px; padding: 0;" (click)="agregarSubtarea()">
           <i class="fa-solid fa-plus"></i>
         </button>
       </div>
@@ -39,16 +36,16 @@
         @for (subtarea of nuevasSubtareas; track $index) {
           <div class="subtask-item" style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f8fafc; border-radius: 8px; margin-bottom: 5px;">
             <span class="subtask-label">{{ subtarea }}</span>
-            <button class="modern-modal-btn danger" style="flex: 0 0 auto; padding: 5px 10px;" (click)="eliminarSubtarea($index)">
+            <button class="btn btn-danger" style="flex: 0 0 auto; padding: 5px 10px;" (click)="eliminarSubtarea($index)">
               <i class="fa-solid fa-trash"></i>
             </button>
           </div>
         }
       </div>
 
-      <div class="modern-modal-actions">
-        <button class="modern-modal-btn cancel" (click)="onCerrar()">Cancelar</button>
-        <button class="modern-modal-btn primary" (click)="onAgregarTarea()">Añadir Tarea</button>
+      <div class="modal-actions" style="margin-top: 20px;">
+        <button class="btn btn-cancel" style="flex: 1;" (click)="onCerrar()">Cancelar</button>
+        <button class="btn btn-primary" style="flex: 1;" (click)="onAgregarTarea()">Añadir Tarea</button>
       </div>
     </div>
   </div>

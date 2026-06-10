@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CalendarService } from '../../../services/calendar/calendar.service';
@@ -15,15 +15,18 @@ import { CustomDropdown } from '../../shared/custom-dropdown/custom-dropdown';
   styleUrl: './add-event-modal.css'
 })
 export class AddEventModal implements OnInit {
+  @Input() eventToEdit: Evento | null = null;
+  @Input() selectedDate: Date | null = null;
   @Output() closeModal = new EventEmitter<void>();
   @Output() eventAdded = new EventEmitter<Evento>();
+  @Output() eventUpdated = new EventEmitter<Evento>();
 
   public title: string = '';
   public place: string = '';
   public category: string = '';
   public participants: number[] = [];
   public isCompanyWide: boolean = false;
-  public tipoEvento: string = '';
+  public tipoEvento: string = 'evento';
   public cliente: string = '';
   public clienteOtro: string = '';
   public participantName: string = '';
@@ -47,7 +50,7 @@ export class AddEventModal implements OnInit {
   public startAt: string = '';
   public endAt: string = '';
 
-  public salas: string[] = ['disrupcion', 'evolucion', 'sal de juntas', 'expansion', 'direccion'];
+  public salas: string[] = ['disrupcion', 'evolucion', 'sala de juntas', 'expansion', 'direccion'];
   public availableUsers: User[] = [];
   public selectedParticipantsList: User[] = [];
 
@@ -88,20 +91,41 @@ export class AddEventModal implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    // Establecer la fecha predeterminada a hoy
-    const today = new Date();
-    this.date = today.toISOString().split('T')[0];
+    if (this.eventToEdit) {
+      this.title = this.eventToEdit.title || '';
+      this.description = this.eventToEdit.description || '';
+      this.place = this.eventToEdit.place || '';
+      this.date = this.eventToEdit.date || '';
+      if (this.eventToEdit.startAt) this.startAt = this.eventToEdit.startAt.includes('T') ? this.eventToEdit.startAt.split('T')[1].substring(0,5) : this.eventToEdit.startAt;
+      if (this.eventToEdit.endAt) this.endAt = this.eventToEdit.endAt.includes('T') ? this.eventToEdit.endAt.split('T')[1].substring(0,5) : this.eventToEdit.endAt;
+      this.isCompanyWide = this.eventToEdit.isCompanyWide || false;
+      this.tipoEvento = this.eventToEdit.tipoEvento || '';
+      this.cliente = this.clientOptions.find(c => c.value === this.eventToEdit?.cliente) ? (this.eventToEdit!.cliente || '') : 'otro';
+      if (this.cliente === 'otro') this.clienteOtro = this.eventToEdit.cliente || '';
+      this.participantName = this.eventToEdit.participantName || '';
+      this.participantCount = this.eventToEdit.participantCount || 1;
+      const matchedCat = this.colorCategories.find(c => c.color === this.eventToEdit?.color);
+      if (matchedCat) this.category = matchedCat.name;
+      this.participants = this.eventToEdit.participants || [];
+    } else {
+      const initDate = this.selectedDate ? new Date(this.selectedDate) : new Date();
+      // Ajustar por la zona horaria local para evitar que se desplace un día atrás
+      const offset = initDate.getTimezoneOffset() * 60000;
+      const localDate = new Date(initDate.getTime() - offset);
+      this.date = localDate.toISOString().split('T')[0];
+    }
 
-    // Cargar usuarios para el dropdown de participantes
     this.userService.getUsers(1, 100).subscribe({
       next: (response) => {
-        // Manejar response.data o response directamente dependiendo del backend
         const data = response.data || response;
         this.availableUsers = data.map((u: any) => ({
           ...u,
           nombre: u.name || u.nombre,
           apellido: u.surname || u.apellido
         }));
+        if (this.eventToEdit && this.participants.length > 0) {
+          this.selectedParticipantsList = this.availableUsers.filter(u => this.participants.includes(u.id));
+        }
       },
       error: (err) => console.error('Error al obtener usuarios', err)
     });
@@ -130,11 +154,12 @@ export class AddEventModal implements OnInit {
   saveEvent() {
     if (!this.title || !this.date) return;
 
-    // Construir strings de fecha y hora
     const startDateTime = this.startAt ? `${this.date}T${this.startAt}:00` : undefined;
     const endDateTime = this.endAt ? `${this.date}T${this.endAt}:00` : undefined;
 
-    const newEvent: Evento = {
+    const color = this.colorCategories.find(c => c.name === this.category)?.color;
+
+    const eventData: Evento = {
       title: this.title,
       description: this.description,
       place: this.place,
@@ -147,18 +172,30 @@ export class AddEventModal implements OnInit {
       tipoEvento: this.tipoEvento,
       cliente: this.cliente === 'otro' ? this.clienteOtro : this.cliente,
       participantName: this.participantName,
-      participantCount: this.participantCount
+      participantCount: this.participantCount,
+      color: color
     };
 
-    this.calendarService.createEvent(newEvent).subscribe({
-      next: () => {
-        this.eventAdded.emit(newEvent);
-      },
-      error: (err) => {
-        console.error('Error al crear evento', err);
-        // Fallback para demo si la API falla
-        this.eventAdded.emit(newEvent);
-      }
-    });
+    if (this.eventToEdit && this.eventToEdit.id) {
+      this.calendarService.updateEvent(this.eventToEdit.id, eventData).subscribe({
+        next: () => {
+          this.eventUpdated.emit({ ...eventData, id: this.eventToEdit!.id });
+        },
+        error: (err) => {
+          console.error('Error al actualizar evento', err);
+          this.eventUpdated.emit({ ...eventData, id: this.eventToEdit!.id });
+        }
+      });
+    } else {
+      this.calendarService.createEvent(eventData).subscribe({
+        next: () => {
+          this.eventAdded.emit(eventData);
+        },
+        error: (err) => {
+          console.error('Error al crear evento', err);
+          this.eventAdded.emit(eventData);
+        }
+      });
+    }
   }
 }

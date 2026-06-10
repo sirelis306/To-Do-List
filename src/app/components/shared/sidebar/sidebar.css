@@ -9,7 +9,7 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  background-color: rgba(12, 20, 39, 0.9);
+  background-color: var(--sidebar-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-right: 5px solid rgba(255, 255, 255, 0.1);
@@ -115,7 +115,7 @@
 }
 
 .nav-links li a.active {
-  background-color: #3240A5;
+  background-color: var(--sidebar-active);
   color: #ffffff;
 }
 
@@ -157,7 +157,7 @@
 }
 
 .profile-btn.active {
-  background-color: #3240A5;
+  background-color: var(--sidebar-active);
   color: #ffffff;
 }
 
@@ -192,7 +192,7 @@
 }
 
 .logout-btn:hover {
-  background-color: #3240A5;
+  background-color: var(--sidebar-active);
   color: #ffffff;
 }
 
@@ -280,7 +280,7 @@
 }
 
 .sidebar-badge {
-  background-color: #ef4444;
+  background-color: var(--danger-color);
   color: white;
   border-radius: 12px;
   padding: 2px 8px;
@@ -296,7 +296,7 @@
   position: absolute;
   top: 6px;
   right: 6px;
-  background-color: #ef4444;
+  background-color: var(--danger-color);
   color: white;
   border-radius: 50%;
   width: 18px;

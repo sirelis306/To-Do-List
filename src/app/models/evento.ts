@@ -15,4 +15,5 @@ export interface Evento {
   cliente?: string;
   participantName?: string;
   participantCount?: number;
+  color?: string;
 }

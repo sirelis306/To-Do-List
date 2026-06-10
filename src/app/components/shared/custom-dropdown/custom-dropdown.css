@@ -55,8 +55,32 @@
   z-index: 100;
   padding: 0.5rem;
   animation: fadeIn 0.2s ease-out;
-  max-height: 250px;
+  max-height: 180px;
   overflow-y: auto;
+}
+
+/* Checkboxes circulares para multi-select */
+.custom-checkbox {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  margin-right: 0.5rem;
+}
+
+.custom-checkbox.checked {
+  background-color: #6366f1;
+  border-color: #6366f1;
+  color: white;
+}
+
+.custom-checkbox i {
+  font-size: 10px;
 }
 
 .custom-select-container.dropup .custom-menu {

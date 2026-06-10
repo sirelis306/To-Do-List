@@ -1,145 +1,146 @@
-<div class="modal-backdrop" (click)="closeModal.emit()"></div>
-<div class="modal-content">
-  <div class="modal-header">
-    <h3>Crear Nuevo Evento</h3>
-    <button class="close-btn" (click)="closeModal.emit()"><i class="fa-solid fa-xmark"></i></button>
-  </div>
+<div class="modal-backdrop" (click)="closeModal.emit()"
+  style="background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;">
+  <div class="gcal-modal-content" (click)="$event.stopPropagation()">
 
-  <div class="modal-body">
-    <div class="form-row">
-      <div class="form-group" style="flex: 2;">
-        <label>Nombre del Evento</label>
-        <input type="text" [(ngModel)]="title" placeholder="Reunión de Tecnología" class="form-control" />
-      </div>
-      <div class="form-group" style="flex: 1;">
-        <label>Categoría</label>
-        <app-custom-dropdown
-          [options]="categoryOptions"
-          [selectedValue]="tipoEvento"
-          icon="fa-tag"
-          label="Seleccionar Categoría..."
-          (valueChange)="tipoEvento = $event">
-        </app-custom-dropdown>
-      </div>
+    <!-- Cabecera simple -->
+    <div class="gcal-header">
+      <button class="gcal-close-btn" (click)="closeModal.emit()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
     </div>
 
-    <div class="form-row">
-      <div class="form-group half-width">
-        <label>Fecha</label>
-        <input type="date" [(ngModel)]="date" class="form-control" />
+    <div class="gcal-body">
+
+      <!-- Título -->
+      <div class="gcal-title-container">
+        <input type="text" [(ngModel)]="title" placeholder="Agregar título" class="gcal-title-input" />
       </div>
-      <div class="form-group half-width">
-        <label>Hora de Inicio</label>
-        <input type="time" [(ngModel)]="startAt" class="form-control" />
+
+      <!-- Píldoras de Categoría (Tipo de Evento) -->
+      <div class="gcal-type-pills">
+        <button class="gcal-pill" [class.active]="tipoEvento === 'evento'"
+          (click)="tipoEvento = 'evento'">Evento</button>
+        <button class="gcal-pill" [class.active]="tipoEvento === 'reunion'"
+          (click)="tipoEvento = 'reunion'">Reunión</button>
+        <button class="gcal-pill" [class.active]="tipoEvento === 'recordatorio'"
+          (click)="tipoEvento = 'recordatorio'">Recordatorio</button>
       </div>
-      <div class="form-group half-width">
-        <label>Hora de Fin</label>
-        <input type="time" [(ngModel)]="endAt" class="form-control" />
+
+      <!-- Fecha y Hora -->
+      <div class="gcal-row">
+        <div class="gcal-icon-col">
+          <i class="fa-regular fa-clock"></i>
+        </div>
+        <div class="gcal-content-col">
+          <div class="gcal-inline-inputs" style="flex-wrap: nowrap;">
+            <input type="date" [(ngModel)]="date" class="gcal-date-input" style="flex: 1; max-width: 140px;" />
+            <input type="time" [(ngModel)]="startAt" class="gcal-time-input" style="flex: 1; max-width: 100px;" />
+            <span>–</span>
+            <input type="time" [(ngModel)]="endAt" class="gcal-time-input" style="flex: 1; max-width: 100px;" />
+          </div>
+        </div>
       </div>
+
+
+
+      <!-- Invitados / Visibilidad -->
+      <div class="gcal-row">
+        <div class="gcal-icon-col">
+          <i class="fa-solid fa-user-group"></i>
+        </div>
+        <div class="gcal-content-col">
+          <div class="gcal-split-row">
+            <div class="gcal-split-item">
+              <app-custom-dropdown label="Agregar invitados" [options]="participantOptions" [multiSelect]="true"
+                [selectedValues]="selectedParticipantIds" (toggleValue)="toggleParticipant($event.original)">
+              </app-custom-dropdown>
+            </div>
+            <div class="gcal-split-item">
+              <app-custom-dropdown [options]="visibilityOptions" [selectedValue]="isCompanyWide"
+                label="Visibilidad predeterminada" (valueChange)="isCompanyWide = $event" icon="fa-calendar">
+              </app-custom-dropdown>
+            </div>
+          </div>
+          <div class="gcal-chips-container" *ngIf="selectedParticipantsList.length > 0" style="margin-top: 8px;">
+            <span class="gcal-chip" *ngFor="let user of selectedParticipantsList">
+              <i class="fa-regular fa-circle-user" style="color: #6366f1;"></i>
+              {{ user.nombre }} {{ user.apellido }}
+              <button class="gcal-chip-remove" (click)="removeParticipant(user.id)"><i
+                  class="fa-solid fa-xmark"></i></button>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ubicación, Sala y Cliente -->
+      <ng-container *ngIf="tipoEvento === 'reunion' || tipoEvento === 'evento'">
+        <div class="gcal-row">
+          <div class="gcal-icon-col">
+            <i class="fa-solid fa-location-dot"></i>
+          </div>
+          <div class="gcal-content-col">
+            <div class="gcal-split-row">
+              <div class="gcal-split-item">
+                <app-custom-dropdown [options]="salaOptions" [selectedValue]="place" label="Agregar ubicación"
+                  (valueChange)="place = $event">
+                </app-custom-dropdown>
+              </div>
+              <div class="gcal-split-item">
+                <app-custom-dropdown [options]="clientOptions" [selectedValue]="cliente" label="Agregar cliente"
+                  (valueChange)="cliente = $event">
+                </app-custom-dropdown>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="gcal-row" *ngIf="cliente === 'otro' || participantName">
+          <div class="gcal-icon-col"></div>
+          <div class="gcal-content-col">
+            <div class="gcal-split-row">
+              <div class="gcal-split-item" *ngIf="cliente === 'otro'">
+                <input type="text" [(ngModel)]="clienteOtro" class="gcal-date-input"
+                  style="width: 100%; border-bottom: 1px solid #dadce0;" placeholder="Especificar cliente" />
+              </div>
+              <div class="gcal-split-item">
+                <input type="text" [(ngModel)]="participantName" class="gcal-date-input"
+                  style="width: 100%; border-bottom: 1px solid #dadce0;" placeholder="Participante externo" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- Fila 📝: Descripción -->
+      <div class="gcal-row">
+        <div class="gcal-icon-col">
+          <i class="fa-solid fa-align-left"></i>
+        </div>
+        <div class="gcal-content-col">
+          <textarea [(ngModel)]="description" class="gcal-textarea"
+            placeholder="Agregar descripción o archivos adjuntos"></textarea>
+        </div>
+      </div>
+
+      <!-- Fila 🏷️: Etiqueta de Color -->
+      <div class="gcal-row">
+        <div class="gcal-icon-col">
+          <i class="fa-solid fa-tag"></i>
+        </div>
+        <div class="gcal-content-col">
+          <div class="gcal-colors-container">
+            <div class="gcal-color-circle" *ngFor="let cat of colorCategories" [style.backgroundColor]="cat.color"
+              [class.selected]="category === cat.name" (click)="category = cat.name" [title]="cat.name">
+            </div>
+          </div>
+        </div>
+      </div>
+
+
     </div>
 
-    <div class="form-group">
-      <label>Visibilidad</label>
-      <app-custom-dropdown
-        [options]="visibilityOptions"
-        [selectedValue]="isCompanyWide"
-        icon="fa-eye"
-        label="Seleccionar Visibilidad..."
-        (valueChange)="isCompanyWide = $event">
-      </app-custom-dropdown>
+    <div class="gcal-footer">
+      <button class="gcal-btn-save" (click)="saveEvent()">Guardar</button>
     </div>
-
-    <!-- Solo mostrar si es reunión o evento -->
-    <ng-container *ngIf="tipoEvento === 'reunion' || tipoEvento === 'evento'">
-      <div class="form-row">
-        <div class="form-group half-width">
-          <label>Sala</label>
-          <app-custom-dropdown
-            [options]="salaOptions"
-            [selectedValue]="place"
-            icon="fa-door-open"
-            label="Seleccionar Sala..."
-            (valueChange)="place = $event">
-          </app-custom-dropdown>
-        </div>
-        <div class="form-group half-width">
-          <label>Cliente</label>
-          <app-custom-dropdown
-            [options]="clientOptions"
-            [selectedValue]="cliente"
-            icon="fa-building"
-            label="Seleccionar Cliente..."
-            (valueChange)="cliente = $event">
-          </app-custom-dropdown>
-        </div>
-      </div>
-
-      <div class="form-row" *ngIf="cliente === 'otro'">
-        <div class="form-group" style="width: 100%;">
-          <label>Especificar Cliente</label>
-          <input type="text" [(ngModel)]="clienteOtro" class="form-control" placeholder="Nombre del cliente" />
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group half-width">
-          <label>Nombre del participante externo</label>
-          <input type="text" [(ngModel)]="participantName" class="form-control" placeholder="Ej. Juan Pérez" />
-        </div>
-        <div class="form-group half-width">
-          <label>Cantidad de personas</label>
-          <input type="number" [(ngModel)]="participantCount" class="form-control" min="1" />
-        </div>
-      </div>
-    </ng-container>
-
-    <div class="form-group">
-      <label>Participantes</label>
-      <div class="participants-container">
-        <div class="selected-participants" *ngIf="selectedParticipantsList.length > 0">
-          <span class="participant-chip" *ngFor="let user of selectedParticipantsList">
-            {{ user.nombre }} {{ user.apellido }}
-            <button class="remove-chip" (click)="removeParticipant(user.id)">&times;</button>
-          </span>
-        </div>
-        
-        <app-custom-dropdown
-          label="Seleccionar participantes..."
-          icon="fa-users"
-          [options]="participantOptions"
-          [multiSelect]="true"
-          [dropup]="true"
-          [selectedValues]="selectedParticipantIds"
-          (toggleValue)="toggleParticipant($event.original)">
-        </app-custom-dropdown>
-      </div>
-    </div>
-
-
-
-    <div class="form-group">
-      <label>Comentario / Descripción</label>
-      <textarea [(ngModel)]="description" rows="3" placeholder="Agregar detalles..." class="form-control"></textarea>
-    </div>
-
-    <div class="form-group">
-      <label>Etiqueta (Color)</label>
-      <div class="color-picker-row">
-        <div class="color-circle" 
-             *ngFor="let cat of colorCategories" 
-             [style.backgroundColor]="cat.color"
-             [style.color]="cat.color"
-             [class.selected]="category === cat.name"
-             (click)="category = cat.name"
-             [title]="cat.name">
-          <i class="fa-solid fa-check" style="color: white;" *ngIf="category === cat.name"></i>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal-footer">
-    <button class="btn btn-cancel" (click)="closeModal.emit()">Cancelar</button>
-    <button class="btn btn-primary" (click)="saveEvent()" [disabled]="!title || !date">Guardar Evento</button>
   </div>
 </div>

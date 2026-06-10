@@ -15,7 +15,9 @@
       
       @for (op of options; track op) {
         <button type="button" (click)="seleccionarOpcion(op, $event)" [class.multi-select-item]="multiSelect">
-          <input type="checkbox" *ngIf="multiSelect" [checked]="isOptionSelected(op)" style="pointer-events: none;" />
+          <div class="custom-checkbox" *ngIf="multiSelect" [class.checked]="isOptionSelected(op)">
+            <i class="fa-solid fa-check" *ngIf="isOptionSelected(op)"></i>
+          </div>
           <span>{{ getLabel(op) }}</span>
         </button>
       }

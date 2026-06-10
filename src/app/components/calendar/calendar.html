@@ -13,25 +13,26 @@
     <aside class="calendar-sidebar">
       <!-- Mini Calendar Mockup -->
       <div class="mini-calendar">
-        <div class="mini-calendar-header"
-          style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-          <h4 style="margin: 0;">{{ getMonthName(currentDate) }} {{ currentDate.getFullYear() }}</h4>
-          <div class="mini-calendar-nav" style="display: flex; gap: 0.5rem;">
-            <button class="nav-btn" (click)="previousMonthMini()"
-              style="background: none; border: none; cursor: pointer; color: #64748b; padding: 0.2rem 0.5rem;"><i
-                class="fa-solid fa-chevron-left"></i></button>
-            <button class="nav-btn" (click)="nextMonthMini()"
-              style="background: none; border: none; cursor: pointer; color: #64748b; padding: 0.2rem 0.5rem;"><i
-                class="fa-solid fa-chevron-right"></i></button>
+        <div class="mini-calendar-header">
+          <h4>{{ getMonthName(currentDate) }} {{ currentDate.getFullYear() }}</h4>
+          <div class="mini-calendar-nav">
+            <button class="nav-btn" (click)="previousMonthMini()">
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <button class="nav-btn" (click)="nextMonthMini()">
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
           </div>
         </div>
         <div class="mini-days-header">
           <span>Lu</span><span>Ma</span><span>Mi</span><span>Ju</span><span>Vi</span><span>Sa</span><span>Do</span>
         </div>
         <div class="mini-days-grid">
-          <span class="day" *ngFor="let dayObj of currentMonthDays" [class.active]="dayObj.isActive"
+          <span class="day" *ngFor="let dayObj of currentMonthDays"
+            [class.active]="dayObj.isActive && !isToday(dayObj.date)" [class.today]="isToday(dayObj.date)"
             [class.text-muted]="!dayObj.isCurrentMonth" (click)="selectDate(dayObj.date)">
             {{ dayObj.date.getDate() }}
+            <div class="event-dot" *ngIf="dayObj.hasEvents"></div>
           </span>
         </div>
       </div>
@@ -63,9 +64,12 @@
           </div>
         </div>
         <div class="controls-right" style="display: flex; gap: 1rem; align-items: center;">
-          <app-custom-dropdown [options]="viewOptions" [selectedValue]="selectedView" icon=""
-            (valueChange)="onViewChange($event)">
-          </app-custom-dropdown>
+          <!-- Contenedor de ancho fijo para evitar que el dropdown cambie de tamaño según la opción seleccionada -->
+          <div style="width: 140px; flex-shrink: 0;">
+            <app-custom-dropdown [options]="viewOptions" [selectedValue]="selectedView" icon=""
+              (valueChange)="onViewChange($event)">
+            </app-custom-dropdown>
+          </div>
           <button class="add-event-btn" (click)="showAddEventModal = true">
             <i class="fa-solid fa-plus"></i> Nuevo Evento
           </button>
@@ -74,19 +78,20 @@
 
       <div class="calendar-grid-container" [ngSwitch]="selectedView">
 
-        <!-- WEEK & DAY VIEWS -->
+        <!-- SEMANA & DÍA VIEWS -->
         <div class="calendar-grid week-day-view" *ngSwitchDefault>
           <!-- Top header with days -->
           <div class="headers-row">
             <div class="time-column-header"></div>
             <div class="day-column-header" *ngFor="let day of (selectedView === 'day' ? [currentDate] : currentWeek)"
-              [class.today]="isToday(day)" (click)="selectDate(day)" style="cursor: pointer;">
+              [class.today]="isToday(day)" [class.active]="isSameDate(day, currentDate) && !isToday(day)"
+              (click)="selectDate(day)" style="cursor: pointer;">
               <span class="day-name">{{ getDayName(day) }}</span>
               <span class="day-number">{{ day.getDate() }}</span>
             </div>
           </div>
 
-          <!-- Time rows -->
+          <!-- HORA -->
           <div class="grid-body">
             <div class="time-column">
               <div class="time-slot" *ngFor="let hour of hours">
@@ -95,17 +100,20 @@
             </div>
 
             <div class="days-container">
-              <!-- Background grid lines -->
               <div class="grid-lines">
                 <div class="grid-row" *ngFor="let hour of hours"></div>
               </div>
 
-              <!-- Day columns for events -->
               <div class="day-columns">
                 <div class="day-column" *ngFor="let day of (selectedView === 'day' ? [currentDate] : currentWeek)">
                   <ng-container *ngFor="let event of getEventsForDay(day)">
-                    <div class="event-card" [ngStyle]="getEventStyle(event)" *ngIf="isEventVisible(event)">
-                      <div class="event-title">{{ event.title }}</div>
+                    <div class="event-card" [ngStyle]="getEventStyle(event)" *ngIf="isEventVisible(event)"
+                      (click)="openEventDetails(event, $event)">
+                      <div class="event-title">
+                        <i *ngIf="getEventIcon(event.tipoEvento)" [class]="'fa-solid ' + getEventIcon(event.tipoEvento)"
+                          style="margin-right: 4px; font-size: 0.85em; opacity: 0.8;"></i>
+                        {{ event.title }}
+                      </div>
                       <div class="event-time">{{ event.startAt | date:'HH:mm' }} - {{ event.endAt | date:'HH:mm' }}
                       </div>
                     </div>
@@ -116,7 +124,7 @@
           </div>
         </div>
 
-        <!-- MONTH VIEW -->
+        <!-- MES VIEW -->
         <div class="month-view-grid" *ngSwitchCase="'month'">
           <div class="month-days-header">
             <span>LUN</span><span>MAR</span><span>MIÉ</span><span>JUE</span><span>VIE</span><span>SÁB</span><span>DOM</span>
@@ -124,12 +132,16 @@
           <div class="month-grid-body">
             <div class="month-week-row" *ngFor="let week of currentMonthGrid">
               <div class="month-day-cell" *ngFor="let day of week" [class.not-current-month]="!day.isCurrentMonth"
-                [class.today]="isToday(day.date)" (click)="selectDate(day.date)">
+                [class.today]="isToday(day.date)"
+                [class.active]="isSameDate(day.date, currentDate) && !isToday(day.date)" (click)="selectDate(day.date)">
                 <div class="day-number-badge">{{ day.date.getDate() }}</div>
                 <div class="day-events-container">
                   <ng-container *ngFor="let event of day.events">
                     <div class="month-event-pill" *ngIf="isEventVisible(event)"
-                      [ngStyle]="{ 'background-color': getCategoryColor(event.tipoEvento) }">
+                      [ngStyle]="{ 'background-color': event.color || getCategoryColor(event.tipoEvento) }"
+                      (click)="openEventDetails(event, $event)">
+                      <i *ngIf="getEventIcon(event.tipoEvento)" [class]="'fa-solid ' + getEventIcon(event.tipoEvento)"
+                        style="margin-right: 3px; opacity: 0.9;"></i>
                       {{ event.title }}
                     </div>
                   </ng-container>
@@ -139,7 +151,7 @@
           </div>
         </div>
 
-        <!-- YEAR VIEW -->
+        <!-- AÑO VIEW -->
         <div class="year-view-grid" *ngSwitchCase="'year'">
           <div class="year-month-card" *ngFor="let month of currentYearGrid">
             <h4 class="year-month-title">{{ month.monthName }}</h4>
@@ -148,11 +160,12 @@
             </div>
             <div class="mini-days-grid year-mini-grid">
               <div class="mini-day" *ngFor="let day of month.days" [class.empty-day]="!day.isCurrentMonth"
-                   [class.today]="day.isCurrentMonth && isToday(day.date)"
-                   [class.active]="day.isCurrentMonth && isSameDate(day.date, currentDate)"
-                   [class.has-events]="day.isCurrentMonth && day.events && day.events.length > 0"
-                   (click)="day.isCurrentMonth ? selectDate(day.date) : null">
+                [class.today]="day.isCurrentMonth && isToday(day.date)"
+                [class.active]="day.isCurrentMonth && isSameDate(day.date, currentDate) && !isToday(day.date)"
+                [class.has-events]="day.isCurrentMonth && hasVisibleEvents(day.events)"
+                (click)="day.isCurrentMonth ? selectDate(day.date) : null">
                 {{ day.isCurrentMonth ? day.date.getDate() : '' }}
+                <div class="event-dot" *ngIf="day.isCurrentMonth && hasVisibleEvents(day.events)"></div>
               </div>
             </div>
           </div>
@@ -160,34 +173,135 @@
 
         <!-- AGENDA VIEW -->
         <div class="agenda-view-list" *ngSwitchCase="'agenda'">
-          <div class="agenda-empty" *ngIf="currentAgendaEvents.length === 0">
+          <div class="agenda-empty" *ngIf="agendaDays.length === 0">
             No hay eventos programados para este mes.
           </div>
-          <ng-container *ngFor="let event of currentAgendaEvents">
-            <div class="agenda-event-row" *ngIf="isEventVisible(event)">
-              <div class="agenda-date">
-                <div class="agenda-day-number">{{ getEventDayNumber(event.date) }}</div>
-                <div class="agenda-day-info">
-                  <span>{{ getEventDayNameStr(event.date) }}</span>
+
+          <div class="agenda-day-group" *ngFor="let dayGroup of agendaDays">
+            <!-- Date details -->
+            <div class="agenda-date-col">
+              <div class="agenda-day-num">{{ dayGroup.date.getDate() }}</div>
+              <div class="agenda-day-name">{{ getEventDayNameStrShort(dayGroup.date) }}</div>
+            </div>
+
+            <!-- Lista de eventos del día -->
+            <div class="agenda-events-col">
+              <div class="agenda-event-item" *ngFor="let event of dayGroup.events"
+                (click)="openEventDetails(event, $event)">
+                <div class="agenda-event-time">
+                  {{ event.startAt ? (event.startAt | date:'HH:mm') : 'Todo el día' }}
+                  <span *ngIf="event.startAt && event.endAt"> – {{ event.endAt | date:'HH:mm' }}</span>
                 </div>
-              </div>
-              <div class="agenda-event-details"
-                [ngStyle]="{ 'border-left': '4px solid ' + getCategoryColor(event.tipoEvento) }">
-                <div class="agenda-time">
-                  <span class="time-dot" [ngStyle]="{ 'background-color': getCategoryColor(event.tipoEvento) }"></span>
-                  {{ event.startAt ? (event.startAt | date:'shortTime') : 'Todo el día' }}
+
+                <span class="agenda-event-dot"
+                  [ngStyle]="{ 'background-color': event.color || getCategoryColor(event.tipoEvento) }"></span>
+
+                <div class="agenda-event-title">
+                  <i *ngIf="getEventIcon(event.tipoEvento)" [class]="'fa-solid ' + getEventIcon(event.tipoEvento)"></i>
+                  <span>{{ event.title }}</span>
                 </div>
-                <div class="agenda-title">{{ event.title }}</div>
+
+                <div class="agenda-event-location" *ngIf="event.place">
+                  <i class="fa-solid fa-location-dot"></i>
+                  <span>{{ event.place }}</span>
+                </div>
               </div>
             </div>
-          </ng-container>
+          </div>
         </div>
       </div>
     </section>
   </div>
 
   @if (showAddEventModal) {
-  <app-add-event-modal (eventAdded)="onEventAdded($event)"
-    (closeModal)="showAddEventModal = false"></app-add-event-modal>
+  <app-add-event-modal [selectedDate]="currentDate" (eventAdded)="onEventAdded($event)"
+    (eventUpdated)="onEventUpdated($event)" [eventToEdit]="selectedEventForEdit"
+    (closeModal)="showAddEventModal = false; selectedEventForEdit = null"></app-add-event-modal>
   }
+
+  @if (selectedEventDetails) {
+  <div class="modal-backdrop" (click)="closeEventDetails()">
+    <div class="gcal-detail-modal" (click)="$event.stopPropagation()">
+      <div class="gcal-detail-actions">
+        <button class="icon-btn" (click)="deleteEvent(selectedEventDetails.id)" title="Eliminar evento"><i
+            class="fa-regular fa-trash-can"></i></button>
+        <button class="icon-btn" (click)="editEvent(selectedEventDetails)" title="Editar evento"><i
+            class="fa-solid fa-pen"></i></button>
+        <button class="icon-btn close-btn-round" (click)="closeEventDetails()"><i
+            class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="gcal-detail-body">
+        <div class="gcal-detail-row title-row">
+          <div class="gcal-detail-icon">
+            <div class="color-square"
+              [ngStyle]="{'background-color': selectedEventDetails.color || getCategoryColor(selectedEventDetails.tipoEvento)}">
+            </div>
+          </div>
+          <div class="gcal-detail-content">
+            <h2 class="gcal-detail-title">{{ selectedEventDetails.title }}</h2>
+            <div class="gcal-detail-subtitle">
+              {{ selectedEventDetails.date | date:'fullDate' }}
+              <span *ngIf="selectedEventDetails.startAt">
+                ⋅ {{ selectedEventDetails.startAt | date:'shortTime' }} - {{ selectedEventDetails.endAt |
+                date:'shortTime' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="gcal-detail-row" *ngIf="selectedEventDetails.tipoEvento">
+          <div class="gcal-detail-icon"><i class="fa-solid fa-align-left"></i></div>
+          <div class="gcal-detail-content text-content">{{ selectedEventDetails.tipoEvento | titlecase }}</div>
+        </div>
+
+        <div class="gcal-detail-row" *ngIf="selectedEventDetails.place">
+          <div class="gcal-detail-icon"><i class="fa-solid fa-location-dot"></i></div>
+          <div class="gcal-detail-content text-content">{{ selectedEventDetails.place | titlecase }}</div>
+        </div>
+
+        <div class="gcal-detail-row" *ngIf="selectedEventDetails.description">
+          <div class="gcal-detail-icon"><i class="fa-solid fa-bars"></i></div>
+          <div class="gcal-detail-content text-content">{{ selectedEventDetails.description }}</div>
+        </div>
+
+        <div class="gcal-detail-row" *ngIf="selectedEventDetails.cliente && selectedEventDetails.cliente !== 'otro'">
+          <div class="gcal-detail-icon"><i class="fa-solid fa-briefcase"></i></div>
+          <div class="gcal-detail-content text-content">{{ selectedEventDetails.cliente | titlecase }}</div>
+        </div>
+
+        <div class="gcal-detail-row">
+          <div class="gcal-detail-icon">
+            <i class="fa-solid" [ngClass]="selectedEventDetails.isCompanyWide ? 'fa-earth-americas' : 'fa-lock'"></i>
+          </div>
+          <div class="gcal-detail-content text-content">
+            {{ selectedEventDetails.isCompanyWide ? 'Público' : 'Privado' }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- Modal de confirmación para eliminar un evento -->
+  @if (showDeleteConfirmModal) {
+  <div class="modal-backdrop" (click)="cancelDelete()">
+    <div class="delete-confirm-modal" (click)="$event.stopPropagation()">
+      <div class="delete-confirm-icon">
+        <i class="fa-regular fa-trash-can"></i>
+      </div>
+      <h3 class="delete-confirm-title">¿Eliminar este evento?</h3>
+      <p class="delete-confirm-message">
+        Esta acción no se puede deshacer. El evento se eliminará permanentemente del calendario.
+      </p>
+      <div class="delete-confirm-actions">
+        <button class="delete-cancel-btn" (click)="cancelDelete()">Cancelar</button>
+        <button class="delete-confirm-btn" (click)="confirmDelete()">
+          <i class="fa-regular fa-trash-can"></i> Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+  }
+
 </main>
