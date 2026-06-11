@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CalendarService } from '../../services/calendar/calendar.service';
+import { AuthService } from '../../services/auth/authService';
 import { Evento } from '../../models/evento';
 import { AddEventModal } from './add-event-modal/add-event-modal';
 import { CustomDropdown } from '../shared/custom-dropdown/custom-dropdown';
@@ -20,6 +21,8 @@ export class Calendar implements OnInit {
   
   public selectedEventDetails: Evento | null = null;
   public selectedEventForEdit: Evento | null = null;
+
+  private layoutCache: Map<string, any[]> = new Map();
   
   // Control del modal de confirmación de eliminación
   public showDeleteConfirmModal: boolean = false;
@@ -49,7 +52,10 @@ export class Calendar implements OnInit {
     { label: 'Agenda', value: 'agenda' }
   ];
 
-  constructor(private calendarService: CalendarService) {
+  constructor(
+    private calendarService: CalendarService,
+    private authService: AuthService
+  ) {
     this.generateHours();
   }
 
@@ -58,6 +64,7 @@ export class Calendar implements OnInit {
   }
 
   updateViewData() {
+    this.layoutCache.clear();
     this.updateWeek();
     this.generateMiniCalendar();
     
@@ -176,6 +183,13 @@ export class Calendar implements OnInit {
 
   selectDate(date: Date) {
     this.currentDate = new Date(date);
+    this.updateViewData();
+  }
+
+  goToDayView(date: Date, event: MouseEvent) {
+    event.stopPropagation();
+    this.currentDate = new Date(date);
+    this.selectedView = 'day';
     this.updateViewData();
   }
 
@@ -328,6 +342,7 @@ export class Calendar implements OnInit {
   }
 
   distributeEvents() {
+    this.layoutCache.clear(); // Asegurar que al aplicar filtros se recalcule el layout
     this.generateMiniCalendar(); // Actualiza los indicadores del mini calendario cuando cambian eventos o categorías
 
     if (this.selectedView === 'month') {
@@ -391,6 +406,8 @@ export class Calendar implements OnInit {
 
   openEventDetails(event: Evento, clickEvent: MouseEvent) {
     clickEvent.stopPropagation();
+    console.log('SELECTED EVENT DETAILS:', JSON.stringify(event));
+    console.log('CURRENT USER PROFILE:', JSON.stringify(this.authService.getUserProfile()));
     this.selectedEventDetails = event;
   }
 
@@ -400,6 +417,10 @@ export class Calendar implements OnInit {
 
   deleteEvent(id: number | undefined) {
     if (!id) return;
+    const event = this.allEvents.find(e => e.id === id);
+    if (event && !this.isEventCreator(event)) {
+      return;
+    }
     // Guardamos el id y abrimos el modal de confirmación propio
     this.eventToDeleteId = id;
     this.showDeleteConfirmModal = true;
@@ -432,6 +453,9 @@ export class Calendar implements OnInit {
   }
 
   editEvent(event: Evento) {
+    if (!this.isEventCreator(event)) {
+      return;
+    }
     this.selectedEventForEdit = event;
     this.closeEventDetails();
     this.showAddEventModal = true;
@@ -452,23 +476,98 @@ export class Calendar implements OnInit {
     });
   }
 
-  getEventStyle(event: Evento): any {
-    if (!event.startAt || !event.endAt) return {};
-    const start = new Date(event.startAt);
-    const end = new Date(event.endAt);
+  getLayoutComputedEventsForDay(date: Date): any[] {
+    const dateStr = date.toISOString().split('T')[0];
+    if (this.layoutCache.has(dateStr)) {
+      return this.layoutCache.get(dateStr)!;
+    }
+
+    const dayEvents = this.getEventsForDay(date).filter(e => this.isEventVisible(e));
     
-    const startHour = start.getHours() + start.getMinutes() / 60;
-    const endHour = end.getHours() + end.getMinutes() / 60;
-    
-    const duration = endHour - startHour;
-    
-    // Usando 60px por hora
-    const top = startHour * 60;
-    const height = duration * 60;
+    // Separamos los eventos de todo el día de los que tienen hora
+    const timedEvents = dayEvents.filter(e => e.startAt && e.endAt);
+    const allDayEvents = dayEvents.filter(e => !e.startAt || !e.endAt);
+
+    // Ordenar por hora de inicio
+    timedEvents.sort((a, b) => new Date(a.startAt!).getTime() - new Date(b.startAt!).getTime());
+
+    let clusters: any[][] = [];
+    let currentCluster: any[] = [];
+    let clusterEnd = 0;
+
+    for (const e of timedEvents) {
+      const start = new Date(e.startAt!).getTime();
+      const end = new Date(e.endAt!).getTime();
+
+      if (currentCluster.length > 0 && start >= clusterEnd) {
+        clusters.push(currentCluster);
+        currentCluster = [];
+      }
+      currentCluster.push(e);
+      if (end > clusterEnd) clusterEnd = end;
+    }
+    if (currentCluster.length > 0) clusters.push(currentCluster);
+
+    for (const cluster of clusters) {
+      let columns: any[][] = [];
+
+      for (const ev of cluster) {
+        let placed = false;
+        for (const col of columns) {
+          const lastEvInCol = col[col.length - 1];
+          if (new Date(ev.startAt!).getTime() >= new Date(lastEvInCol.endAt!).getTime()) {
+            col.push(ev);
+            placed = true;
+            break;
+          }
+        }
+        if (!placed) columns.push([ev]);
+      }
+
+      const numCols = columns.length;
+      for (let i = 0; i < numCols; i++) {
+        for (const ev of columns[i]) {
+          ev._colIndex = i;
+          ev._numCols = numCols;
+        }
+      }
+    }
+
+    const result = [...allDayEvents, ...timedEvents];
+    this.layoutCache.set(dateStr, result);
+    return result;
+  }
+
+  getEventStyle(event: any): any {
+    let top = 0;
+    let height = 45; // Altura fija por defecto para eventos de todo el día o sin hora
+
+    if (event.startAt && event.endAt) {
+      const start = new Date(event.startAt);
+      const end = new Date(event.endAt);
+      
+      const startHour = start.getHours() + start.getMinutes() / 60;
+      const endHour = end.getHours() + end.getMinutes() / 60;
+      
+      const duration = endHour - startHour;
+      
+      // Usando 60px por hora
+      top = startHour * 60;
+      height = duration * 60;
+    }
     
     // Determinar el color según la categoría o el color personalizado del evento
-    let borderColor = event.color || (event.tipoEvento ? this.getCategoryColor(event.tipoEvento) : '#9e9e9e');
+    let borderColor = this.getEventColor(event);
     let bgColor = this.hexToRgba(borderColor, 0.18);
+
+    let width = '90%';
+    let left = '5%';
+
+    if (event._numCols) {
+      const widthPct = 90 / event._numCols;
+      width = `${widthPct}%`;
+      left = `calc(5% + ${event._colIndex * widthPct}%)`;
+    }
 
     return {
       top: `${top}px`,
@@ -476,8 +575,8 @@ export class Calendar implements OnInit {
       backgroundColor: bgColor,
       borderLeft: `4px solid ${borderColor}`,
       position: 'absolute',
-      width: '90%',
-      left: '5%',
+      width: width,
+      left: left,
       borderRadius: '4px',
       padding: '4px 8px',
       fontSize: '0.85rem',
@@ -498,7 +597,33 @@ export class Calendar implements OnInit {
     return cat ? cat.color : '#94a3b8';
   }
 
-  getEventIcon(tipoEvento?: string): string {
+  getEventColor(event: Evento): string {
+    if (event.color) return event.color;
+
+    // Buscar si algún tag es un código hexadecimal de color
+    if (event.tags && event.tags.length > 0) {
+      const colorTag = event.tags.find(tag => tag.startsWith('#'));
+      if (colorTag) return colorTag;
+    }
+
+    let tipo = this.getEventType(event);
+    return tipo ? this.getCategoryColor(tipo) : '#9e9e9e';
+  }
+
+  getEventType(event: Evento): string {
+    if (event.tipoEvento) return event.tipoEvento;
+    if (event.tags && event.tags.length > 0) {
+      // Buscar en los tags si hay alguno que coincida con nuestras categorías
+      const tagsNorm = event.tags.map(t => this.normalizeString(t));
+      if (tagsNorm.includes('reunion')) return 'reunion';
+      if (tagsNorm.includes('evento')) return 'evento';
+      if (tagsNorm.includes('recordatorio')) return 'recordatorio';
+    }
+    return '';
+  }
+
+  getEventIcon(event: Evento): string {
+    const tipoEvento = this.getEventType(event);
     if (!tipoEvento) return '';
     const normTipo = this.normalizeString(tipoEvento);
     if (normTipo === 'reunion') return 'fa-users';
@@ -528,9 +653,47 @@ export class Calendar implements OnInit {
     return days[date.getDay()];
   }
 
-  isEventVisible(event: Evento) {
-    if (!event.tipoEvento) return true; // Si no tiene tipo, lo mostramos por defecto
-    const normTipo = this.normalizeString(event.tipoEvento);
+  getEventCreatorStr(event: any): string {
+    if (event.isCompanyWide || (event.participants && event.participants.length > 0)) {
+      if (event.user && event.user.nombre) {
+        return ` - ${event.user.nombre}`;
+      } else if (event.user && event.user.name) {
+        return ` - ${event.user.name}`;
+      } else if (event.owner && event.owner.nombre) {
+        return ` - ${event.owner.nombre}`;
+      } else if (event.owner && event.owner.name) {
+        return ` - ${event.owner.name}`;
+      } else if (event.participantName) {
+        return ` - ${event.participantName}`;
+      }
+    }
+    return '';
+  }
+
+  getEventCreatorOnlyStr(event: any): string {
+    if (!event) return '';
+    if (event.user) {
+      if (event.user.nombre && event.user.apellido) {
+        return `${event.user.nombre} ${event.user.apellido}`;
+      }
+      if (event.user.nombre) return event.user.nombre;
+      if (event.user.name) return event.user.name;
+    }
+    if (event.owner) {
+      if (event.owner.nombre && event.owner.apellido) {
+        return `${event.owner.nombre} ${event.owner.apellido}`;
+      }
+      if (event.owner.nombre) return event.owner.nombre;
+      if (event.owner.name) return event.owner.name;
+    }
+    if (event.participantName) return event.participantName;
+    return '';
+  }
+
+  isEventVisible(event: any) {
+    const tipo = this.getEventType(event);
+    if (!tipo) return true; // Si no tiene tipo, lo mostramos por defecto
+    const normTipo = this.normalizeString(tipo);
     const selectedCategories = this.categories.filter(c => c.selected).map(c => this.normalizeString(c.name));
     return selectedCategories.includes(normTipo);
   }
@@ -545,5 +708,33 @@ export class Calendar implements OnInit {
         g = parseInt(hex.slice(3, 5), 16),
         b = parseInt(hex.slice(5, 7), 16);
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+
+  isEventCreator(event: Evento | null): boolean {
+    if (!event) return false;
+    if (!event.id) return true;
+    
+    const currentUser = this.authService.getUserProfile();
+    if (!currentUser || !currentUser.id) return false;
+
+    if (event.user && event.user.id) {
+      return event.user.id === currentUser.id;
+    }
+    if ((event as any).owner && (event as any).owner.id) {
+      return (event as any).owner.id === currentUser.id;
+    }
+    if ((event as any).userId) {
+      return (event as any).userId === currentUser.id;
+    }
+    if ((event as any).user_id) {
+      return (event as any).user_id === currentUser.id;
+    }
+    
+    // Si no hay información de usuario creador en absoluto, permitir edición
+    if (!event.user && !(event as any).owner && !(event as any).userId && !(event as any).user_id) {
+      return true;
+    }
+    
+    return false;
   }
 }

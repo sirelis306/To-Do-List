@@ -26,11 +26,9 @@ export class AddEventModal implements OnInit {
   public category: string = '';
   public participants: number[] = [];
   public isCompanyWide: boolean = false;
-  public tipoEvento: string = 'evento';
+  public tipoEvento: string = '';
   public cliente: string = '';
   public clienteOtro: string = '';
-  public participantName: string = '';
-  public participantCount: number = 1;
 
   get selectedParticipantIds(): number[] {
     return this.selectedParticipantsList.map(u => u.id);
@@ -55,12 +53,16 @@ export class AddEventModal implements OnInit {
   public selectedParticipantsList: User[] = [];
 
   public colorCategories = [
-    { name: 'Product Design', color: '#4caf50' },
-    { name: 'Software Engineering', color: '#2196f3' },
-    { name: 'User Research', color: '#9c27b0' },
-    { name: 'Marketing', color: '#f44336' },
-    { name: 'Tecnología', color: '#ff9800' }
+    { name: 'Verde', color: '#4caf50' },
+    { name: 'Azul', color: '#2196f3' },
+    { name: 'Morado', color: '#9c27b0' },
+    { name: 'Rojo', color: '#f44336' },
+    { name: 'Naranja', color: '#ff9800' }
   ];
+
+  public selectedColorHex: string = '';
+
+  public errorMessage: string = '';
 
   public categoryOptions = [
     { label: 'Reunión', value: 'reunion' },
@@ -96,16 +98,54 @@ export class AddEventModal implements OnInit {
       this.description = this.eventToEdit.description || '';
       this.place = this.eventToEdit.place || '';
       this.date = this.eventToEdit.date || '';
-      if (this.eventToEdit.startAt) this.startAt = this.eventToEdit.startAt.includes('T') ? this.eventToEdit.startAt.split('T')[1].substring(0,5) : this.eventToEdit.startAt;
-      if (this.eventToEdit.endAt) this.endAt = this.eventToEdit.endAt.includes('T') ? this.eventToEdit.endAt.split('T')[1].substring(0,5) : this.eventToEdit.endAt;
+      if (this.eventToEdit.startAt) {
+        try {
+          const d = new Date(this.eventToEdit.startAt);
+          if (!isNaN(d.getTime())) {
+            const h = d.getHours().toString().padStart(2, '0');
+            const m = d.getMinutes().toString().padStart(2, '0');
+            this.startAt = `${h}:${m}`;
+          }
+        } catch (e) {}
+      }
+      if (this.eventToEdit.endAt) {
+        try {
+          const d = new Date(this.eventToEdit.endAt);
+          if (!isNaN(d.getTime())) {
+            const h = d.getHours().toString().padStart(2, '0');
+            const m = d.getMinutes().toString().padStart(2, '0');
+            this.endAt = `${h}:${m}`;
+          }
+        } catch (e) {}
+      }
       this.isCompanyWide = this.eventToEdit.isCompanyWide || false;
       this.tipoEvento = this.eventToEdit.tipoEvento || '';
-      this.cliente = this.clientOptions.find(c => c.value === this.eventToEdit?.cliente) ? (this.eventToEdit!.cliente || '') : 'otro';
-      if (this.cliente === 'otro') this.clienteOtro = this.eventToEdit.cliente || '';
-      this.participantName = this.eventToEdit.participantName || '';
-      this.participantCount = this.eventToEdit.participantCount || 1;
-      const matchedCat = this.colorCategories.find(c => c.color === this.eventToEdit?.color);
-      if (matchedCat) this.category = matchedCat.name;
+      if (this.eventToEdit.tags) {
+        const typeTag = this.eventToEdit.tags.find(t => ['reunion', 'evento', 'recordatorio'].includes(t.toLowerCase()));
+        if (typeTag) {
+          this.tipoEvento = typeTag.toLowerCase();
+        }
+      }
+
+      if (!this.eventToEdit.cliente) {
+        this.cliente = '';
+        this.clienteOtro = '';
+      } else {
+        const found = this.clientOptions.find(c => c.value === this.eventToEdit?.cliente);
+        this.cliente = found ? found.value : 'otro';
+        if (this.cliente === 'otro') {
+          this.clienteOtro = this.eventToEdit.cliente;
+        }
+      }
+      
+      // Buscar si algún tag es un color hexadecimal
+      if (this.eventToEdit.tags) {
+        const colorTag = this.eventToEdit.tags.find(t => t.startsWith('#'));
+        if (colorTag) {
+          this.selectedColorHex = colorTag;
+        }
+      }
+      
       this.participants = this.eventToEdit.participants || [];
     } else {
       const initDate = this.selectedDate ? new Date(this.selectedDate) : new Date();
@@ -152,28 +192,40 @@ export class AddEventModal implements OnInit {
   }
 
   saveEvent() {
-    if (!this.title || !this.date) return;
+    this.errorMessage = ''; // reset
+    if (!this.title) {
+      this.errorMessage = 'Te faltó llenar el título del evento.';
+      return;
+    }
+    if (!this.tipoEvento) {
+      this.errorMessage = 'Te faltó seleccionar si es Evento, Reunión o Recordatorio.';
+      return;
+    }
+    if (!this.date) {
+      this.errorMessage = 'Te faltó seleccionar la fecha.';
+      return;
+    }
 
-    const startDateTime = this.startAt ? `${this.date}T${this.startAt}:00` : undefined;
-    const endDateTime = this.endAt ? `${this.date}T${this.endAt}:00` : undefined;
+    const startDateTime = this.startAt && this.startAt.length === 5 ? `${this.date} ${this.startAt}:00` : null;
+    const endDateTime = this.endAt && this.endAt.length === 5 ? `${this.date} ${this.endAt}:00` : null;
 
-    const color = this.colorCategories.find(c => c.name === this.category)?.color;
+    const tagsArray = [];
+    if (this.tipoEvento) tagsArray.push(this.tipoEvento);
+    if (this.selectedColorHex) tagsArray.push(this.selectedColorHex);
 
     const eventData: Evento = {
       title: this.title,
-      description: this.description,
-      place: this.place,
+      description: this.description ? (this.description.trim() || null as any) : null,
+      place: this.place ? (this.place.trim() || null as any) : null,
       date: this.date,
-      startAt: startDateTime,
-      endAt: endDateTime,
-      tags: this.category ? [this.category] : [],
+      startAt: startDateTime || null as any,
+      endAt: endDateTime || null as any,
+      tags: tagsArray,
       isCompanyWide: this.isCompanyWide,
+      // Los siguientes campos se omiten si el API no los necesita,
+      // la información de categoría y color ya va en 'tags'.
       participants: this.participants,
-      tipoEvento: this.tipoEvento,
-      cliente: this.cliente === 'otro' ? this.clienteOtro : this.cliente,
-      participantName: this.participantName,
-      participantCount: this.participantCount,
-      color: color
+      cliente: this.cliente === 'otro' ? (this.clienteOtro.trim() || null as any) : (this.cliente || null)
     };
 
     if (this.eventToEdit && this.eventToEdit.id) {
@@ -183,7 +235,7 @@ export class AddEventModal implements OnInit {
         },
         error: (err) => {
           console.error('Error al actualizar evento', err);
-          this.eventUpdated.emit({ ...eventData, id: this.eventToEdit!.id });
+          this.errorMessage = err.error?.error || err.error?.message || 'Error al actualizar el evento.';
         }
       });
     } else {
@@ -193,7 +245,7 @@ export class AddEventModal implements OnInit {
         },
         error: (err) => {
           console.error('Error al crear evento', err);
-          this.eventAdded.emit(eventData);
+          this.errorMessage = err.error?.error || err.error?.message || 'Error al crear el evento.';
         }
       });
     }

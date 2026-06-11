@@ -106,15 +106,17 @@
 
               <div class="day-columns">
                 <div class="day-column" *ngFor="let day of (selectedView === 'day' ? [currentDate] : currentWeek)">
-                  <ng-container *ngFor="let event of getEventsForDay(day)">
+                  <ng-container *ngFor="let event of getLayoutComputedEventsForDay(day)">
                     <div class="event-card" [ngStyle]="getEventStyle(event)" *ngIf="isEventVisible(event)"
                       (click)="openEventDetails(event, $event)">
                       <div class="event-title">
-                        <i *ngIf="getEventIcon(event.tipoEvento)" [class]="'fa-solid ' + getEventIcon(event.tipoEvento)"
+                        <i *ngIf="getEventIcon(event)" [class]="'fa-solid ' + getEventIcon(event)"
                           style="margin-right: 4px; font-size: 0.85em; opacity: 0.8;"></i>
                         {{ event.title }}
                       </div>
-                      <div class="event-time">{{ event.startAt | date:'HH:mm' }} - {{ event.endAt | date:'HH:mm' }}
+                      <div class="event-time">
+                        <span *ngIf="event.startAt && event.endAt">{{ event.startAt | date:'HH:mm' }} - {{ event.endAt | date:'HH:mm' }}</span>
+                        <span *ngIf="!event.startAt || !event.endAt">Todo el día</span>
                       </div>
                     </div>
                   </ng-container>
@@ -136,15 +138,19 @@
                 [class.active]="isSameDate(day.date, currentDate) && !isToday(day.date)" (click)="selectDate(day.date)">
                 <div class="day-number-badge">{{ day.date.getDate() }}</div>
                 <div class="day-events-container">
-                  <ng-container *ngFor="let event of day.events">
+                  <ng-container *ngFor="let event of day.events | slice:0:1">
                     <div class="month-event-pill" *ngIf="isEventVisible(event)"
-                      [ngStyle]="{ 'background-color': event.color || getCategoryColor(event.tipoEvento) }"
+                      [ngStyle]="{ 'background-color': getEventColor(event) }"
                       (click)="openEventDetails(event, $event)">
-                      <i *ngIf="getEventIcon(event.tipoEvento)" [class]="'fa-solid ' + getEventIcon(event.tipoEvento)"
+                      <i *ngIf="getEventIcon(event)" [class]="'fa-solid ' + getEventIcon(event)"
                         style="margin-right: 3px; opacity: 0.9;"></i>
                       {{ event.title }}
                     </div>
                   </ng-container>
+                  <div class="month-event-more" *ngIf="day.events.length > 1" (click)="goToDayView(day.date, $event)"
+                       style="font-size: 0.65rem; color: #5f6368; padding: 2px 4px; margin-top: 4px; cursor: pointer; font-weight: 500; border-radius: 4px; transition: background-color 0.2s;">
+                    +{{ day.events.length - 1 }} más
+                  </div>
                 </div>
               </div>
             </div>
@@ -194,10 +200,10 @@
                 </div>
 
                 <span class="agenda-event-dot"
-                  [ngStyle]="{ 'background-color': event.color || getCategoryColor(event.tipoEvento) }"></span>
+                  [ngStyle]="{ 'background-color': getEventColor(event) }"></span>
 
                 <div class="agenda-event-title">
-                  <i *ngIf="getEventIcon(event.tipoEvento)" [class]="'fa-solid ' + getEventIcon(event.tipoEvento)"></i>
+                  <i *ngIf="getEventIcon(event)" [class]="'fa-solid ' + getEventIcon(event)"></i>
                   <span>{{ event.title }}</span>
                 </div>
 
@@ -223,9 +229,9 @@
   <div class="modal-backdrop" (click)="closeEventDetails()">
     <div class="gcal-detail-modal" (click)="$event.stopPropagation()">
       <div class="gcal-detail-actions">
-        <button class="icon-btn" (click)="deleteEvent(selectedEventDetails.id)" title="Eliminar evento"><i
+        <button *ngIf="isEventCreator(selectedEventDetails)" class="icon-btn" (click)="deleteEvent(selectedEventDetails.id)" title="Eliminar evento"><i
             class="fa-regular fa-trash-can"></i></button>
-        <button class="icon-btn" (click)="editEvent(selectedEventDetails)" title="Editar evento"><i
+        <button *ngIf="isEventCreator(selectedEventDetails)" class="icon-btn" (click)="editEvent(selectedEventDetails)" title="Editar evento"><i
             class="fa-solid fa-pen"></i></button>
         <button class="icon-btn close-btn-round" (click)="closeEventDetails()"><i
             class="fa-solid fa-xmark"></i></button>
@@ -235,7 +241,7 @@
         <div class="gcal-detail-row title-row">
           <div class="gcal-detail-icon">
             <div class="color-square"
-              [ngStyle]="{'background-color': selectedEventDetails.color || getCategoryColor(selectedEventDetails.tipoEvento)}">
+              [ngStyle]="{'background-color': getEventColor(selectedEventDetails)}">
             </div>
           </div>
           <div class="gcal-detail-content">
@@ -268,6 +274,13 @@
         <div class="gcal-detail-row" *ngIf="selectedEventDetails.cliente && selectedEventDetails.cliente !== 'otro'">
           <div class="gcal-detail-icon"><i class="fa-solid fa-briefcase"></i></div>
           <div class="gcal-detail-content text-content">{{ selectedEventDetails.cliente | titlecase }}</div>
+        </div>
+
+        <div class="gcal-detail-row" *ngIf="getEventCreatorOnlyStr(selectedEventDetails) && !isEventCreator(selectedEventDetails)">
+          <div class="gcal-detail-icon"><i class="fa-regular fa-circle-user"></i></div>
+          <div class="gcal-detail-content text-content">
+            {{ getEventCreatorOnlyStr(selectedEventDetails) }}
+          </div>
         </div>
 
         <div class="gcal-detail-row">

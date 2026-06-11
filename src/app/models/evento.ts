@@ -16,4 +16,5 @@ export interface Evento {
   participantName?: string;
   participantCount?: number;
   color?: string;
+  user?: any; // Para mostrar el creador del evento
 }

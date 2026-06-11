@@ -43,25 +43,26 @@
 
 
 
-      <!-- Invitados / Visibilidad -->
+      <!-- Visibilidad / Invitados -->
       <div class="gcal-row">
         <div class="gcal-icon-col">
-          <i class="fa-solid fa-user-group"></i>
+          <i class="fa-solid fa-globe" *ngIf="isCompanyWide"></i>
+          <i class="fa-solid fa-lock" *ngIf="!isCompanyWide"></i>
         </div>
         <div class="gcal-content-col">
-          <div class="gcal-split-row">
-            <div class="gcal-split-item">
+          <div class="gcal-split-row" style="display: flex; gap: 15px;">
+            <div class="gcal-split-item" [style.flex]="isCompanyWide ? '1' : '100%'">
+              <app-custom-dropdown [options]="visibilityOptions" [selectedValue]="isCompanyWide"
+                label="Visibilidad predeterminada" (valueChange)="isCompanyWide = $event" icon="fa-eye">
+              </app-custom-dropdown>
+            </div>
+            <div class="gcal-split-item" *ngIf="isCompanyWide" style="flex: 1;">
               <app-custom-dropdown label="Agregar invitados" [options]="participantOptions" [multiSelect]="true"
                 [selectedValues]="selectedParticipantIds" (toggleValue)="toggleParticipant($event.original)">
               </app-custom-dropdown>
             </div>
-            <div class="gcal-split-item">
-              <app-custom-dropdown [options]="visibilityOptions" [selectedValue]="isCompanyWide"
-                label="Visibilidad predeterminada" (valueChange)="isCompanyWide = $event" icon="fa-calendar">
-              </app-custom-dropdown>
-            </div>
           </div>
-          <div class="gcal-chips-container" *ngIf="selectedParticipantsList.length > 0" style="margin-top: 8px;">
+          <div class="gcal-chips-container" *ngIf="isCompanyWide && selectedParticipantsList.length > 0" style="margin-top: 8px;">
             <span class="gcal-chip" *ngFor="let user of selectedParticipantsList">
               <i class="fa-regular fa-circle-user" style="color: #6366f1;"></i>
               {{ user.nombre }} {{ user.apellido }}
@@ -82,29 +83,25 @@
             <div class="gcal-split-row">
               <div class="gcal-split-item">
                 <app-custom-dropdown [options]="salaOptions" [selectedValue]="place" label="Agregar ubicación"
-                  (valueChange)="place = $event">
+                  [showClearOption]="true" [dropup]="true" (valueChange)="place = $event">
                 </app-custom-dropdown>
               </div>
               <div class="gcal-split-item">
                 <app-custom-dropdown [options]="clientOptions" [selectedValue]="cliente" label="Agregar cliente"
-                  (valueChange)="cliente = $event">
+                  [showClearOption]="true" [dropup]="true" (valueChange)="cliente = $event">
                 </app-custom-dropdown>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="gcal-row" *ngIf="cliente === 'otro' || participantName">
+        <div class="gcal-row" *ngIf="cliente === 'otro'">
           <div class="gcal-icon-col"></div>
           <div class="gcal-content-col">
             <div class="gcal-split-row">
-              <div class="gcal-split-item" *ngIf="cliente === 'otro'">
+              <div class="gcal-split-item">
                 <input type="text" [(ngModel)]="clienteOtro" class="gcal-date-input"
                   style="width: 100%; border-bottom: 1px solid #dadce0;" placeholder="Especificar cliente" />
-              </div>
-              <div class="gcal-split-item">
-                <input type="text" [(ngModel)]="participantName" class="gcal-date-input"
-                  style="width: 100%; border-bottom: 1px solid #dadce0;" placeholder="Participante externo" />
               </div>
             </div>
           </div>
@@ -130,13 +127,18 @@
         <div class="gcal-content-col">
           <div class="gcal-colors-container">
             <div class="gcal-color-circle" *ngFor="let cat of colorCategories" [style.backgroundColor]="cat.color"
-              [class.selected]="category === cat.name" (click)="category = cat.name" [title]="cat.name">
+              [class.selected]="selectedColorHex === cat.color" (click)="selectedColorHex = cat.color" [title]="cat.name">
             </div>
           </div>
         </div>
       </div>
 
 
+    </div>
+
+    <!-- Mensaje de Error de Validación -->
+    <div *ngIf="errorMessage" class="gcal-error-message" style="color: #ef4444; font-size: 0.85rem; padding: 0 24px; margin-top: -10px; margin-bottom: 10px;">
+      <i class="fa-solid fa-circle-exclamation" style="margin-right: 5px;"></i> {{ errorMessage }}
     </div>
 
     <div class="gcal-footer">
