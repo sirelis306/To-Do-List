@@ -24,6 +24,8 @@
           (click)="tipoEvento = 'reunion'">Reunión</button>
         <button class="gcal-pill" [class.active]="tipoEvento === 'recordatorio'"
           (click)="tipoEvento = 'recordatorio'">Recordatorio</button>
+        <button class="gcal-pill" [class.active]="tipoEvento === 'mantenimiento'"
+          (click)="tipoEvento = 'mantenimiento'">Mantenimiento</button>
       </div>
 
       <!-- Fecha y Hora -->
@@ -108,6 +110,40 @@
         </div>
       </ng-container>
 
+      <!-- Ubicación y Proveedor para Mantenimiento -->
+      <ng-container *ngIf="tipoEvento === 'mantenimiento'">
+        <div class="gcal-row">
+          <div class="gcal-icon-col">
+            <i class="fa-solid fa-location-dot"></i>
+          </div>
+          <div class="gcal-content-col">
+            <div class="gcal-split-row">
+              <div class="gcal-split-item">
+                <app-custom-dropdown [options]="salaOptions" [selectedValue]="place" label="Agregar ubicación"
+                  [showClearOption]="true" [dropup]="true" (valueChange)="place = $event">
+                </app-custom-dropdown>
+              </div>
+              <div class="gcal-split-item">
+                <input type="text" [(ngModel)]="proveedor" class="gcal-date-input"
+                  style="width: 100%; border-bottom: 1px solid #dadce0; margin-top: 5px; height: 35px; padding-left: 8px;" placeholder="Proveedor" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <div class="gcal-row" *ngIf="place === 'otro'">
+        <div class="gcal-icon-col"></div>
+        <div class="gcal-content-col">
+          <div class="gcal-split-row">
+            <div class="gcal-split-item">
+              <input type="text" [(ngModel)]="placeOtro" class="gcal-date-input"
+                style="width: 100%; border-bottom: 1px solid #dadce0;" placeholder="Especificar ubicación" />
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Fila 📝: Descripción -->
       <div class="gcal-row">
         <div class="gcal-icon-col">
@@ -119,19 +155,7 @@
         </div>
       </div>
 
-      <!-- Fila 🏷️: Etiqueta de Color -->
-      <div class="gcal-row">
-        <div class="gcal-icon-col">
-          <i class="fa-solid fa-tag"></i>
-        </div>
-        <div class="gcal-content-col">
-          <div class="gcal-colors-container">
-            <div class="gcal-color-circle" *ngFor="let cat of colorCategories" [style.backgroundColor]="cat.color"
-              [class.selected]="selectedColorHex === cat.color" (click)="selectedColorHex = cat.color" [title]="cat.name">
-            </div>
-          </div>
-        </div>
-      </div>
+
 
 
     </div>

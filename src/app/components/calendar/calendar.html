@@ -276,6 +276,11 @@
           <div class="gcal-detail-content text-content">{{ selectedEventDetails.cliente | titlecase }}</div>
         </div>
 
+        <div class="gcal-detail-row" *ngIf="getEventProveedor(selectedEventDetails)">
+          <div class="gcal-detail-icon"><i class="fa-solid fa-truck-fast"></i></div>
+          <div class="gcal-detail-content text-content">{{ getEventProveedor(selectedEventDetails) | titlecase }}</div>
+        </div>
+
         <div class="gcal-detail-row" *ngIf="getEventCreatorOnlyStr(selectedEventDetails) && !isEventCreator(selectedEventDetails)">
           <div class="gcal-detail-icon"><i class="fa-regular fa-circle-user"></i></div>
           <div class="gcal-detail-content text-content">

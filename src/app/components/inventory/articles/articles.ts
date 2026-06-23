@@ -67,6 +67,8 @@ export class Articles implements OnInit, OnDestroy {
 
   private searchSubject = new Subject<string>();
   private searchSubscription!: Subscription;
+  private searchIdSubject = new Subject<string>();
+  private searchIdSubscription!: Subscription;
 
   constructor(private router: Router, private articleService: ArticleService, private route: ActivatedRoute, private authService: AuthService) { }
 
@@ -95,6 +97,13 @@ export class Articles implements OnInit, OnDestroy {
         localStorage.setItem('recentSearches', JSON.stringify(this.recentSearches));
       }
     });
+
+    this.searchIdSubscription = this.searchIdSubject.pipe(
+      debounceTime(500),
+      distinctUntilChanged()
+    ).subscribe((term) => {
+      this.ejecutarBusquedaPorId(term);
+    });
     
     this.isAdmin = this.authService.isAdmin();
 
@@ -116,6 +125,9 @@ export class Articles implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.searchSubscription) {
       this.searchSubscription.unsubscribe();
+    }
+    if (this.searchIdSubscription) {
+      this.searchIdSubscription.unsubscribe();
     }
   }
 
@@ -155,14 +167,18 @@ export class Articles implements OnInit, OnDestroy {
   }
 
   onBuscarPorId(): void {
-    const term = this.terminoBusquedaId.trim();
+    if (this.terminoBusqueda) {
+      this.terminoBusqueda = ''; // Limpiamos el texto general
+    }
+    this.searchIdSubject.next(this.terminoBusquedaId);
+  }
+
+  ejecutarBusquedaPorId(termId: string): void {
+    const term = termId.trim();
     if (!term) {
       this.cargarArticulos();
       return;
     }
-    
-    // Limpiamos el texto general para evitar confusión
-    this.terminoBusqueda = '';
 
     this.articleService.getArticleById(term).subscribe({
       next: (response: any) => {

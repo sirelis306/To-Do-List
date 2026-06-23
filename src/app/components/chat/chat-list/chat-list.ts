@@ -89,6 +89,16 @@ export class ChatList implements OnInit {
   selectConversation(conversation: Conversation): void {
     this.selectedConversationId = conversation.id;
     this.conversationSelected.emit(conversation);
+
+    // Marcar como leído automáticamente si tiene mensajes sin leer
+    if (conversation.unreadCount && conversation.unreadCount > 0) {
+      this.chatService.markAsRead(conversation.id).subscribe(
+        () => {
+          conversation.unreadCount = 0;
+        },
+        (error) => console.error('Error al marcar conversación como leída', error)
+      );
+    }
   }
 
   getConversationName(conv: Conversation): string {

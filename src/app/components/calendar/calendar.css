@@ -62,10 +62,10 @@
 
 .week-title {
   font-weight: 600;
-  font-size: 1.1rem;
+  font-size: 1.25rem;
   color: #1e293b;
-  min-width: 200px;
-  text-align: center;
+  text-align: left;
+  margin-left: 0.5rem;
 }
 
 .add-event-btn {

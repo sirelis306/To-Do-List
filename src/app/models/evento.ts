@@ -13,6 +13,7 @@ export interface Evento {
   participants?: any[];
   tipoEvento?: string;
   cliente?: string;
+  proveedor?: string;
   participantName?: string;
   participantCount?: number;
   color?: string;

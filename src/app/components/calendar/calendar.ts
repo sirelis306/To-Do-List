@@ -36,7 +36,8 @@ export class Calendar implements OnInit {
   public categories: { name: string, color: string, selected: boolean }[] = [
     { name: 'Reunión', color: '#4caf50', selected: true },
     { name: 'Evento', color: '#2196f3', selected: true },
-    { name: 'Recordatorio', color: '#ff9800', selected: true }
+    { name: 'Recordatorio', color: '#9c27b0', selected: true },
+    { name: 'Mantenimiento/Reparaciones', color: '#ff9800', selected: true }
   ];
   
   public currentMonthGrid: { date: Date, isCurrentMonth: boolean, events: Evento[] }[][] = [];
@@ -300,18 +301,13 @@ export class Calendar implements OnInit {
 
 
   loadEvents() {
-    let startStr, endStr;
-    if (this.selectedView === 'week' || this.selectedView === 'day') {
-      startStr = this.currentWeek[0].toISOString().split('T')[0];
-      endStr = this.currentWeek[6].toISOString().split('T')[0];
-    } else {
-      const year = this.currentDate.getFullYear();
-      const month = this.currentDate.getMonth();
-      const start = new Date(year, month - 1, 1);
-      const end = new Date(year, month + 2, 0);
-      startStr = start.toISOString().split('T')[0];
-      endStr = end.toISOString().split('T')[0];
-    }
+    const year = this.currentDate.getFullYear();
+    const month = this.currentDate.getMonth();
+    // Siempre cargamos un rango amplio para que el mini-calendario tenga los datos de todo el mes mostrado
+    const start = new Date(year, month - 1, 1);
+    const end = new Date(year, month + 2, 0);
+    const startStr = start.toISOString().split('T')[0];
+    const endStr = end.toISOString().split('T')[0];
     
     this.calendarService.getEvents(startStr, endStr).subscribe({
       next: (events) => {
@@ -618,6 +614,7 @@ export class Calendar implements OnInit {
       if (tagsNorm.includes('reunion')) return 'reunion';
       if (tagsNorm.includes('evento')) return 'evento';
       if (tagsNorm.includes('recordatorio')) return 'recordatorio';
+      if (tagsNorm.includes('mantenimiento') || tagsNorm.includes('mantenimiento/reparaciones')) return 'mantenimiento/reparaciones';
     }
     return '';
   }
@@ -629,6 +626,16 @@ export class Calendar implements OnInit {
     if (normTipo === 'reunion') return 'fa-users';
     if (normTipo === 'evento') return 'fa-calendar-check';
     if (normTipo === 'recordatorio') return 'fa-bell';
+    if (normTipo === 'mantenimiento' || normTipo === 'mantenimiento/reparaciones') return 'fa-wrench';
+    return '';
+  }
+
+  getEventProveedor(event: any): string {
+    if (event.proveedor) return event.proveedor;
+    if (event.tags) {
+      const tag = event.tags.find((t: string) => t.startsWith('proveedor:'));
+      if (tag) return tag.substring(10);
+    }
     return '';
   }
 

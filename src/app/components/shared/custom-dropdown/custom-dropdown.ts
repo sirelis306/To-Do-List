@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ElementRef, HostListener } from '@angular/core';
 import { CommonModule, TitleCasePipe } from '@angular/common';
 
 
@@ -24,7 +24,14 @@ export class CustomDropdown {
 
   public menuAbierto: boolean = false;
 
-  constructor() { }
+  constructor(private elementRef: ElementRef) { }
+
+  @HostListener('document:click', ['$event'])
+  onClickOutside(event: Event) {
+    if (!this.elementRef.nativeElement.contains(event.target)) {
+      this.menuAbierto = false;
+    }
+  }
 
   seleccionarOpcion(opcion: any, event?: Event): void {
     if (event) {

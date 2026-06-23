@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../services/auth/authService';
 import { WebmailService } from '../../../services/webmail/webmailService';
 import { ChatService } from '../../../services/chat/chatService';
+import { Router, NavigationEnd } from '@angular/router';
 
 @Component({
   selector: 'app-sidebar',
@@ -21,7 +22,8 @@ export class Sidebar implements OnInit {
   constructor(
     private authService: AuthService, 
     private webmailService: WebmailService,
-    private chatService: ChatService
+    private chatService: ChatService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -29,13 +31,26 @@ export class Sidebar implements OnInit {
     if (this.authService.isAuthenticated()) {
       this.authService.getMe().subscribe();
       
-      // Obtener la cantidad global de mensajes no leídos
-      this.chatService.getGlobalUnreadCount().subscribe({
-        next: (res: any) => {
-          this.unreadChatCount = typeof res === 'number' ? res : (res.count || res.unreadCount || res.total || 0);
-        },
-        error: (err) => console.error('Error obteniendo conteo de mensajes no leídos', err)
+      // Suscribirse a cambios de ruta para resetear el contador si entramos a chat
+      this.router.events.subscribe((event) => {
+        if (event instanceof NavigationEnd) {
+          if (event.urlAfterRedirects.includes('/chat')) {
+            this.unreadChatCount = 0;
+          }
+        }
       });
+
+      if (this.router.url.includes('/chat')) {
+        this.unreadChatCount = 0;
+      } else {
+        // Obtener la cantidad global de mensajes no leídos
+        this.chatService.getGlobalUnreadCount().subscribe({
+          next: (res: any) => {
+            this.unreadChatCount = typeof res === 'number' ? res : (res.count || res.unreadCount || res.total || 0);
+          },
+          error: (err) => console.error('Error obteniendo conteo de mensajes no leídos', err)
+        });
+      }
     }
   }
 
