@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { CalendarService } from '../../../services/calendar/calendar.service';
 import { UserService } from '../../../services/user/userService';
@@ -10,7 +10,7 @@ import { CustomDropdown } from '../../shared/custom-dropdown/custom-dropdown';
 @Component({
   selector: 'app-add-event-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule, CustomDropdown],
+  imports: [FormsModule, CustomDropdown],
   templateUrl: './add-event-modal.html',
   styleUrl: './add-event-modal.css'
 })

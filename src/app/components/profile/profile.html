@@ -30,14 +30,16 @@
                 <i class="fa-solid fa-user"></i>
               </div>
             }
-            <div class="avatar-overlay" *ngIf="modoEdicion">
-              <label for="profileImageInput">
-                <i class="fa-solid fa-camera"></i>
-              </label>
-              <input id="profileImageInput" type="file" accept="image/*" (change)="onFileSelected($event)" style="display: none;">
-            </div>
+            @if (modoEdicion) {
+              <div class="avatar-overlay">
+                <label for="profileImageInput">
+                  <i class="fa-solid fa-camera"></i>
+                </label>
+                <input id="profileImageInput" type="file" accept="image/*" (change)="onFileSelected($event)" style="display: none;">
+              </div>
+            }
           </div>
-          
+
           <div class="user-main-info">
             <h2>{{ tempUser.nombre | titlecase }} {{ tempUser.apellido | titlecase }}</h2>
             <p>{{ tempUser.email }}</p>
@@ -54,7 +56,7 @@
           @if (modoEdicion) {
             <div class="edit-section">
               <h3><i class="fa-solid fa-address-card"></i> Detalles de Usuario</h3>
-              
+
               <form (ngSubmit)="guardarPerfil()" #profileForm="ngForm" class="modern-form">
                 <div class="form-grid">
                   <div class="form-group">
@@ -96,9 +98,11 @@
                     <div class="input-wrapper">
                       <i class="fa-solid fa-lock-open"></i>
                       <input [type]="showCurrentPassword ? 'text' : 'password'" [(ngModel)]="currentPassword" name="currentPassword" placeholder="Ingresa tu contraseña para validar el cambio">
-                      <button *ngIf="currentPassword" type="button" class="toggle-password-btn" (click)="togglePasswordVisibility('current')" title="Mostrar/Ocultar contraseña">
-                        <i class="fa-solid" [ngClass]="showCurrentPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
-                      </button>
+                      @if (currentPassword) {
+                        <button type="button" class="toggle-password-btn" (click)="togglePasswordVisibility('current')" title="Mostrar/Ocultar contraseña">
+                          <i class="fa-solid" [ngClass]="showCurrentPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                        </button>
+                      }
                     </div>
                   </div>
 
@@ -107,9 +111,11 @@
                     <div class="input-wrapper">
                       <i class="fa-solid fa-key"></i>
                       <input [type]="showNewPassword ? 'text' : 'password'" [(ngModel)]="newPassword" name="newPassword" placeholder="Mínimo 6 caracteres">
-                      <button *ngIf="newPassword" type="button" class="toggle-password-btn" (click)="togglePasswordVisibility('new')" title="Mostrar/Ocultar contraseña">
-                        <i class="fa-solid" [ngClass]="showNewPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
-                      </button>
+                      @if (newPassword) {
+                        <button type="button" class="toggle-password-btn" (click)="togglePasswordVisibility('new')" title="Mostrar/Ocultar contraseña">
+                          <i class="fa-solid" [ngClass]="showNewPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                        </button>
+                      }
                     </div>
                   </div>
 
@@ -118,13 +124,15 @@
                     <div class="input-wrapper">
                       <i class="fa-solid fa-shield-halved"></i>
                       <input [type]="showConfirmPassword ? 'text' : 'password'" [(ngModel)]="confirmPassword" name="confirmPassword" placeholder="Repite la contraseña">
-                      <button *ngIf="confirmPassword" type="button" class="toggle-password-btn" (click)="togglePasswordVisibility('confirm')" title="Mostrar/Ocultar contraseña">
-                        <i class="fa-solid" [ngClass]="showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
-                      </button>
+                      @if (confirmPassword) {
+                        <button type="button" class="toggle-password-btn" (click)="togglePasswordVisibility('confirm')" title="Mostrar/Ocultar contraseña">
+                          <i class="fa-solid" [ngClass]="showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                        </button>
+                      }
                     </div>
                   </div>
                 </div>
-                
+
                 @if (passwordError) {
                   <div class="error-text" style="color: #ef4444; font-size: 0.85rem; margin-top: -0.5rem; margin-bottom: 1rem; font-style: italic;">
                     <i class="fa-solid fa-triangle-exclamation"></i> {{ passwordError }}

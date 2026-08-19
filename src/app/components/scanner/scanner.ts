@@ -1,11 +1,11 @@
 import { Component, AfterViewInit, OnDestroy, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { Html5QrcodeScanner } from 'html5-qrcode';
 
 @Component({
   selector: 'app-scanner',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './scanner.html',
   styleUrl: './scanner.css'
 })

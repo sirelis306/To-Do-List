@@ -28,12 +28,16 @@
           <span>Lu</span><span>Ma</span><span>Mi</span><span>Ju</span><span>Vi</span><span>Sa</span><span>Do</span>
         </div>
         <div class="mini-days-grid">
-          <span class="day" *ngFor="let dayObj of currentMonthDays"
-            [class.active]="dayObj.isActive && !isToday(dayObj.date)" [class.today]="isToday(dayObj.date)"
-            [class.text-muted]="!dayObj.isCurrentMonth" (click)="selectDate(dayObj.date)">
-            {{ dayObj.date.getDate() }}
-            <div class="event-dot" *ngIf="dayObj.hasEvents"></div>
-          </span>
+          @for (dayObj of currentMonthDays; track dayObj) {
+            <span class="day"
+              [class.active]="dayObj.isActive && !isToday(dayObj.date)" [class.today]="isToday(dayObj.date)"
+              [class.text-muted]="!dayObj.isCurrentMonth" (click)="selectDate(dayObj.date)">
+              {{ dayObj.date.getDate() }}
+              @if (dayObj.hasEvents) {
+                <div class="event-dot"></div>
+              }
+            </span>
+          }
         </div>
       </div>
 
@@ -41,14 +45,16 @@
       <div class="categories-section">
         <h4>Categorías</h4>
         <ul class="category-list">
-          <li *ngFor="let cat of categories">
-            <label class="checkbox-container">
-              <input type="checkbox" [(ngModel)]="cat.selected" (change)="loadEvents()">
-              <span class="checkmark" [style.backgroundColor]="cat.selected ? cat.color : '#fff'"
+          @for (cat of categories; track cat) {
+            <li>
+              <label class="checkbox-container">
+                <input type="checkbox" [(ngModel)]="cat.selected" (change)="loadEvents()">
+                <span class="checkmark" [style.backgroundColor]="cat.selected ? cat.color : '#fff'"
                 [style.borderColor]="cat.color"></span>
-              {{ cat.name }}
-            </label>
-          </li>
+                {{ cat.name }}
+              </label>
+            </li>
+          }
         </ul>
       </div>
     </aside>
@@ -76,250 +82,310 @@
         </div>
       </div>
 
-      <div class="calendar-grid-container" [ngSwitch]="selectedView">
-
-        <!-- SEMANA & DÍA VIEWS -->
-        <div class="calendar-grid week-day-view" *ngSwitchDefault>
-          <!-- Top header with days -->
-          <div class="headers-row">
-            <div class="time-column-header"></div>
-            <div class="day-column-header" *ngFor="let day of (selectedView === 'day' ? [currentDate] : currentWeek)"
-              [class.today]="isToday(day)" [class.active]="isSameDate(day, currentDate) && !isToday(day)"
-              (click)="selectDate(day)" style="cursor: pointer;">
-              <span class="day-name">{{ getDayName(day) }}</span>
-              <span class="day-number">{{ day.getDate() }}</span>
-            </div>
-          </div>
-
-          <!-- HORA -->
-          <div class="grid-body">
-            <div class="time-column">
-              <div class="time-slot" *ngFor="let hour of hours">
-                <span>{{ hour }}</span>
+      <div class="calendar-grid-container">
+        @switch (selectedView) {
+          <!-- SEMANA & DÍA VIEWS -->
+          @default {
+            <div class="calendar-grid week-day-view">
+              <!-- Top header with days -->
+              <div class="headers-row">
+                <div class="time-column-header"></div>
+                @for (day of (selectedView === 'day' ? [currentDate] : currentWeek); track day) {
+                  <div class="day-column-header"
+                    [class.today]="isToday(day)" [class.active]="isSameDate(day, currentDate) && !isToday(day)"
+                    (click)="selectDate(day)" style="cursor: pointer;">
+                    <span class="day-name">{{ getDayName(day) }}</span>
+                    <span class="day-number">{{ day.getDate() }}</span>
+                  </div>
+                }
               </div>
-            </div>
-
-            <div class="days-container">
-              <div class="grid-lines">
-                <div class="grid-row" *ngFor="let hour of hours"></div>
-              </div>
-
-              <div class="day-columns">
-                <div class="day-column" *ngFor="let day of (selectedView === 'day' ? [currentDate] : currentWeek)">
-                  <ng-container *ngFor="let event of getLayoutComputedEventsForDay(day)">
-                    <div class="event-card" [ngStyle]="getEventStyle(event)" *ngIf="isEventVisible(event)"
-                      (click)="openEventDetails(event, $event)">
-                      <div class="event-title">
-                        <i *ngIf="getEventIcon(event)" [class]="'fa-solid ' + getEventIcon(event)"
-                          style="margin-right: 4px; font-size: 0.85em; opacity: 0.8;"></i>
-                        {{ event.title }}
-                      </div>
-                      <div class="event-time">
-                        <span *ngIf="event.startAt && event.endAt">{{ event.startAt | date:'HH:mm' }} - {{ event.endAt | date:'HH:mm' }}</span>
-                        <span *ngIf="!event.startAt || !event.endAt">Todo el día</span>
-                      </div>
+              <!-- HORA -->
+              <div class="grid-body">
+                <div class="time-column">
+                  @for (hour of hours; track hour) {
+                    <div class="time-slot">
+                      <span>{{ hour }}</span>
                     </div>
-                  </ng-container>
+                  }
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- MES VIEW -->
-        <div class="month-view-grid" *ngSwitchCase="'month'">
-          <div class="month-days-header">
-            <span>LUN</span><span>MAR</span><span>MIÉ</span><span>JUE</span><span>VIE</span><span>SÁB</span><span>DOM</span>
-          </div>
-          <div class="month-grid-body">
-            <div class="month-week-row" *ngFor="let week of currentMonthGrid">
-              <div class="month-day-cell" *ngFor="let day of week" [class.not-current-month]="!day.isCurrentMonth"
-                [class.today]="isToday(day.date)"
-                [class.active]="isSameDate(day.date, currentDate) && !isToday(day.date)" (click)="selectDate(day.date)">
-                <div class="day-number-badge">{{ day.date.getDate() }}</div>
-                <div class="day-events-container">
-                  <ng-container *ngFor="let event of day.events | slice:0:1">
-                    <div class="month-event-pill" *ngIf="isEventVisible(event)"
-                      [ngStyle]="{ 'background-color': getEventColor(event) }"
-                      (click)="openEventDetails(event, $event)">
-                      <i *ngIf="getEventIcon(event)" [class]="'fa-solid ' + getEventIcon(event)"
-                        style="margin-right: 3px; opacity: 0.9;"></i>
-                      {{ event.title }}
-                    </div>
-                  </ng-container>
-                  <div class="month-event-more" *ngIf="day.events.length > 1" (click)="goToDayView(day.date, $event)"
-                       style="font-size: 0.65rem; color: #5f6368; padding: 2px 4px; margin-top: 4px; cursor: pointer; font-weight: 500; border-radius: 4px; transition: background-color 0.2s;">
-                    +{{ day.events.length - 1 }} más
+                <div class="days-container">
+                  <div class="grid-lines">
+                    @for (hour of hours; track hour) {
+                      <div class="grid-row"></div>
+                    }
+                  </div>
+                  <div class="day-columns">
+                    @for (day of (selectedView === 'day' ? [currentDate] : currentWeek); track day) {
+                      <div class="day-column">
+                        @for (event of getLayoutComputedEventsForDay(day); track event) {
+                          @if (isEventVisible(event)) {
+                            <div class="event-card" [ngStyle]="getEventStyle(event)"
+                              (click)="openEventDetails(event, $event)">
+                              <div class="event-title">
+                                @if (getEventIcon(event)) {
+                                  <i [class]="'fa-solid ' + getEventIcon(event)"
+                                  style="margin-right: 4px; font-size: 0.85em; opacity: 0.8;"></i>
+                                }
+                                {{ event.title }}
+                              </div>
+                              <div class="event-time">
+                                @if (event.startAt && event.endAt) {
+                                  <span>{{ event.startAt | date:'HH:mm' }} - {{ event.endAt | date:'HH:mm' }}</span>
+                                }
+                                @if (!event.startAt || !event.endAt) {
+                                  <span>Todo el día</span>
+                                }
+                              </div>
+                            </div>
+                          }
+                        }
+                      </div>
+                    }
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-
-        <!-- AÑO VIEW -->
-        <div class="year-view-grid" *ngSwitchCase="'year'">
-          <div class="year-month-card" *ngFor="let month of currentYearGrid">
-            <h4 class="year-month-title">{{ month.monthName }}</h4>
-            <div class="mini-days-header year-mini-header">
-              <span>Lu</span><span>Ma</span><span>Mi</span><span>Ju</span><span>Vi</span><span>Sa</span><span>Do</span>
-            </div>
-            <div class="mini-days-grid year-mini-grid">
-              <div class="mini-day" *ngFor="let day of month.days" [class.empty-day]="!day.isCurrentMonth"
-                [class.today]="day.isCurrentMonth && isToday(day.date)"
-                [class.active]="day.isCurrentMonth && isSameDate(day.date, currentDate) && !isToday(day.date)"
-                [class.has-events]="day.isCurrentMonth && hasVisibleEvents(day.events)"
-                (click)="day.isCurrentMonth ? selectDate(day.date) : null">
-                {{ day.isCurrentMonth ? day.date.getDate() : '' }}
-                <div class="event-dot" *ngIf="day.isCurrentMonth && hasVisibleEvents(day.events)"></div>
+          }
+          <!-- MES VIEW -->
+          @case ('month') {
+            <div class="month-view-grid">
+              <div class="month-days-header">
+                <span>LUN</span><span>MAR</span><span>MIÉ</span><span>JUE</span><span>VIE</span><span>SÁB</span><span>DOM</span>
+              </div>
+              <div class="month-grid-body">
+                @for (week of currentMonthGrid; track week) {
+                  <div class="month-week-row">
+                    @for (day of week; track day) {
+                      <div class="month-day-cell" [class.not-current-month]="!day.isCurrentMonth"
+                        [class.today]="isToday(day.date)"
+                        [class.active]="isSameDate(day.date, currentDate) && !isToday(day.date)" (click)="selectDate(day.date)">
+                        <div class="day-number-badge">{{ day.date.getDate() }}</div>
+                        <div class="day-events-container">
+                          @for (event of day.events | slice:0:1; track event) {
+                            @if (isEventVisible(event)) {
+                              <div class="month-event-pill"
+                                [ngStyle]="{ 'background-color': getEventColor(event) }"
+                                (click)="openEventDetails(event, $event)">
+                                @if (getEventIcon(event)) {
+                                  <i [class]="'fa-solid ' + getEventIcon(event)"
+                                  style="margin-right: 3px; opacity: 0.9;"></i>
+                                }
+                                {{ event.title }}
+                              </div>
+                            }
+                          }
+                          @if (day.events.length > 1) {
+                            <div class="month-event-more" (click)="goToDayView(day.date, $event)"
+                              style="font-size: 0.65rem; color: #5f6368; padding: 2px 4px; margin-top: 4px; cursor: pointer; font-weight: 500; border-radius: 4px; transition: background-color 0.2s;">
+                              +{{ day.events.length - 1 }} más
+                            </div>
+                          }
+                        </div>
+                      </div>
+                    }
+                  </div>
+                }
               </div>
             </div>
-          </div>
-        </div>
-
-        <!-- AGENDA VIEW -->
-        <div class="agenda-view-list" *ngSwitchCase="'agenda'">
-          <div class="agenda-empty" *ngIf="agendaDays.length === 0">
-            No hay eventos programados para este mes.
-          </div>
-
-          <div class="agenda-day-group" *ngFor="let dayGroup of agendaDays">
-            <!-- Date details -->
-            <div class="agenda-date-col">
-              <div class="agenda-day-num">{{ dayGroup.date.getDate() }}</div>
-              <div class="agenda-day-name">{{ getEventDayNameStrShort(dayGroup.date) }}</div>
+          }
+          <!-- AÑO VIEW -->
+          @case ('year') {
+            <div class="year-view-grid">
+              @for (month of currentYearGrid; track month) {
+                <div class="year-month-card">
+                  <h4 class="year-month-title">{{ month.monthName }}</h4>
+                  <div class="mini-days-header year-mini-header">
+                    <span>Lu</span><span>Ma</span><span>Mi</span><span>Ju</span><span>Vi</span><span>Sa</span><span>Do</span>
+                  </div>
+                  <div class="mini-days-grid year-mini-grid">
+                    @for (day of month.days; track day) {
+                      <div class="mini-day" [class.empty-day]="!day.isCurrentMonth"
+                        [class.today]="day.isCurrentMonth && isToday(day.date)"
+                        [class.active]="day.isCurrentMonth && isSameDate(day.date, currentDate) && !isToday(day.date)"
+                        [class.has-events]="day.isCurrentMonth && hasVisibleEvents(day.events)"
+                        (click)="day.isCurrentMonth ? selectDate(day.date) : null">
+                        {{ day.isCurrentMonth ? day.date.getDate() : '' }}
+                        @if (day.isCurrentMonth && hasVisibleEvents(day.events)) {
+                          <div class="event-dot"></div>
+                        }
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
             </div>
-
-            <!-- Lista de eventos del día -->
-            <div class="agenda-events-col">
-              <div class="agenda-event-item" *ngFor="let event of dayGroup.events"
-                (click)="openEventDetails(event, $event)">
-                <div class="agenda-event-time">
-                  {{ event.startAt ? (event.startAt | date:'HH:mm') : 'Todo el día' }}
-                  <span *ngIf="event.startAt && event.endAt"> – {{ event.endAt | date:'HH:mm' }}</span>
+          }
+          <!-- AGENDA VIEW -->
+          @case ('agenda') {
+            <div class="agenda-view-list">
+              @if (agendaDays.length === 0) {
+                <div class="agenda-empty">
+                  No hay eventos programados para este mes.
                 </div>
-
-                <span class="agenda-event-dot"
-                  [ngStyle]="{ 'background-color': getEventColor(event) }"></span>
-
-                <div class="agenda-event-title">
-                  <i *ngIf="getEventIcon(event)" [class]="'fa-solid ' + getEventIcon(event)"></i>
-                  <span>{{ event.title }}</span>
+              }
+              @for (dayGroup of agendaDays; track dayGroup) {
+                <div class="agenda-day-group">
+                  <!-- Date details -->
+                  <div class="agenda-date-col">
+                    <div class="agenda-day-num">{{ dayGroup.date.getDate() }}</div>
+                    <div class="agenda-day-name">{{ getEventDayNameStrShort(dayGroup.date) }}</div>
+                  </div>
+                  <!-- Lista de eventos del día -->
+                  <div class="agenda-events-col">
+                    @for (event of dayGroup.events; track event) {
+                      <div class="agenda-event-item"
+                        (click)="openEventDetails(event, $event)">
+                        <div class="agenda-event-time">
+                          {{ event.startAt ? (event.startAt | date:'HH:mm') : 'Todo el día' }}
+                          @if (event.startAt && event.endAt) {
+                            <span> – {{ event.endAt | date:'HH:mm' }}</span>
+                          }
+                        </div>
+                        <span class="agenda-event-dot"
+                        [ngStyle]="{ 'background-color': getEventColor(event) }"></span>
+                        <div class="agenda-event-title">
+                          @if (getEventIcon(event)) {
+                            <i [class]="'fa-solid ' + getEventIcon(event)"></i>
+                          }
+                          <span>{{ event.title }}</span>
+                        </div>
+                        @if (event.place) {
+                          <div class="agenda-event-location">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <span>{{ event.place }}</span>
+                          </div>
+                        }
+                      </div>
+                    }
+                  </div>
                 </div>
-
-                <div class="agenda-event-location" *ngIf="event.place">
-                  <i class="fa-solid fa-location-dot"></i>
-                  <span>{{ event.place }}</span>
-                </div>
-              </div>
+              }
             </div>
-          </div>
-        </div>
+          }
+        }
       </div>
     </section>
   </div>
 
   @if (showAddEventModal) {
-  <app-add-event-modal [selectedDate]="currentDate" (eventAdded)="onEventAdded($event)"
-    (eventUpdated)="onEventUpdated($event)" [eventToEdit]="selectedEventForEdit"
+    <app-add-event-modal [selectedDate]="currentDate" (eventAdded)="onEventAdded($event)"
+      (eventUpdated)="onEventUpdated($event)" [eventToEdit]="selectedEventForEdit"
     (closeModal)="showAddEventModal = false; selectedEventForEdit = null"></app-add-event-modal>
   }
 
   @if (selectedEventDetails) {
-  <div class="modal-backdrop" (click)="closeEventDetails()">
-    <div class="gcal-detail-modal" (click)="$event.stopPropagation()">
-      <div class="gcal-detail-actions">
-        <button *ngIf="isEventCreator(selectedEventDetails)" class="icon-btn" (click)="deleteEvent(selectedEventDetails.id)" title="Eliminar evento"><i
+    <div class="modal-backdrop" (click)="closeEventDetails()">
+      <div class="gcal-detail-modal" (click)="$event.stopPropagation()">
+        <div class="gcal-detail-actions">
+          @if (isEventCreator(selectedEventDetails)) {
+            <button class="icon-btn" (click)="deleteEvent(selectedEventDetails.id)" title="Eliminar evento"><i
             class="fa-regular fa-trash-can"></i></button>
-        <button *ngIf="isEventCreator(selectedEventDetails)" class="icon-btn" (click)="editEvent(selectedEventDetails)" title="Editar evento"><i
+          }
+          @if (isEventCreator(selectedEventDetails)) {
+            <button class="icon-btn" (click)="editEvent(selectedEventDetails)" title="Editar evento"><i
             class="fa-solid fa-pen"></i></button>
-        <button class="icon-btn close-btn-round" (click)="closeEventDetails()"><i
-            class="fa-solid fa-xmark"></i></button>
-      </div>
+          }
+          <button class="icon-btn close-btn-round" (click)="closeEventDetails()"><i
+          class="fa-solid fa-xmark"></i></button>
+        </div>
 
-      <div class="gcal-detail-body">
-        <div class="gcal-detail-row title-row">
-          <div class="gcal-detail-icon">
-            <div class="color-square"
-              [ngStyle]="{'background-color': getEventColor(selectedEventDetails)}">
+        <div class="gcal-detail-body">
+          <div class="gcal-detail-row title-row">
+            <div class="gcal-detail-icon">
+              <div class="color-square"
+                [ngStyle]="{'background-color': getEventColor(selectedEventDetails)}">
+              </div>
+            </div>
+            <div class="gcal-detail-content">
+              <h2 class="gcal-detail-title">{{ selectedEventDetails.title }}</h2>
+              <div class="gcal-detail-subtitle">
+                {{ selectedEventDetails.date | date:'fullDate' }}
+                @if (selectedEventDetails.startAt) {
+                  <span>
+                    ⋅ {{ selectedEventDetails.startAt | date:'shortTime' }} - {{ selectedEventDetails.endAt |
+                    date:'shortTime' }}
+                  </span>
+                }
+              </div>
             </div>
           </div>
-          <div class="gcal-detail-content">
-            <h2 class="gcal-detail-title">{{ selectedEventDetails.title }}</h2>
-            <div class="gcal-detail-subtitle">
-              {{ selectedEventDetails.date | date:'fullDate' }}
-              <span *ngIf="selectedEventDetails.startAt">
-                ⋅ {{ selectedEventDetails.startAt | date:'shortTime' }} - {{ selectedEventDetails.endAt |
-                date:'shortTime' }}
-              </span>
+
+          @if (selectedEventDetails.tipoEvento) {
+            <div class="gcal-detail-row">
+              <div class="gcal-detail-icon"><i class="fa-solid fa-align-left"></i></div>
+              <div class="gcal-detail-content text-content">{{ selectedEventDetails.tipoEvento | titlecase }}</div>
             </div>
-          </div>
-        </div>
+          }
 
-        <div class="gcal-detail-row" *ngIf="selectedEventDetails.tipoEvento">
-          <div class="gcal-detail-icon"><i class="fa-solid fa-align-left"></i></div>
-          <div class="gcal-detail-content text-content">{{ selectedEventDetails.tipoEvento | titlecase }}</div>
-        </div>
+          @if (selectedEventDetails.place) {
+            <div class="gcal-detail-row">
+              <div class="gcal-detail-icon"><i class="fa-solid fa-location-dot"></i></div>
+              <div class="gcal-detail-content text-content">{{ selectedEventDetails.place | titlecase }}</div>
+            </div>
+          }
 
-        <div class="gcal-detail-row" *ngIf="selectedEventDetails.place">
-          <div class="gcal-detail-icon"><i class="fa-solid fa-location-dot"></i></div>
-          <div class="gcal-detail-content text-content">{{ selectedEventDetails.place | titlecase }}</div>
-        </div>
+          @if (selectedEventDetails.description) {
+            <div class="gcal-detail-row">
+              <div class="gcal-detail-icon"><i class="fa-solid fa-bars"></i></div>
+              <div class="gcal-detail-content text-content">{{ selectedEventDetails.description }}</div>
+            </div>
+          }
 
-        <div class="gcal-detail-row" *ngIf="selectedEventDetails.description">
-          <div class="gcal-detail-icon"><i class="fa-solid fa-bars"></i></div>
-          <div class="gcal-detail-content text-content">{{ selectedEventDetails.description }}</div>
-        </div>
+          @if (selectedEventDetails.cliente && selectedEventDetails.cliente !== 'otro') {
+            <div class="gcal-detail-row">
+              <div class="gcal-detail-icon"><i class="fa-solid fa-briefcase"></i></div>
+              <div class="gcal-detail-content text-content">{{ selectedEventDetails.cliente | titlecase }}</div>
+            </div>
+          }
 
-        <div class="gcal-detail-row" *ngIf="selectedEventDetails.cliente && selectedEventDetails.cliente !== 'otro'">
-          <div class="gcal-detail-icon"><i class="fa-solid fa-briefcase"></i></div>
-          <div class="gcal-detail-content text-content">{{ selectedEventDetails.cliente | titlecase }}</div>
-        </div>
+          @if (getEventProveedor(selectedEventDetails)) {
+            <div class="gcal-detail-row">
+              <div class="gcal-detail-icon"><i class="fa-solid fa-truck-fast"></i></div>
+              <div class="gcal-detail-content text-content">{{ getEventProveedor(selectedEventDetails) | titlecase }}</div>
+            </div>
+          }
 
-        <div class="gcal-detail-row" *ngIf="getEventProveedor(selectedEventDetails)">
-          <div class="gcal-detail-icon"><i class="fa-solid fa-truck-fast"></i></div>
-          <div class="gcal-detail-content text-content">{{ getEventProveedor(selectedEventDetails) | titlecase }}</div>
-        </div>
+          @if (getEventCreatorOnlyStr(selectedEventDetails) && !isEventCreator(selectedEventDetails)) {
+            <div class="gcal-detail-row">
+              <div class="gcal-detail-icon"><i class="fa-regular fa-circle-user"></i></div>
+              <div class="gcal-detail-content text-content">
+                {{ getEventCreatorOnlyStr(selectedEventDetails) }}
+              </div>
+            </div>
+          }
 
-        <div class="gcal-detail-row" *ngIf="getEventCreatorOnlyStr(selectedEventDetails) && !isEventCreator(selectedEventDetails)">
-          <div class="gcal-detail-icon"><i class="fa-regular fa-circle-user"></i></div>
-          <div class="gcal-detail-content text-content">
-            {{ getEventCreatorOnlyStr(selectedEventDetails) }}
-          </div>
-        </div>
-
-        <div class="gcal-detail-row">
-          <div class="gcal-detail-icon">
-            <i class="fa-solid" [ngClass]="selectedEventDetails.isCompanyWide ? 'fa-earth-americas' : 'fa-lock'"></i>
-          </div>
-          <div class="gcal-detail-content text-content">
-            {{ selectedEventDetails.isCompanyWide ? 'Público' : 'Privado' }}
+          <div class="gcal-detail-row">
+            <div class="gcal-detail-icon">
+              <i class="fa-solid" [ngClass]="selectedEventDetails.isCompanyWide ? 'fa-earth-americas' : 'fa-lock'"></i>
+            </div>
+            <div class="gcal-detail-content text-content">
+              {{ selectedEventDetails.isCompanyWide ? 'Público' : 'Privado' }}
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
   }
 
   <!-- Modal de confirmación para eliminar un evento -->
   @if (showDeleteConfirmModal) {
-  <div class="modal-backdrop" (click)="cancelDelete()">
-    <div class="delete-confirm-modal" (click)="$event.stopPropagation()">
-      <div class="delete-confirm-icon">
-        <i class="fa-regular fa-trash-can"></i>
-      </div>
-      <h3 class="delete-confirm-title">¿Eliminar este evento?</h3>
-      <p class="delete-confirm-message">
-        Esta acción no se puede deshacer. El evento se eliminará permanentemente del calendario.
-      </p>
-      <div class="delete-confirm-actions">
-        <button class="delete-cancel-btn" (click)="cancelDelete()">Cancelar</button>
-        <button class="delete-confirm-btn" (click)="confirmDelete()">
-          <i class="fa-regular fa-trash-can"></i> Eliminar
-        </button>
+    <div class="modal-backdrop" (click)="cancelDelete()">
+      <div class="delete-confirm-modal" (click)="$event.stopPropagation()">
+        <div class="delete-confirm-icon">
+          <i class="fa-regular fa-trash-can"></i>
+        </div>
+        <h3 class="delete-confirm-title">¿Eliminar este evento?</h3>
+        <p class="delete-confirm-message">
+          Esta acción no se puede deshacer. El evento se eliminará permanentemente del calendario.
+        </p>
+        <div class="delete-confirm-actions">
+          <button class="delete-cancel-btn" (click)="cancelDelete()">Cancelar</button>
+          <button class="delete-confirm-btn" (click)="confirmDelete()">
+            <i class="fa-regular fa-trash-can"></i> Eliminar
+          </button>
+        </div>
       </div>
     </div>
-  </div>
   }
 
 </main>

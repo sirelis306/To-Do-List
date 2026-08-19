@@ -1,5 +1,5 @@
 import { Component, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { TranscriptorService } from '../../services/transcriptorService/transcriptor-service';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
@@ -7,7 +7,7 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 @Component({
   selector: 'app-transcriptor',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   templateUrl: './transcriptor.html',
   styleUrl: './transcriptor.css',
 })

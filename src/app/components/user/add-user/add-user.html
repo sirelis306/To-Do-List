@@ -23,46 +23,58 @@
           <input type="email" name="email" [(ngModel)]="userData.email" required placeholder="correo@ejemplo.com" class="form-control">
         </div>
 
-        <div class="form-group" *ngIf="isAdmin">
-          <label>{{ modoEdicion ? 'Cambiar Contraseña' : 'Contraseña *' }}</label>
-          <div class="input-with-icon">
-            <i class="fa-solid fa-lock"></i>
-            <input [type]="showPassword ? 'text' : 'password'" name="nuevaPassword" [(ngModel)]="userData.nuevaPassword"
-              [placeholder]="modoEdicion ? 'Opcional (Dejar en blanco para no cambiar)' : 'Contraseña inicial'"
-              minlength="6" class="form-control">
-            <button *ngIf="userData.nuevaPassword" type="button" class="toggle-password-btn" (click)="togglePasswordVisibility('new')" title="Mostrar/Ocultar contraseña">
-              <i class="fa-solid" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
-            </button>
+        @if (isAdmin) {
+          <div class="form-group">
+            <label>{{ modoEdicion ? 'Cambiar Contraseña' : 'Contraseña *' }}</label>
+            <div class="input-with-icon">
+              <i class="fa-solid fa-lock"></i>
+              <input [type]="showPassword ? 'text' : 'password'" name="nuevaPassword" [(ngModel)]="userData.nuevaPassword"
+                [placeholder]="modoEdicion ? 'Opcional (Dejar en blanco para no cambiar)' : 'Contraseña inicial'"
+                minlength="6" class="form-control">
+              @if (userData.nuevaPassword) {
+                <button type="button" class="toggle-password-btn" (click)="togglePasswordVisibility('new')" title="Mostrar/Ocultar contraseña">
+                  <i class="fa-solid" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                </button>
+              }
+            </div>
+            <span class="field-hint">
+              Mínimo 6 caracteres. {{ modoEdicion ? 'Al cambiarla, se le solicitará al usuario actualizarla al iniciar sesión.' : '' }}
+            </span>
           </div>
-          <span class="field-hint">
-            Mínimo 6 caracteres. {{ modoEdicion ? 'Al cambiarla, se le solicitará al usuario actualizarla al iniciar sesión.' : '' }}
-          </span>
-        </div>
+        }
 
-        <div class="form-group" *ngIf="isAdmin">
-          <label>{{ modoEdicion ? 'Confirmar Nueva Contraseña' : 'Confirmar Contraseña *' }}</label>
-          <div class="input-with-icon">
-            <i class="fa-solid fa-shield-halved"></i>
-            <input [type]="showConfirmPassword ? 'text' : 'password'" name="confirmarPassword" [(ngModel)]="userData.confirmarPassword"
-              [class.invalid-field]="userData.nuevaPassword !== userData.confirmarPassword && userData.confirmarPassword.length > 0" class="form-control">
-            <button *ngIf="userData.confirmarPassword" type="button" class="toggle-password-btn" (click)="togglePasswordVisibility('confirm')" title="Mostrar/Ocultar contraseña">
-              <i class="fa-solid" [ngClass]="showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
-            </button>
+        @if (isAdmin) {
+          <div class="form-group">
+            <label>{{ modoEdicion ? 'Confirmar Nueva Contraseña' : 'Confirmar Contraseña *' }}</label>
+            <div class="input-with-icon">
+              <i class="fa-solid fa-shield-halved"></i>
+              <input [type]="showConfirmPassword ? 'text' : 'password'" name="confirmarPassword" [(ngModel)]="userData.confirmarPassword"
+                [class.invalid-field]="userData.nuevaPassword !== userData.confirmarPassword && userData.confirmarPassword.length > 0" class="form-control">
+              @if (userData.confirmarPassword) {
+                <button type="button" class="toggle-password-btn" (click)="togglePasswordVisibility('confirm')" title="Mostrar/Ocultar contraseña">
+                  <i class="fa-solid" [ngClass]="showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                </button>
+              }
+            </div>
+            @if (userData.nuevaPassword !== userData.confirmarPassword && userData.confirmarPassword.length > 0) {
+              <span class="error-text"
+                >
+                Las contraseñas no coinciden
+              </span>
+            }
           </div>
-          <span class="error-text"
-            *ngIf="userData.nuevaPassword !== userData.confirmarPassword && userData.confirmarPassword.length > 0">
-            Las contraseñas no coinciden
-          </span>
-        </div>
+        }
       </div>
 
       <div class="roles-section">
         <label class="section-title">Roles</label>
         <div class="radio-group">
-          <label *ngIf="isSuperAdmin" class="radio-label">
-            <input type="radio" name="role" value="superadmin" [(ngModel)]="userData.role">
-            <span class="radio-custom"></span> Super Admin
-          </label>
+          @if (isSuperAdmin) {
+            <label class="radio-label">
+              <input type="radio" name="role" value="superadmin" [(ngModel)]="userData.role">
+              <span class="radio-custom"></span> Super Admin
+            </label>
+          }
           <label class="radio-label">
             <input type="radio" name="role" value="admin" [(ngModel)]="userData.role" [disabled]="!isAdmin">
             <span class="radio-custom"></span> Administrador
@@ -92,13 +104,13 @@
 
 <!-- Modal de Éxito -->
 @if (showSuccessModal) {
-<div class="confirm-modal-backdrop" (click)="onCloseSuccess()"></div>
-<div class="confirm-modal-content">
-  <h4>{{ modoEdicion ? '¡Usuario Actualizado!' : '¡Usuario Creado!' }}</h4>
-  <p>{{ modoEdicion ? 'El usuario ha sido actualizado exitosamente.' : 'El nuevo usuario ha sido registrado exitosamente
+  <div class="confirm-modal-backdrop" (click)="onCloseSuccess()"></div>
+  <div class="confirm-modal-content">
+    <h4>{{ modoEdicion ? '¡Usuario Actualizado!' : '¡Usuario Creado!' }}</h4>
+    <p>{{ modoEdicion ? 'El usuario ha sido actualizado exitosamente.' : 'El nuevo usuario ha sido registrado exitosamente
     en el sistema.' }}</p>
-  <div class="modal-actions">
-    <button class="btn btn-success" (click)="onCloseSuccess()">Aceptar</button>
+    <div class="modal-actions">
+      <button class="btn btn-success" (click)="onCloseSuccess()">Aceptar</button>
+    </div>
   </div>
-</div>
 }

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { Article } from '../../../models/article';
 import { ArticleService } from '../../../services/article/articleService';
@@ -11,7 +11,7 @@ import { CustomDropdown } from '../../shared/custom-dropdown/custom-dropdown';
 @Component({
   selector: 'app-add-article',
   standalone: true,
-  imports: [CommonModule, FormsModule, CustomDropdown],
+  imports: [FormsModule, CustomDropdown],
   templateUrl: './add-article.html',
   styleUrl: './add-article.css',
 })

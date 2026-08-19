@@ -1,20 +1,20 @@
-<div class="modern-modal-backdrop" *ngIf="showConfirmModal" (click)="onCancelDelete()">
-  <div class="modern-modal" (click)="$event.stopPropagation()">
-    <div class="modal-icon-container" [ngClass]="confirmActionType === 'delete' ? 'danger' : 'info'">
-      <i class="fa-solid" [ngClass]="confirmActionType === 'delete' ? 'fa-exclamation' : 'fa-rotate-left'"></i>
-    </div>
-    
-    <h3>Confirmación</h3>
-    <p>{{ confirmMessage }}</p>
-    
-    <div class="modern-modal-actions">
-      <button class="modern-modal-btn cancel" (click)="onCancelDelete()">Cancelar</button>
-      <button class="modern-modal-btn" [ngClass]="confirmActionType === 'delete' ? 'danger' : 'primary'" (click)="onConfirmAction()">
-        {{ confirmActionType === 'delete' ? 'Desactivar' : 'Restaurar' }}
-      </button>
+@if (showConfirmModal) {
+  <div class="modern-modal-backdrop" (click)="onCancelDelete()">
+    <div class="modern-modal" (click)="$event.stopPropagation()">
+      <div class="modal-icon-container" [ngClass]="confirmActionType === 'delete' ? 'danger' : 'info'">
+        <i class="fa-solid" [ngClass]="confirmActionType === 'delete' ? 'fa-exclamation' : 'fa-rotate-left'"></i>
+      </div>
+      <h3>Confirmación</h3>
+      <p>{{ confirmMessage }}</p>
+      <div class="modern-modal-actions">
+        <button class="modern-modal-btn cancel" (click)="onCancelDelete()">Cancelar</button>
+        <button class="modern-modal-btn" [ngClass]="confirmActionType === 'delete' ? 'danger' : 'primary'" (click)="onConfirmAction()">
+          {{ confirmActionType === 'delete' ? 'Desactivar' : 'Restaurar' }}
+        </button>
+      </div>
     </div>
   </div>
-</div>
+}
 
 <div class="admin-page">
   <div class="page-header">
@@ -24,11 +24,13 @@
       <span class="current">Listado</span>
     </div>
     <div class="header-actions">
-      <button *ngIf="isAdmin" class="history-btn" [ngClass]="{'active': mostrarEliminados}"
-        (click)="toggleVerEliminados()" [title]="mostrarEliminados ? 'Ver activos' : 'Ver desactivados'">
-        <i class="fa-solid" [ngClass]="mostrarEliminados ? 'fa-boxes-stacked' : 'fa-clock-rotate-left'"></i>
-        {{ mostrarEliminados ? 'Ver Activos' : 'Historial Desactivados' }}
-      </button>
+      @if (isAdmin) {
+        <button class="history-btn" [ngClass]="{'active': mostrarEliminados}"
+          (click)="toggleVerEliminados()" [title]="mostrarEliminados ? 'Ver activos' : 'Ver desactivados'">
+          <i class="fa-solid" [ngClass]="mostrarEliminados ? 'fa-boxes-stacked' : 'fa-clock-rotate-left'"></i>
+          {{ mostrarEliminados ? 'Ver Activos' : 'Historial Desactivados' }}
+        </button>
+      }
       <button class="new-item-btn" (click)="onNuevoProductoClick()">
         <i class="fa-solid fa-plus"></i> Nuevo Producto
       </button>
@@ -36,31 +38,39 @@
   </div>
 
   <!-- Banner de Historial -->
-  <div *ngIf="mostrarEliminados" class="history-banner">
-    <div class="banner-content">
-      <i class="fa-solid fa-clock-rotate-left"></i>
-      <span>Estás viendo el <strong>Historial de Productos Desactivados</strong>. Estos productos no aparecen en el
-        listado activo.</span>
+  @if (mostrarEliminados) {
+    <div class="history-banner">
+      <div class="banner-content">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+        <span>Estás viendo el <strong>Historial de Productos Desactivados</strong>. Estos productos no aparecen en el
+      listado activo.</span>
     </div>
   </div>
+}
 
-  <div class="content-card">
-    <div class="filters-bar">
-      <!-- Buscador General -->
-      <div class="search-box">
-        <i class="fa-solid fa-magnifying-glass"></i>
-        <input type="text" placeholder="Buscar por nombre, marca, serial..." [(ngModel)]="terminoBusqueda"
-          (ngModelChange)="onBuscar()" (focus)="showRecentSearches = true" (blur)="onSearchBlur()">
-        <button class="clear-input-btn" (click)="clearSearch()" *ngIf="terminoBusqueda" title="Limpiar búsqueda">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
+<div class="content-card">
+  <div class="filters-bar">
+    <!-- Buscador General -->
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" placeholder="Buscar por nombre, marca, serial..." [(ngModel)]="terminoBusqueda"
+        (ngModelChange)="onBuscar()" (focus)="showRecentSearches = true" (blur)="onSearchBlur()">
+        @if (terminoBusqueda) {
+          <button class="clear-input-btn" (click)="clearSearch()" title="Limpiar búsqueda">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        }
 
         <!-- Dropdown de búsquedas recientes -->
-        <div class="recent-searches-dropdown" *ngIf="showRecentSearches && recentSearches.length > 0">
-          <div class="recent-search-item" *ngFor="let term of recentSearches" (mousedown)="onSelectRecentSearch(term)">
-            <i class="fa-solid fa-clock-rotate-left"></i> {{ term }}
+        @if (showRecentSearches && recentSearches.length > 0) {
+          <div class="recent-searches-dropdown">
+            @for (term of recentSearches; track term) {
+              <div class="recent-search-item" (mousedown)="onSelectRecentSearch(term)">
+                <i class="fa-solid fa-clock-rotate-left"></i> {{ term }}
+              </div>
+            }
           </div>
-        </div>
+        }
       </div>
 
       <!-- Buscador por ID (Derecha del general) -->
@@ -68,253 +78,278 @@
         <i class="fa-solid fa-hashtag"></i>
         <input type="text" placeholder="Buscar por ID.." [(ngModel)]="terminoBusquedaId"
           (ngModelChange)="onBuscarPorId()" title="Búsqueda rápida por ID exacto">
-        <button class="clear-input-btn" (click)="clearSearchId()" *ngIf="terminoBusquedaId" title="Limpiar ID">
-          <i class="fa-solid fa-xmark"></i>
+          @if (terminoBusquedaId) {
+            <button class="clear-input-btn" (click)="clearSearchId()" title="Limpiar ID">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          }
+        </div>
+
+        <div class="filter-dropdown">
+          <app-custom-dropdown [options]="opcionesEmpresa" [selectedValue]="empresaFilter" label="Todas las empresas"
+            (valueChange)="onEmpresaChange($event)">
+          </app-custom-dropdown>
+        </div>
+      </div>
+
+      <div class="table-wrapper">
+        <table class="modern-table">
+          <thead>
+            <tr>
+              <th (click)="onSort('nombre')" class="sortable">
+                PRODUCTO <i class="fa-solid" [ngClass]="getSortIcon('nombre')"></i>
+              </th>
+              <th (click)="onSort('empresa')" class="sortable">
+                EMPRESA <i class="fa-solid" [ngClass]="getSortIcon('empresa')"></i>
+              </th>
+              <th (click)="onSort('categoria')" class="sortable">
+                CATEGORÍA <i class="fa-solid" [ngClass]="getSortIcon('categoria')"></i>
+              </th>
+              <th (click)="onSort('marca')" class="sortable">
+                MARCA/MODELO <i class="fa-solid" [ngClass]="getSortIcon('marca')"></i>
+              </th>
+              <th (click)="onSort('serial')" class="sortable">
+                SERIAL <i class="fa-solid" [ngClass]="getSortIcon('serial')"></i>
+              </th>
+              <th (click)="onSort('condicion')" class="sortable">
+                CONDICIÓN <i class="fa-solid" [ngClass]="getSortIcon('condicion')"></i>
+              </th>
+              <th (click)="onSort('locacion')" class="sortable">
+                UBICACIÓN <i class="fa-solid" [ngClass]="getSortIcon('locacion')"></i>
+              </th>
+              <th (click)="onSort('cantidad')" class="sortable">
+                CANTIDAD <i class="fa-solid" [ngClass]="getSortIcon('cantidad')"></i>
+              </th>
+              <th>ACCIONES</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (articulo of articulosPaginados; track articulo) {
+              <tr [class.highlighted-row]="highlightedArticleId === articulo.id"
+                (click)="toggleHighlight(articulo.id, $event)">
+                <td>
+                  <div class="item-info">
+                    <span class="item-name">{{ articulo.nombre }}</span>
+                    <span class="item-id">ID: {{ articulo.id }}</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="empresa-chip"
+                    [ngClass]="articulo.empresa === '3D3' ? 'empresa-3d3' : (articulo.empresa?.toLowerCase() || '')">
+                    {{ articulo.empresa || 'N/A' }}
+                  </span>
+                </td>
+                <td>
+                  <span class="category-chip">{{ articulo.categoria }}</span>
+                </td>
+                <td>
+                  <div class="item-info">
+                    <span>{{ articulo.marca }}</span>
+                    <span class="item-id">{{ articulo.modelo }}</span>
+                  </div>
+                </td>
+                <td>{{ articulo.serial || 'N/A' }}</td>
+                <td>
+                  <span class="condition-chip" [ngClass]="articulo.condicion.toLowerCase() || ''">
+                    {{ articulo.condicion }}
+                  </span>
+                </td>
+                <td>{{ articulo.locacion }}</td>
+                <td>
+                  <span [ngClass]="{'stock-alert': (articulo.cantidad || 0) <= 5}">
+                    {{ articulo.cantidad }}
+                  </span>
+                </td>
+                <td>
+                  <div class="actions-cell-wrapper">
+                    <div class="actions-cell">
+                      <button class="icon-btn view" (click)="verDetalles(articulo)" title="Ver Detalles">
+                        <i class="fa-solid fa-file-lines"></i>
+                      </button>
+                      <button class="icon-btn edit" [routerLink]="['/articles/edit', articulo.id]" title="Editar">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                      </button>
+                      <button class="icon-btn barcode" (click)="onShowBarcode(articulo)" title="Código de Barras">
+                        <i class="fa-solid fa-barcode"></i>
+                      </button>
+                      @if (!mostrarEliminados) {
+                        <button class="icon-btn delete" (click)="onDelete(articulo)"
+                          title="Desactivar">
+                          <i class="fa-solid fa-trash"></i>
+                        </button>
+                      }
+                      @if (mostrarEliminados) {
+                        <button class="icon-btn restore" (click)="onRestore(articulo)"
+                          title="Restaurar">
+                          <i class="fa-solid fa-rotate-left"></i>
+                        </button>
+                      }
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            }
+            @if (articulosPaginados.length === 0) {
+              <tr>
+                <td colspan="8" class="empty-cell">No se encontraron productos.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination-container">
+        <mat-paginator (page)="onPageChange($event)" [length]="totalArticles" [pageSize]="pageSize"
+          [pageSizeOptions]="pageSizeOptions" [pageIndex]="pageIndex" aria-label="Seleccionar página">
+        </mat-paginator>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Código de Barras -->
+  @if (showBarcodeModal) {
+    <div class="barcode-modal-backdrop" (click)="onCloseBarcodeModal()"></div>
+  }
+  @if (showBarcodeModal) {
+    <div class="barcode-modal-content no-print">
+      <div class="barcode-modal-header">
+        <h4>Etiqueta de Producto</h4>
+        <button class="close-btn" (click)="onCloseBarcodeModal()">&times;</button>
+      </div>
+      <div class="barcode-display-area" id="print-section">
+        <div class="barcode-info">
+          <span class="product-name">{{ selectedArticle?.nombre }}</span>
+          <span class="product-meta">{{ selectedArticle?.marca }} - {{ selectedArticle?.modelo }}</span>
+        </div>
+        <div class="barcode-container-inner">
+          <div class="barcode-image-container">
+            <svg id="barcode"></svg>
+          </div>
+          <div class="barcode-footer-row">
+            <div class="barcode-id-display">
+              {{ selectedArticle?.id }}
+            </div>
+            <div class="barcode-logo-container">
+              @switch (selectedArticle?.empresa?.toUpperCase()) {
+                <!-- JPL Logo -->
+                @case ('JPL') {
+                  <div class="company-logo jpl-logo">
+                    <img src="img/Logo_JPL.png" alt="JPL Logo" class="logo-image">
+                  </div>
+                }
+                <!-- PAFAR Logo -->
+                @case ('PAFAR') {
+                  <div class="company-logo pafar-logo">
+                    <img src="img/Logo_PAFAR.png" alt="PAFAR Logo" class="logo-image">
+                  </div>
+                }
+                <!-- 3D3 Logo -->
+                @case ('3D3') {
+                  <div class="company-logo logo-3d3">
+                    <img src="img/Logo_3D3.png" alt="3D3 Logo" class="logo-image">
+                  </div>
+                }
+                <!-- Default Logo (Fallback to PAFAR) -->
+                @default {
+                  <div class="company-logo default-logo">
+                    <img src="img/Logo_PAFAR.png" alt="Logo" class="logo-image">
+                  </div>
+                }
+              }
+            </div>
+          </div>
+        </div>
+        <div class="barcode-footer-hint no-print">
+          Presione el botón de escanear para leer el código
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-cancel" (click)="onCloseBarcodeModal()">Cerrar</button>
+        <button class="btn btn-confirm" (click)="onPrintBarcode()">
+          <i class="fa-solid fa-print"></i> Imprimir
         </button>
       </div>
-
-      <div class="filter-dropdown">
-        <app-custom-dropdown [options]="opcionesEmpresa" [selectedValue]="empresaFilter" label="Todas las empresas"
-          (valueChange)="onEmpresaChange($event)">
-        </app-custom-dropdown>
-      </div>
     </div>
+  }
 
-    <div class="table-wrapper">
-      <table class="modern-table">
-        <thead>
-          <tr>
-            <th (click)="onSort('nombre')" class="sortable">
-              PRODUCTO <i class="fa-solid" [ngClass]="getSortIcon('nombre')"></i>
-            </th>
-            <th (click)="onSort('empresa')" class="sortable">
-              EMPRESA <i class="fa-solid" [ngClass]="getSortIcon('empresa')"></i>
-            </th>
-            <th (click)="onSort('categoria')" class="sortable">
-              CATEGORÍA <i class="fa-solid" [ngClass]="getSortIcon('categoria')"></i>
-            </th>
-            <th (click)="onSort('marca')" class="sortable">
-              MARCA/MODELO <i class="fa-solid" [ngClass]="getSortIcon('marca')"></i>
-            </th>
-            <th (click)="onSort('serial')" class="sortable">
-              SERIAL <i class="fa-solid" [ngClass]="getSortIcon('serial')"></i>
-            </th>
-            <th (click)="onSort('condicion')" class="sortable">
-              CONDICIÓN <i class="fa-solid" [ngClass]="getSortIcon('condicion')"></i>
-            </th>
-            <th (click)="onSort('locacion')" class="sortable">
-              UBICACIÓN <i class="fa-solid" [ngClass]="getSortIcon('locacion')"></i>
-            </th>
-            <th (click)="onSort('cantidad')" class="sortable">
-              CANTIDAD <i class="fa-solid" [ngClass]="getSortIcon('cantidad')"></i>
-            </th>
-            <th>ACCIONES</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let articulo of articulosPaginados" [class.highlighted-row]="highlightedArticleId === articulo.id"
-            (click)="toggleHighlight(articulo.id, $event)">
-            <td>
-              <div class="item-info">
-                <span class="item-name">{{ articulo.nombre }}</span>
-                <span class="item-id">ID: {{ articulo.id }}</span>
-              </div>
-            </td>
-            <td>
+  <!-- Modal de Escáner -->
+  @if (showScannerModal) {
+    <app-scanner (scanResult)="onScanResult($event)" (close)="onCloseScanner()"></app-scanner>
+  }
+
+  <!-- Modal de Detalles de Producto Escaneado -->
+  @if (showScannedDetailsModal) {
+    <div class="confirm-modal-backdrop" (click)="onCloseScannedDetails()"></div>
+  }
+  @if (showScannedDetailsModal) {
+    <div class="details-modal-content">
+      <div class="details-header">
+        <div class="header-title-info">
+          <i class="fa-solid fa-file-lines primary-icon"></i>
+          <div class="title-with-id">
+            <h4>{{ scannedArticle?.nombre }}</h4>
+            <span class="id-badge-sub">#{{ scannedArticle?.id }}</span>
+          </div>
+        </div>
+        <div class="header-actions-side">
+          <span class="condition-chip" [ngClass]="scannedArticle?.condicion?.toLowerCase()">
+            {{ scannedArticle?.condicion }}
+          </span>
+          <button class="close-btn" (click)="onCloseScannedDetails()">&times;</button>
+        </div>
+      </div>
+      @if (scannedArticle) {
+        <div class="details-body">
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span class="detail-label">Categoría</span>
+              <span class="detail-value">{{ scannedArticle.categoria }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Marca / Modelo</span>
+              <span class="detail-value">{{ scannedArticle.marca }} - {{ scannedArticle.modelo }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Serial</span>
+              <span class="detail-value highlight-value">{{ scannedArticle.serial || 'N/A' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Ubicación</span>
+              <span class="detail-value">{{ scannedArticle.locacion }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Cantidad</span>
+              <span class="detail-value">{{ scannedArticle.cantidad }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Color</span>
+              <span class="detail-value">{{ scannedArticle.color }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Empresa</span>
               <span class="empresa-chip"
-                [ngClass]="articulo.empresa === '3D3' ? 'empresa-3d3' : (articulo.empresa?.toLowerCase() || '')">
-                {{ articulo.empresa || 'N/A' }}
+                [ngClass]="scannedArticle.empresa === '3D3' ? 'empresa-3d3' : (scannedArticle.empresa?.toLowerCase() || '')">
+                {{ scannedArticle.empresa || 'N/A' }}
               </span>
-            </td>
-            <td>
-              <span class="category-chip">{{ articulo.categoria }}</span>
-            </td>
-            <td>
-              <div class="item-info">
-                <span>{{ articulo.marca }}</span>
-                <span class="item-id">{{ articulo.modelo }}</span>
-              </div>
-            </td>
-            <td>{{ articulo.serial || 'N/A' }}</td>
-            <td>
-              <span class="condition-chip" [ngClass]="articulo.condicion.toLowerCase() || ''">
-                {{ articulo.condicion }}
-              </span>
-            </td>
-            <td>{{ articulo.locacion }}</td>
-            <td>
-              <span [ngClass]="{'stock-alert': (articulo.cantidad || 0) <= 5}">
-                {{ articulo.cantidad }}
-              </span>
-            </td>
-            <td>
-              <div class="actions-cell-wrapper">
-                <div class="actions-cell">
-                  <button class="icon-btn view" (click)="verDetalles(articulo)" title="Ver Detalles">
-                    <i class="fa-solid fa-file-lines"></i>
-                  </button>
-                  <button class="icon-btn edit" [routerLink]="['/articles/edit', articulo.id]" title="Editar">
-                    <i class="fa-solid fa-pen-to-square"></i>
-                  </button>
-                  <button class="icon-btn barcode" (click)="onShowBarcode(articulo)" title="Código de Barras">
-                    <i class="fa-solid fa-barcode"></i>
-                  </button>
-                  <button *ngIf="!mostrarEliminados" class="icon-btn delete" (click)="onDelete(articulo)"
-                    title="Desactivar">
-                    <i class="fa-solid fa-trash"></i>
-                  </button>
-                  <button *ngIf="mostrarEliminados" class="icon-btn restore" (click)="onRestore(articulo)"
-                    title="Restaurar">
-                    <i class="fa-solid fa-rotate-left"></i>
-                  </button>
-                </div>
-              </div>
-            </td>
-          </tr>
-          <tr *ngIf="articulosPaginados.length === 0">
-            <td colspan="8" class="empty-cell">No se encontraron productos.</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="pagination-container">
-      <mat-paginator (page)="onPageChange($event)" [length]="totalArticles" [pageSize]="pageSize"
-        [pageSizeOptions]="pageSizeOptions" [pageIndex]="pageIndex" aria-label="Seleccionar página">
-      </mat-paginator>
-    </div>
-  </div>
-</div>
-
-<!-- Modal de Código de Barras -->
-<div *ngIf="showBarcodeModal" class="barcode-modal-backdrop" (click)="onCloseBarcodeModal()"></div>
-<div *ngIf="showBarcodeModal" class="barcode-modal-content no-print">
-  <div class="barcode-modal-header">
-    <h4>Etiqueta de Producto</h4>
-    <button class="close-btn" (click)="onCloseBarcodeModal()">&times;</button>
-  </div>
-  <div class="barcode-display-area" id="print-section">
-    <div class="barcode-info">
-      <span class="product-name">{{ selectedArticle?.nombre }}</span>
-      <span class="product-meta">{{ selectedArticle?.marca }} - {{ selectedArticle?.modelo }}</span>
-    </div>
-    <div class="barcode-container-inner">
-      <div class="barcode-image-container">
-        <svg id="barcode"></svg>
-      </div>
-      <div class="barcode-footer-row">
-        <div class="barcode-id-display">
-          {{ selectedArticle?.id }}
-        </div>
-        <div class="barcode-logo-container" [ngSwitch]="selectedArticle?.empresa?.toUpperCase()">
-          <!-- JPL Logo -->
-          <div *ngSwitchCase="'JPL'" class="company-logo jpl-logo">
-            <img src="img/Logo_JPL.png" alt="JPL Logo" class="logo-image">
-          </div>
-
-          <!-- PAFAR Logo -->
-          <div *ngSwitchCase="'PAFAR'" class="company-logo pafar-logo">
-            <img src="img/Logo_PAFAR.png" alt="PAFAR Logo" class="logo-image">
-          </div>
-
-          <!-- 3D3 Logo -->
-          <div *ngSwitchCase="'3D3'" class="company-logo logo-3d3">
-            <img src="img/Logo_3D3.png" alt="3D3 Logo" class="logo-image">
-          </div>
-
-          <!-- Default Logo (Fallback to PAFAR) -->
-          <div *ngSwitchDefault class="company-logo default-logo">
-            <img src="img/Logo_PAFAR.png" alt="Logo" class="logo-image">
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">{{ scannedArticle.deletedAt ? 'Fecha Desactivación' : 'Fecha Registro' }}</span>
+              <span class="detail-value">{{ (scannedArticle.deletedAt || scannedArticle.registeredAt) | date:'dd/MM/yyyy'
+              }}</span>
+            </div>
+            <div class="detail-item full-width">
+              <span class="detail-label">Características</span>
+              <span class="detail-value text-detail-block">{{ scannedArticle.caracteristicas | uppercase }}</span>
+            </div>
           </div>
         </div>
+      }
+      <div class="modal-actions">
+        <button class="btn btn-cancel" (click)="onCloseScannedDetails()">Cerrar</button>
+        <button class="btn btn-primary" [routerLink]="['/articles/edit', scannedArticle?.id]"
+          (click)="onCloseScannedDetails()">
+          <i class="fa-solid fa-pen-to-square"></i> Editar Producto
+        </button>
       </div>
     </div>
-    <div class="barcode-footer-hint no-print">
-      Presione el botón de escanear para leer el código
-    </div>
-  </div>
-  <div class="modal-actions">
-    <button class="btn btn-cancel" (click)="onCloseBarcodeModal()">Cerrar</button>
-    <button class="btn btn-confirm" (click)="onPrintBarcode()">
-      <i class="fa-solid fa-print"></i> Imprimir
-    </button>
-  </div>
-</div>
-
-<!-- Modal de Escáner -->
-@if (showScannerModal) {
-<app-scanner (scanResult)="onScanResult($event)" (close)="onCloseScanner()"></app-scanner>
-}
-
-<!-- Modal de Detalles de Producto Escaneado -->
-<div *ngIf="showScannedDetailsModal" class="confirm-modal-backdrop" (click)="onCloseScannedDetails()"></div>
-<div *ngIf="showScannedDetailsModal" class="details-modal-content">
-  <div class="details-header">
-    <div class="header-title-info">
-      <i class="fa-solid fa-file-lines primary-icon"></i>
-      <div class="title-with-id">
-        <h4>{{ scannedArticle?.nombre }}</h4>
-        <span class="id-badge-sub">#{{ scannedArticle?.id }}</span>
-      </div>
-    </div>
-    <div class="header-actions-side">
-      <span class="condition-chip" [ngClass]="scannedArticle?.condicion?.toLowerCase()">
-        {{ scannedArticle?.condicion }}
-      </span>
-      <button class="close-btn" (click)="onCloseScannedDetails()">&times;</button>
-    </div>
-  </div>
-  <div class="details-body" *ngIf="scannedArticle">
-
-    <div class="detail-grid">
-      <div class="detail-item">
-        <span class="detail-label">Categoría</span>
-        <span class="detail-value">{{ scannedArticle.categoria }}</span>
-      </div>
-      <div class="detail-item">
-        <span class="detail-label">Marca / Modelo</span>
-        <span class="detail-value">{{ scannedArticle.marca }} - {{ scannedArticle.modelo }}</span>
-      </div>
-      <div class="detail-item">
-        <span class="detail-label">Serial</span>
-        <span class="detail-value highlight-value">{{ scannedArticle.serial || 'N/A' }}</span>
-      </div>
-      <div class="detail-item">
-        <span class="detail-label">Ubicación</span>
-        <span class="detail-value">{{ scannedArticle.locacion }}</span>
-      </div>
-      <div class="detail-item">
-        <span class="detail-label">Cantidad</span>
-        <span class="detail-value">{{ scannedArticle.cantidad }}</span>
-      </div>
-      <div class="detail-item">
-        <span class="detail-label">Color</span>
-        <span class="detail-value">{{ scannedArticle.color }}</span>
-      </div>
-
-      <div class="detail-item">
-        <span class="detail-label">Empresa</span>
-        <span class="empresa-chip"
-          [ngClass]="scannedArticle.empresa === '3D3' ? 'empresa-3d3' : (scannedArticle.empresa?.toLowerCase() || '')">
-          {{ scannedArticle.empresa || 'N/A' }}
-        </span>
-      </div>
-      <div class="detail-item">
-        <span class="detail-label">{{ scannedArticle.deletedAt ? 'Fecha Desactivación' : 'Fecha Registro' }}</span>
-        <span class="detail-value">{{ (scannedArticle.deletedAt || scannedArticle.registeredAt) | date:'dd/MM/yyyy'
-          }}</span>
-      </div>
-      <div class="detail-item full-width">
-        <span class="detail-label">Características</span>
-        <span class="detail-value text-detail-block">{{ scannedArticle.caracteristicas | uppercase }}</span>
-      </div>
-    </div>
-  </div>
-  <div class="modal-actions">
-    <button class="btn btn-cancel" (click)="onCloseScannedDetails()">Cerrar</button>
-    <button class="btn btn-primary" [routerLink]="['/articles/edit', scannedArticle?.id]"
-      (click)="onCloseScannedDetails()">
-      <i class="fa-solid fa-pen-to-square"></i> Editar Producto
-    </button>
-  </div>
-</div>
+  }

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { Sidebar } from './components/shared/sidebar/sidebar';
 import { filter } from 'rxjs/operators';
@@ -9,7 +9,7 @@ import { AuthService } from './services/auth/authService';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, Sidebar, Chatbot],
+  imports: [RouterOutlet, Sidebar, Chatbot],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

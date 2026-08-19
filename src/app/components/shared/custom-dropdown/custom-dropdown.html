@@ -1,23 +1,29 @@
 <div class="custom-select-container" [class.dropup]="dropup">
-  
+
   <button type="button" class="custom-btn" (click)="menuAbierto = !menuAbierto">
     <div class="btn-content">
-      <i [class]="'fa-solid ' + icon"></i> 
+      <i [class]="'fa-solid ' + icon"></i>
       <span>{{ getNombreSeleccion() }}</span>
     </div>
     <i class="fa-solid fa-chevron-down arrow-icon" [class.rotated]="menuAbierto"></i>
   </button>
-  
+
   @if (menuAbierto) {
     <div class="custom-menu">
-      
-      <button type="button" *ngIf="showClearOption" (click)="seleccionarOpcion('')">{{ label }}</button>
-      
+
+      @if (showClearOption) {
+        <button type="button" (click)="seleccionarOpcion('')">{{ label }}</button>
+      }
+
       @for (op of options; track op) {
         <button type="button" (click)="seleccionarOpcion(op, $event)" [class.multi-select-item]="multiSelect">
-          <div class="custom-checkbox" *ngIf="multiSelect" [class.checked]="isOptionSelected(op)">
-            <i class="fa-solid fa-check" *ngIf="isOptionSelected(op)"></i>
-          </div>
+          @if (multiSelect) {
+            <div class="custom-checkbox" [class.checked]="isOptionSelected(op)">
+              @if (isOptionSelected(op)) {
+                <i class="fa-solid fa-check"></i>
+              }
+            </div>
+          }
           <span>{{ getLabel(op) }}</span>
         </button>
       }

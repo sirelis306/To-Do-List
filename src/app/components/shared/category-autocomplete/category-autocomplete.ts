@@ -1,12 +1,12 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { TaskService } from '../../../services/task/taskService';
 
 @Component({
   selector: 'app-category-autocomplete',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   templateUrl: './category-autocomplete.html',
   styleUrl: './category-autocomplete.css'
 })

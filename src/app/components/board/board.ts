@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormsModule } from '@angular/forms';
@@ -15,7 +15,7 @@ import { AuthService } from '../../services/auth/authService';
 
 @Component({
   selector: 'app-board',
-  imports: [CommonModule, FormsModule, KanbanColumn, DragDropModule, AddTaskModal, MatFormFieldModule, MatSelectModule, CustomDropdown, TaskDetailModal], 
+  imports: [FormsModule, KanbanColumn, DragDropModule, AddTaskModal, MatFormFieldModule, MatSelectModule, CustomDropdown, TaskDetailModal], 
   templateUrl: './board.html', 
   styleUrl: './board.css',
   standalone: true,
