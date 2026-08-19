@@ -35,6 +35,7 @@
           },
           "configurations": {
             "production": {
+              "baseHref": "/intranet-corporativa/",
               "budgets": [
                 {
                   "type": "initial",
