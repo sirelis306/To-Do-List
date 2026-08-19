@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Tarea, Subtarea, Importancia, EstadoTarea } from '../../../models/tarea';
@@ -10,6 +10,7 @@ import { CustomDropdown } from '../../shared/custom-dropdown/custom-dropdown';
   standalone: true,
   imports: [CommonModule, FormsModule, CustomDropdown],
   templateUrl: './task-detail-modal.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './task-detail-modal.css',
 })
 export class TaskDetailModal {

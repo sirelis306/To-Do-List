@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router'; 
 import { CommonModule } from '@angular/common'; 
 import { AuthService } from '../../../services/auth/authService';
@@ -11,6 +11,7 @@ import { Router, NavigationEnd } from '@angular/router';
   imports: [CommonModule, RouterLink, RouterLinkActive],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: true,
 })
 export class Sidebar implements OnInit {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CalendarService } from '../../services/calendar/calendar.service';
@@ -12,6 +12,7 @@ import { CustomDropdown } from '../shared/custom-dropdown/custom-dropdown';
   standalone: true,
   imports: [CommonModule, FormsModule, AddEventModal, CustomDropdown],
   templateUrl: './calendar.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './calendar.css'
 })
 export class Calendar implements OnInit {

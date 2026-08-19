@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { Sidebar } from './components/shared/sidebar/sidebar';
@@ -11,6 +11,7 @@ import { AuthService } from './services/auth/authService';
   standalone: true,
   imports: [RouterOutlet, Sidebar, Chatbot],
   templateUrl: './app.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './app.css'
 })
 export class App {

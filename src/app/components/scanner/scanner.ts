@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, OnDestroy, Output, EventEmitter } from '@angular/core';
+import { Component, AfterViewInit, OnDestroy, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 
 import { Html5QrcodeScanner } from 'html5-qrcode';
 
@@ -7,6 +7,7 @@ import { Html5QrcodeScanner } from 'html5-qrcode';
   standalone: true,
   imports: [],
   templateUrl: './scanner.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './scanner.css'
 })
 export class Scanner implements AfterViewInit, OnDestroy {

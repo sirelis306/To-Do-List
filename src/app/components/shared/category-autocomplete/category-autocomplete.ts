@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import { TaskService } from '../../../services/task/taskService';
@@ -8,6 +8,7 @@ import { TaskService } from '../../../services/task/taskService';
   standalone: true,
   imports: [FormsModule],
   templateUrl: './category-autocomplete.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './category-autocomplete.css'
 })
 export class CategoryAutocomplete implements OnInit {

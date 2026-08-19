@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -16,6 +16,7 @@ import { CustomDropdown } from '../../shared/custom-dropdown/custom-dropdown';
   standalone: true,
   imports: [CommonModule, RouterModule, FormsModule, MatPaginatorModule, CustomDropdown],
   templateUrl: './users.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './users.css'
 })
 export class Users implements OnInit, OnDestroy {

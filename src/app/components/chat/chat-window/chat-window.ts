@@ -1,4 +1,4 @@
-import { Component, OnInit, OnChanges, SimpleChanges, Input } from '@angular/core';
+import { Component, OnInit, OnChanges, SimpleChanges, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ChatWindowFacadeService } from '../../../services/chat/chat-window-facade.service';
@@ -9,6 +9,7 @@ import { ChatWindowFacadeService } from '../../../services/chat/chat-window-faca
   templateUrl: './chat-window.html',
   styleUrl: './chat-window.css',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [ChatWindowFacadeService] // Provide facade per instance
 })
 export class ChatWindow implements OnInit, OnChanges {

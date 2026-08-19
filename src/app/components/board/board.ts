@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -18,6 +18,7 @@ import { AuthService } from '../../services/auth/authService';
   imports: [FormsModule, KanbanColumn, DragDropModule, AddTaskModal, MatFormFieldModule, MatSelectModule, CustomDropdown, TaskDetailModal], 
   templateUrl: './board.html', 
   styleUrl: './board.css',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: true,
 })
 

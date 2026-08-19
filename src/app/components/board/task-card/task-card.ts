@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule, TitleCasePipe } from '@angular/common';
 import { Tarea, Importancia } from '../../../models/tarea';
 
@@ -7,6 +7,7 @@ import { Tarea, Importancia } from '../../../models/tarea';
   standalone: true,
   imports: [CommonModule, TitleCasePipe],
   templateUrl: './task-card.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './task-card.css',
 })
 export class TaskCard {

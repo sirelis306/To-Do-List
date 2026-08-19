@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Conversation } from '../../../models/chat';
@@ -11,6 +11,7 @@ import { AuthService } from '../../../services/auth/authService';
   imports: [CommonModule, FormsModule],
   templateUrl: './chat-list.html',
   styleUrl: './chat-list.css',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: true,
 })
 export class ChatList implements OnInit {

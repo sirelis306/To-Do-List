@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import { TranscriptorService } from '../../services/transcriptorService/transcriptor-service';
@@ -9,6 +9,7 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
   standalone: true,
   imports: [FormsModule],
   templateUrl: './transcriptor.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './transcriptor.css',
 })
 export class Transcriptor implements OnDestroy {

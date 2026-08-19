@@ -292,7 +292,7 @@
           </div>
         </div>
         <div class="header-actions-side">
-          <span class="condition-chip" [ngClass]="scannedArticle?.condicion?.toLowerCase()">
+          <span class="condition-chip" [ngClass]="$safeNavigationMigration(scannedArticle?.condicion?.toLowerCase())">
             {{ scannedArticle?.condicion }}
           </span>
           <button class="close-btn" (click)="onCloseScannedDetails()">&times;</button>
@@ -346,7 +346,7 @@
       }
       <div class="modal-actions">
         <button class="btn btn-cancel" (click)="onCloseScannedDetails()">Cerrar</button>
-        <button class="btn btn-primary" [routerLink]="['/articles/edit', scannedArticle?.id]"
+        <button class="btn btn-primary" [routerLink]="['/articles/edit', $safeNavigationMigration(scannedArticle?.id)]"
           (click)="onCloseScannedDetails()">
           <i class="fa-solid fa-pen-to-square"></i> Editar Producto
         </button>

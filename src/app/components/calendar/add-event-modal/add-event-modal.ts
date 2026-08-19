@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import { CalendarService } from '../../../services/calendar/calendar.service';
@@ -12,6 +12,7 @@ import { CustomDropdown } from '../../shared/custom-dropdown/custom-dropdown';
   standalone: true,
   imports: [FormsModule, CustomDropdown],
   templateUrl: './add-event-modal.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './add-event-modal.css'
 })
 export class AddEventModal implements OnInit {

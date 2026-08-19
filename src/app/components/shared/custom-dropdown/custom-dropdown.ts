@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ElementRef, HostListener } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ElementRef, HostListener, ChangeDetectionStrategy } from '@angular/core';
 import { TitleCasePipe } from '@angular/common';
 
 
@@ -7,6 +7,7 @@ import { TitleCasePipe } from '@angular/common';
   standalone: true,
   imports: [],
   templateUrl: './custom-dropdown.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './custom-dropdown.css'
 })
 export class CustomDropdown {

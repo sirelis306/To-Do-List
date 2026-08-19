@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
@@ -11,6 +11,7 @@ import { UserRole } from '../../../models/user';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './add-user.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './add-user.css'
 })
 export class AddUser implements OnInit {

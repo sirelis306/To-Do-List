@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule, TitleCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth/authService';
@@ -9,6 +9,7 @@ import { User } from '../../models/user';
   standalone: true,
   imports: [CommonModule, FormsModule, TitleCasePipe],
   templateUrl: './profile.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './profile.css',
 })
 export class Profile implements OnInit{

@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { CategoryAutocomplete } from '../../shared/category-autocomplete/category-autocomplete';
@@ -10,6 +10,7 @@ import { CustomDropdown } from '../../shared/custom-dropdown/custom-dropdown';
   standalone: true,
   imports: [FormsModule, CategoryAutocomplete, CustomDropdown],
   templateUrl: './add-task-modal.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './add-task-modal.css',
 })
 export class AddTaskModal {

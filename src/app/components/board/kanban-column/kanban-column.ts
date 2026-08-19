@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Tarea, EstadoTarea } from '../../../models/tarea';
 import { TaskCard } from '../task-card/task-card';
@@ -14,6 +14,7 @@ export interface MoverTareaEvento {
   standalone: true,
   imports: [CommonModule, TaskCard, DragDropModule, CdkDrag, CdkDropList],
   templateUrl: './kanban-column.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './kanban-column.css',
 })
 export class KanbanColumn { 

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Injectable } from '@angular/core';
+import { Component, OnInit, OnDestroy, Injectable, ChangeDetectionStrategy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -27,6 +27,7 @@ export class MyPaginatorIntl extends MatPaginatorIntl {
   imports: [CommonModule, FormsModule, RouterLink, MatPaginatorModule, CustomDropdown, Scanner],
   templateUrl: './articles.html',
   styleUrl: './articles.css',
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [
     { provide: MatPaginatorIntl, useClass: MyPaginatorIntl }
   ]

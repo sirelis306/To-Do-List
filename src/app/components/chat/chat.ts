@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 
 import { ChatList } from './chat-list/chat-list';
 import { ChatWindow } from './chat-window/chat-window';
@@ -10,6 +10,7 @@ import { Conversation } from '../../models/chat';
   imports: [ChatList, ChatWindow],
   templateUrl: './chat.html',
   styleUrl: './chat.css',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: true,
 })
 export class Chat implements OnInit, OnDestroy {

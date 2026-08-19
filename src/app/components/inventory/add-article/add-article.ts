@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
 import { FormsModule } from '@angular/forms';
@@ -13,6 +13,7 @@ import { CustomDropdown } from '../../shared/custom-dropdown/custom-dropdown';
   standalone: true,
   imports: [FormsModule, CustomDropdown],
   templateUrl: './add-article.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './add-article.css',
 })
 export class AddArticle implements OnInit {
