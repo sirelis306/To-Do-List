@@ -244,16 +244,30 @@
 
 .avatar-container {
   position: relative;
-  margin-right: 15px;
+  margin-right: 14px;
   flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 
 .user-avatar {
-  font-size: 1.5em; 
-  color: #94a3b8;
-  padding: 8px;
-  border-radius: 50%;
-  background-color: #e2e8f0;
+  font-size: 1.25rem !important; 
+  color: #64748b !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  height: 100% !important;
 }
 
 .status-indicator {

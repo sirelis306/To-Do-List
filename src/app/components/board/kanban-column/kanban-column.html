@@ -5,7 +5,13 @@
       'kanban-column-completada': titulo === 'Completada' 
     }">
   
-  <h2>{{ titulo }}</h2>
+  <div class="column-header">
+    <div class="column-title-group">
+      <span class="column-dot"></span>
+      <h2>{{ titulo }}</h2>
+    </div>
+    <span class="column-badge">{{ tareas.length }}</span>
+  </div>
 
   <div 
     class="card-container"
